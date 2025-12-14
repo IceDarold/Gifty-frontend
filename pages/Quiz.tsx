@@ -63,116 +63,112 @@ export const Quiz: React.FC = () => {
     }
   };
 
-  // Neo-Brutalist Styles
-  const containerStyle = "bg-white border-2 border-black p-4 rounded-xl shadow-hard mb-6 relative";
-  const headerTextStyle = "text-black font-display font-bold text-xl";
-  const subTextStyle = "text-gray-600 font-bold text-sm mt-1";
-  const inputStyle = "w-full bg-white border-2 border-black text-black placeholder-gray-400 rounded-xl p-4 text-xl font-bold outline-none focus:shadow-hard transition-all text-center";
-  
-  const optionBtnBase = "p-4 rounded-xl font-bold border-2 border-black transition-all text-center active:translate-y-1 active:shadow-none";
-  const optionBtnSelected = "bg-pop-yellow text-black shadow-hard scale-[1.02]";
-  const optionBtnDefault = "bg-white text-black hover:bg-gray-50 shadow-sm";
+  // Styles
+  const cardStyle = "bg-white border-2 border-black rounded-2xl shadow-hard p-6 min-h-[300px] flex flex-col items-center text-center justify-center relative overflow-hidden";
+  const labelStyle = "text-sm font-bold text-gray-500 uppercase tracking-widest mb-2";
+  const questionStyle = "text-3xl font-display font-black text-black mb-6 leading-none";
+  const inputStyle = "w-full bg-paper border-2 border-black text-black placeholder-gray-400 rounded-xl p-4 text-2xl font-bold outline-none focus:shadow-hard focus:-translate-y-1 transition-all text-center";
 
   const renderContent = () => {
     switch (step) {
       case 0:
         return (
-          <>
-            <div className={containerStyle}>
-               <p className={headerTextStyle}>Кому ищем подарок?</p>
-               <p className={subTextStyle}>Как зовут счастливчика?</p>
-            </div>
+          <div className={cardStyle}>
+            <div className="absolute top-0 left-0 w-full h-2 bg-pop-pink"></div>
+            <Mascot emotion="happy" className="w-20 h-20 mb-4" />
+            <p className={labelStyle}>Вопрос 1/6</p>
+            <h2 className={questionStyle}>Как зовут счастливчика?</h2>
             <input
               type="text"
-              placeholder="например, Саша"
+              placeholder="Имя..."
               value={answers.name}
               onChange={(e) => updateAnswer('name', e.target.value)}
               className={inputStyle}
               autoFocus
             />
-          </>
+          </div>
         );
       case 1:
         return (
-          <>
-            <div className={containerStyle}>
-               <p className={headerTextStyle}>Супер! Сколько лет {answers.name}?</p>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {AGE_GROUPS.map(age => (
-                <button
-                  key={age}
-                  onClick={() => updateAnswer('ageGroup', age)}
-                  className={`${optionBtnBase} ${answers.ageGroup === age ? optionBtnSelected : optionBtnDefault}`}
-                >
-                  {age}
-                </button>
-              ))}
-            </div>
-          </>
+           <div className="space-y-4">
+              <div className="bg-white border-2 border-black p-4 rounded-xl shadow-sm text-center">
+                  <h2 className="text-2xl font-black font-display">Сколько лет?</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {AGE_GROUPS.map(age => (
+                  <button
+                    key={age}
+                    onClick={() => updateAnswer('ageGroup', age)}
+                    className={`p-4 rounded-xl font-bold border-2 border-black transition-all ${answers.ageGroup === age ? 'bg-pop-yellow text-black shadow-hard translate-x-[-2px] translate-y-[-2px]' : 'bg-white hover:bg-gray-50'}`}
+                  >
+                    {age}
+                  </button>
+                ))}
+              </div>
+           </div>
         );
       case 2:
         return (
-          <>
-            <div className={containerStyle}>
-               <p className={headerTextStyle}>Кем приходится?</p>
-            </div>
-            <div className="flex flex-wrap gap-2 justify-center">
+          <div className="space-y-4">
+             <div className="bg-white border-2 border-black p-4 rounded-xl shadow-sm text-center">
+                  <h2 className="text-2xl font-black font-display">Кто он/она для тебя?</h2>
+             </div>
+             <div className="grid grid-cols-2 gap-3">
               {RELATIONSHIPS.map(rel => (
                 <button
                   key={rel}
                   onClick={() => updateAnswer('relationship', rel)}
-                  className={`px-6 py-3 rounded-full font-bold text-sm border-2 border-black transition-all active:translate-y-1 active:shadow-none ${answers.relationship === rel ? 'bg-pop-pink text-black shadow-hard scale-105' : 'bg-white text-black hover:bg-gray-50'}`}
+                  className={`p-3 rounded-xl font-bold border-2 border-black transition-all ${answers.relationship === rel ? 'bg-pop-pink text-black shadow-hard' : 'bg-white hover:bg-gray-50'}`}
                 >
                   {rel}
                 </button>
               ))}
             </div>
-          </>
+          </div>
         );
       case 3:
         return (
-          <>
-             <div className={containerStyle}>
-               <p className={headerTextStyle}>Где живет?</p>
-               <p className={subTextStyle}>Проверю наличие в локальных магазинах.</p>
-            </div>
-            <input
+          <div className={cardStyle}>
+             <div className="absolute top-0 left-0 w-full h-2 bg-pop-cyan"></div>
+             <Mascot emotion="thinking" className="w-20 h-20 mb-4" />
+             <p className={labelStyle}>Локация</p>
+             <h2 className={questionStyle}>Где живет?</h2>
+             <p className="text-gray-500 text-xs font-bold mb-4">Подберу доставку</p>
+             <input
               type="text"
-              placeholder="например, Москва"
+              placeholder="Город..."
               value={answers.city}
               onChange={(e) => updateAnswer('city', e.target.value)}
               className={inputStyle}
             />
-          </>
+          </div>
         );
       case 4:
         return (
-          <>
-            <div className={containerStyle}>
-               <p className={headerTextStyle}>Что любит?</p>
-               <p className={subTextStyle}>Хобби, работа, интересы...</p>
-            </div>
-            <textarea
-              placeholder="любит спорт, работает в IT, обожает котиков..."
+          <div className={cardStyle}>
+             <div className="absolute top-0 left-0 w-full h-2 bg-pop-lime"></div>
+             <p className={labelStyle}>Интересы</p>
+             <h2 className={questionStyle}>Что любит?</h2>
+             <textarea
+              placeholder="Спорт, аниме, рыбалка, сон..."
               value={answers.interests}
               onChange={(e) => updateAnswer('interests', e.target.value)}
-              className="w-full h-32 bg-white border-2 border-black text-black placeholder-gray-400 rounded-xl p-4 text-lg font-bold outline-none focus:shadow-hard transition-all resize-none"
+              className="w-full h-32 bg-paper border-2 border-black text-black placeholder-gray-400 rounded-xl p-4 text-xl font-bold outline-none focus:shadow-hard transition-all resize-none text-center"
             />
-          </>
+          </div>
         );
       case 5:
         return (
-          <>
-            <div className={containerStyle}>
-               <p className={headerTextStyle}>Последний вопрос! Бюджет?</p>
-            </div>
-            <div className="flex flex-col gap-3">
+           <div className="space-y-4">
+             <div className="bg-white border-2 border-black p-4 rounded-xl shadow-sm text-center">
+                  <h2 className="text-2xl font-black font-display">Бюджет?</h2>
+             </div>
+             <div className="flex flex-col gap-3">
               {BUDGETS.map(b => (
                 <button
                   key={b}
                   onClick={() => updateAnswer('budget', b)}
-                  className={`p-4 rounded-xl font-bold text-left border-2 border-black transition-all flex justify-between items-center active:translate-y-1 active:shadow-none ${answers.budget === b ? 'bg-pop-cyan text-black shadow-hard pl-6' : 'bg-white text-black hover:bg-gray-50'}`}
+                  className={`p-4 rounded-xl font-bold text-left border-2 border-black transition-all flex justify-between items-center ${answers.budget === b ? 'bg-pop-cyan text-black shadow-hard translate-x-[-2px]' : 'bg-white hover:bg-gray-50'}`}
                 >
                   <span>{b}</span>
                   {answers.budget === b && (
@@ -181,48 +177,49 @@ export const Quiz: React.FC = () => {
                 </button>
               ))}
             </div>
-          </>
+           </div>
         );
       default: return null;
     }
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-40 px-4 bg-paper">
+    <div className="min-h-screen pt-20 pb-32 px-4 bg-paper">
       <div className="max-w-md mx-auto relative">
-        {/* Header with Progress */}
-        <div className="absolute -top-12 left-0 right-0 flex items-center justify-between px-2">
-            <button onClick={prevStep} className="bg-white text-black border-2 border-black hover:bg-gray-100 p-2 rounded-full shadow-hard-sm active:translate-y-0.5 active:shadow-none transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
-            <div className="bg-pop-yellow border-2 border-black px-3 py-1 rounded-lg text-black font-black text-sm shadow-hard-sm transform rotate-2">
-                ШАГ {step + 1} / 6
-            </div>
-            <div className="w-8"></div>
+        
+        {/* Progress Bar */}
+        <div className="fixed top-0 left-0 right-0 z-30 h-1.5 bg-gray-200">
+           <div 
+             className="h-full bg-black transition-all duration-300 ease-out"
+             style={{ width: `${((step + 1) / 6) * 100}%` }}
+           />
         </div>
 
-        {/* Mascot & Content */}
-        <div className="flex gap-4 items-start mb-4">
-            <Mascot className="w-16 h-16 shrink-0" emotion={step === 4 ? 'thinking' : 'happy'} />
+        {/* Top Nav for Quiz */}
+        <div className="flex items-center justify-between mb-6">
+           <button onClick={prevStep} className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center bg-white shadow-hard-sm hover:translate-y-0.5 hover:shadow-none transition-all">
+             ←
+           </button>
+           <div className="font-display font-black text-xl">
+             ШАГ {step + 1}
+           </div>
+           <div className="w-10"></div> 
         </div>
 
-        <div className="animate-pop min-h-[300px]">
+        <div className="animate-pop">
             {renderContent()}
         </div>
 
-        {/* Footer Actions - Positioned above the Bottom Nav */}
-        <div className="fixed bottom-28 left-0 right-0 px-6 pointer-events-none z-40">
+        {/* Footer Actions */}
+        <div className="fixed bottom-28 left-0 right-0 px-6 z-40 pointer-events-none">
              <div className="max-w-md mx-auto pointer-events-auto">
                 <Button 
                     onClick={nextStep} 
                     disabled={!isCurrentStepValid()} 
                     fullWidth
-                    className={`shadow-hard-lg ${!isCurrentStepValid() ? 'opacity-50 grayscale' : 'animate-bounce-slight'}`}
-                    variant="primary"
+                    className={`shadow-hard-lg text-xl py-4 border-2 border-black ${!isCurrentStepValid() ? 'opacity-50 grayscale bg-gray-200' : 'bg-black text-white hover:bg-gray-800'}`}
                 >
-                    {step === 5 ? 'ПОКАЗАТЬ РЕЗУЛЬТАТЫ 🚀' : 'ПРОДОЛЖИТЬ ->'}
+                    {step === 5 ? 'ПОКАЗАТЬ РЕЗУЛЬТАТЫ 🚀' : 'ДАЛЬШЕ'}
                 </Button>
              </div>
         </div>
