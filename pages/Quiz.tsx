@@ -4,6 +4,7 @@ import { Button } from '../components/Button';
 import { AGE_GROUPS, RELATIONSHIPS, BUDGETS } from '../constants';
 import { QuizAnswers } from '../types';
 import { track } from '../utils/analytics';
+import { Mascot } from '../components/Mascot';
 
 const INITIAL_ANSWERS: QuizAnswers = {
   name: '',
@@ -61,49 +62,43 @@ export const Quiz: React.FC = () => {
     }
   };
 
-  // Notebook Styles
-  const notebookStyle = {
-      background: 'linear-gradient(to bottom, transparent 39px, #94a3b8 40px)',
-      backgroundSize: '100% 40px',
-      backgroundColor: 'white',
-      lineHeight: '40px'
-  };
-
-  const inputClass = "w-full bg-transparent font-hand text-4xl text-blue-800 outline-none leading-[40px]";
-
   const renderContent = () => {
     switch (step) {
       case 0:
         return (
-          <div className="relative">
-             <div className="font-marker text-2xl mb-8 transform -rotate-1 text-gray-800">1. Как зовут счастливчика?</div>
-             <input
-                type="text"
-                placeholder="Имя..."
-                value={answers.name}
-                onChange={(e) => updateAnswer('name', e.target.value)}
-                className={inputClass}
-                autoFocus
-             />
-             <div className="absolute -right-4 top-20 text-red-500 font-doodle text-sm opacity-60 transform rotate-12">
-                 *пиши разборчиво!
+          <div className="flex flex-col items-center text-center animate-shine">
+             <h2 className="text-2xl font-bold text-blue-900 mb-6">Как зовут счастливчика?</h2>
+             <div className="w-full relative">
+                <input
+                    type="text"
+                    placeholder="Введите имя..."
+                    value={answers.name}
+                    onChange={(e) => updateAnswer('name', e.target.value)}
+                    className="w-full bg-white/50 border-2 border-white rounded-2xl px-6 py-4 text-2xl text-center text-blue-800 placeholder-blue-300 outline-none focus:bg-white/80 focus:shadow-glow transition-all"
+                    autoFocus
+                />
+                <div className="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
              </div>
           </div>
         );
       case 1:
         return (
            <div>
-              <div className="font-marker text-2xl mb-6 transform rotate-1 text-gray-800">2. Сколько лет?</div>
-              <div className="flex flex-wrap gap-4 pl-4">
+              <h2 className="text-2xl font-bold text-blue-900 mb-6 text-center">Сколько лет?</h2>
+              <div className="grid grid-cols-2 gap-4">
                 {AGE_GROUPS.map(age => (
                   <button
                     key={age}
                     onClick={() => updateAnswer('ageGroup', age)}
                     className={`
-                        font-hand text-2xl px-3 py-1 border-2 border-black rounded-lg transform transition-all hover:scale-105
-                        ${answers.ageGroup === age ? 'bg-marker-yellow rotate-[-2deg] shadow-sticker' : 'bg-white rotate-1 hover:bg-gray-50'}
+                        py-4 rounded-xl font-bold transition-all relative overflow-hidden group
+                        ${answers.ageGroup === age 
+                            ? 'bg-gradient-to-b from-blue-400 to-blue-600 text-white shadow-glow' 
+                            : 'bg-white/40 text-blue-800 hover:bg-white/60'}
                     `}
                   >
+                    {/* Gloss shine */}
+                    <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/20 rounded-t-xl pointer-events-none"></div>
                     {age}
                   </button>
                 ))}
@@ -113,18 +108,20 @@ export const Quiz: React.FC = () => {
       case 2:
         return (
           <div>
-             <div className="font-marker text-2xl mb-6 text-gray-800">3. Кто это для тебя?</div>
-             <div className="grid grid-cols-2 gap-y-4 gap-x-2">
-              {RELATIONSHIPS.map((rel, i) => (
+             <h2 className="text-2xl font-bold text-blue-900 mb-6 text-center">Кто это для тебя?</h2>
+             <div className="grid grid-cols-2 gap-3">
+              {RELATIONSHIPS.map(rel => (
                 <button
                   key={rel}
                   onClick={() => updateAnswer('relationship', rel)}
                   className={`
-                    text-left font-typewriter text-lg border-b border-dashed border-gray-400 pb-1
-                    ${answers.relationship === rel ? 'text-red-600 font-bold decoration-wavy underline' : 'text-gray-600'}
+                    py-3 px-4 rounded-full text-sm font-bold border transition-all
+                    ${answers.relationship === rel 
+                        ? 'bg-green-500 border-green-400 text-white shadow-md' 
+                        : 'bg-white/30 border-white/50 text-blue-900 hover:bg-white/50'}
                   `}
                 >
-                  {i+1}. {rel}
+                  {rel}
                 </button>
               ))}
             </div>
@@ -132,43 +129,44 @@ export const Quiz: React.FC = () => {
         );
       case 3:
         return (
-          <div>
-             <div className="font-marker text-2xl mb-8 transform -rotate-1 text-gray-800">4. Из какого города?</div>
+          <div className="text-center">
+             <h2 className="text-2xl font-bold text-blue-900 mb-6">Из какого города?</h2>
              <input
                 type="text"
-                placeholder="Город..."
+                placeholder="Москва..."
                 value={answers.city}
                 onChange={(e) => updateAnswer('city', e.target.value)}
-                className={inputClass}
+                className="w-full bg-white/50 border-2 border-white rounded-2xl px-6 py-4 text-xl text-center text-blue-800 outline-none focus:shadow-glow transition-all"
              />
+             <p className="mt-4 text-blue-800/60 text-sm">Мы проверим варианты доставки</p>
           </div>
         );
       case 4:
         return (
-          <div>
-             <div className="font-marker text-2xl mb-2 text-gray-800">5. Чем увлекается?</div>
-             <p className="font-hand text-xl text-gray-500 mb-4">(игры, готовка, спать...)</p>
+          <div className="text-center">
+             <h2 className="text-2xl font-bold text-blue-900 mb-2">Чем увлекается?</h2>
+             <p className="text-blue-800/60 mb-6 text-sm">Игры, спорт, кулинария, сон...</p>
              <textarea
               value={answers.interests}
               onChange={(e) => updateAnswer('interests', e.target.value)}
-              className={`${inputClass} h-60 resize-none`}
-              style={{ lineHeight: '40px' }}
+              className="w-full h-40 bg-white/50 border-2 border-white rounded-2xl p-4 text-lg text-blue-900 outline-none focus:shadow-glow resize-none"
+              placeholder="Напишите всё, что придет в голову..."
             />
           </div>
         );
       case 5:
         return (
            <div>
-             <div className="font-marker text-2xl mb-6 text-gray-800">6. Бюджет?</div>
-             <div className="flex flex-col gap-4">
-              {BUDGETS.map((b, i) => (
+             <h2 className="text-2xl font-bold text-blue-900 mb-6 text-center">Бюджет?</h2>
+             <div className="space-y-3">
+              {BUDGETS.map(b => (
                 <button
                   key={b}
                   onClick={() => updateAnswer('budget', b)}
-                  className={`flex items-center gap-3 font-hand text-3xl transition-all ${answers.budget === b ? 'text-green-700 font-bold translate-x-4' : 'text-gray-400 hover:text-gray-600'}`}
+                  className={`w-full text-left px-6 py-4 rounded-xl font-bold transition-all flex justify-between items-center ${answers.budget === b ? 'bg-white text-blue-600 shadow-lg scale-105' : 'bg-white/20 text-blue-900 hover:bg-white/30'}`}
                 >
-                  <div className={`w-6 h-6 border-2 border-black rounded-sm ${answers.budget === b ? 'bg-black' : ''}`}></div>
                   {b}
+                  {answers.budget === b && <span className="text-green-500 text-xl">✓</span>}
                 </button>
               ))}
             </div>
@@ -179,43 +177,61 @@ export const Quiz: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-10 pb-40 px-4">
+    <div className="min-h-screen pt-12 pb-32 px-4 flex flex-col items-center justify-center">
       
-      {/* SPIRAL NOTEBOOK CONTAINER */}
-      <div className="max-w-md mx-auto relative group">
+      {/* WINDOW CONTAINER (Glassmorphism) */}
+      <div className="w-full max-w-md relative">
          
-         {/* Notebook Binding */}
-         <div className="absolute top-0 left-4 w-8 h-full z-20 flex flex-col gap-4 py-6">
-             {[...Array(12)].map((_, i) => (
-                 <div key={i} className="w-8 h-4 bg-gray-300 rounded-full border border-gray-400 shadow-inner"></div>
-             ))}
-         </div>
-
-         {/* The Paper Page */}
-         <div 
-            className="bg-white min-h-[500px] shadow-lifted pl-16 pr-6 py-10 relative torn-edge"
-            style={notebookStyle}
-         >
-            {/* Red margin line */}
-            <div className="absolute top-0 left-12 w-0.5 h-full bg-red-200/80"></div>
-
-            {/* Content */}
-            {renderContent()}
-
-            {/* Navigation Arrows */}
-            <div className="absolute bottom-8 right-6 flex gap-4">
-                <button onClick={prevStep} className="font-marker text-gray-400 hover:text-black">
-                    НАЗАД
-                </button>
-                <button 
-                    onClick={nextStep} 
-                    disabled={!isCurrentStepValid()} 
-                    className={`font-marker text-xl ${isCurrentStepValid() ? 'text-red-600 animate-pulse' : 'text-gray-300'}`}
+         {/* Top Bar / Progress */}
+         <div className="mb-6 flex items-center justify-between">
+            <button onClick={prevStep} className="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-blue-900 hover:bg-white transition-colors">
+                ←
+            </button>
+            
+            {/* Glossy Progress Tube */}
+            <div className="flex-1 mx-4 h-4 bg-black/10 rounded-full overflow-hidden shadow-inner border border-white/20 relative">
+                <div 
+                    className="h-full bg-gradient-to-r from-green-400 to-green-500 transition-all duration-500 relative"
+                    style={{ width: `${((step + 1) / 6) * 100}%` }}
                 >
-                    {step === 5 ? 'ГОТОВО!' : 'ДАЛЬШЕ ->'}
-                </button>
+                    {/* Shine on progress bar */}
+                    <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/40"></div>
+                </div>
+            </div>
+
+            <div className="text-blue-900 font-bold font-sans">
+                {step + 1}/6
             </div>
          </div>
+
+         {/* MAIN GLASS PANEL */}
+         <div className="bg-white/30 backdrop-blur-xl border border-white/60 shadow-glass rounded-[2rem] p-8 min-h-[400px] flex flex-col relative overflow-hidden">
+            {/* Shine overlay */}
+            <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div className="flex-1 flex flex-col justify-center relative z-10">
+                {renderContent()}
+            </div>
+
+            {/* Mascot Helper */}
+            <div className="absolute bottom-4 right-4 opacity-50 transform scale-50 origin-bottom-right pointer-events-none">
+                <Mascot emotion="thinking" />
+            </div>
+         </div>
+
+         {/* Action Button */}
+         <div className="mt-8">
+             <Button 
+                onClick={nextStep} 
+                disabled={!isCurrentStepValid()} 
+                fullWidth 
+                variant="primary"
+                className="h-16 text-xl shadow-xl"
+             >
+                {step === 5 ? 'Показать результаты ✨' : 'Дальше'}
+             </Button>
+         </div>
+
       </div>
     </div>
   );

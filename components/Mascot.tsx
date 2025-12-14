@@ -10,54 +10,55 @@ interface MascotProps {
 export const Mascot: React.FC<MascotProps> = ({ 
   className = "w-24 h-24", 
   emotion = 'happy',
-  eyesX = 0,
-  eyesY = 0,
 }) => {
   return (
-    <div className={`${className} relative`}>
-      {/* "Napkin" Background for drawing */}
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible filter drop-shadow-md">
-        
-        {/* Paper Texture */}
-        <path 
-            d="M10 15 L90 10 L95 90 L5 85 Z" 
-            fill="#FFFFFF" 
-            stroke="none"
-        />
-        
-        {/* Marker Drawing */}
-        <path 
-            d="M20 20 C 20 10, 80 10, 80 20 C 85 50, 85 70, 80 80 C 70 90, 30 90, 20 80 C 15 70, 15 50, 20 20 Z" 
-            fill="none"
-            stroke="#1a1a1a"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="animate-scribble"
-        />
-        
-        {/* Antenna */}
-        <path d="M50 15 L50 0" stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />
-        <circle cx="50" cy="0" r="4" fill="#1a1a1a" />
+    <div className={`${className} relative flex items-center justify-center`}>
+       {/* Glass Sphere Container */}
+       <div className="w-full h-full rounded-full bg-gradient-to-b from-white/10 to-blue-500/20 backdrop-blur-sm border border-white/50 shadow-glass relative overflow-hidden">
+          
+          {/* Inner Bot Body */}
+          <div className="absolute top-[15%] left-[15%] right-[15%] bottom-[15%] bg-white rounded-full shadow-inner flex flex-col items-center justify-center animate-float">
+               
+               {/* Screen / Face */}
+               <div className="w-[70%] h-[50%] bg-black rounded-2xl relative overflow-hidden flex items-center justify-center border-2 border-gray-300">
+                   {/* Reflection on screen */}
+                   <div className="absolute top-0 right-0 w-[150%] h-[50%] bg-white/10 transform -rotate-12 translate-x-4"></div>
+                   
+                   {/* Eyes */}
+                   <div className="flex gap-2">
+                       {emotion === 'happy' && (
+                           <>
+                             <div className="w-2 h-4 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_cyan]"></div>
+                             <div className="w-2 h-4 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_cyan]"></div>
+                           </>
+                       )}
+                       {emotion === 'thinking' && (
+                           <>
+                             <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                             <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-100"></div>
+                             <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-200"></div>
+                           </>
+                       )}
+                       {emotion === 'cool' && (
+                           <div className="w-12 h-3 bg-cyan-400 rounded-full shadow-[0_0_10px_cyan]"></div>
+                       )}
+                       {emotion === 'surprised' && (
+                           <>
+                             <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                             <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                           </>
+                       )}
+                   </div>
+               </div>
 
-        {/* Face */}
-        <g transform="translate(0, 5)">
-            {/* Eyes */}
-            <circle cx="35" cy="40" r="2" fill="#1a1a1a" />
-            <circle cx="65" cy="40" r="2" fill="#1a1a1a" />
-            
-            {/* Mouth */}
-            {emotion === 'happy' && <path d="M35 60 Q50 70 65 60" stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" fill="none" />}
-            {emotion === 'thinking' && <path d="M35 65 L65 60" stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />}
-            {emotion === 'surprised' && <circle cx="50" cy="65" r="5" stroke="#1a1a1a" strokeWidth="3" fill="none" />}
-            {emotion === 'excited' && <path d="M35 60 Q50 80 65 60 Z" fill="#1a1a1a" />}
-        </g>
+               {/* Body details */}
+               <div className="w-full h-2 bg-gray-100 mt-1"></div>
+          </div>
 
-        {/* Red Marker Blush */}
-        <path d="M25 55 L30 50 M28 58 L33 53" stroke="#d93025" strokeWidth="2" opacity="0.7" />
-        <path d="M70 50 L75 55 M73 48 L78 53" stroke="#d93025" strokeWidth="2" opacity="0.7" />
-
-      </svg>
+          {/* Sphere Highlights (The "Frutiger" Gloss) */}
+          <div className="absolute top-1 left-4 right-4 h-1/3 bg-gradient-to-b from-white/90 to-transparent rounded-full opacity-80 pointer-events-none"></div>
+          <div className="absolute bottom-2 left-4 right-4 h-1/4 bg-gradient-to-t from-blue-300/50 to-transparent rounded-full blur-md opacity-60 pointer-events-none"></div>
+       </div>
     </div>
   );
 };

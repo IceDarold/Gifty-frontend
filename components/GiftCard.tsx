@@ -13,13 +13,6 @@ interface Props {
 export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWishlist, onClick }) => {
   const [saved, setSaved] = useState(isInWishlist(gift.id));
 
-  // Determine style type: Polaroid vs Magazine Cutout based on ID parity for variety
-  const isCutout = parseInt(gift.id, 16) % 3 === 0;
-
-  // Static random rotation per card
-  const [rotation] = useState(() => Math.random() * 6 - 3);
-  const [tapePos] = useState(() => Math.random() * 40 + 30); // 30% to 70%
-
   useEffect(() => {
     setSaved(isInWishlist(gift.id));
   }, [gift.id, onToggleWishlist]);
@@ -37,85 +30,60 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
     if (onToggleWishlist) onToggleWishlist();
   };
 
-  if (isCutout) {
-      // STYLE 1: MAGAZINE CUTOUT (Rough edges, vivid)
-      return (
-        <div 
-          onClick={() => onClick && onClick(gift)}
-          className="relative group cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-20"
-          style={{ transform: `rotate(${rotation * 1.5}deg)` }}
-        >
-           {/* Shadow layer */}
-           <div className="absolute inset-0 bg-black/30 translate-x-2 translate-y-2 torn-edge"></div>
-           
-           <div className="relative bg-white p-1 torn-edge overflow-hidden">
-               <div className="relative aspect-square">
-                   <img src={gift.image} alt={gift.title} className="w-full h-full object-cover filter contrast-125 saturate-150" />
-                   {/* Halftone pattern overlay */}
-                   <div className="absolute inset-0 bg-[radial-gradient(circle,black_1px,transparent_1px)] bg-[size:4px_4px] opacity-10"></div>
-               </div>
-               
-               <div className="p-2 bg-marker-yellow">
-                   <h3 className="font-marker text-lg leading-none text-black uppercase mb-1">{gift.title}</h3>
-                   <span className="bg-black text-white px-1 font-typewriter text-xs font-bold">{gift.price} ₽</span>
-               </div>
-           </div>
-
-           {/* Washi Tape */}
-           <div className="tape bg-marker-red/50" style={{ top: '-10px', left: `${tapePos}%`, width: '40px', height: '25px', '--tape-rot': '85deg' } as any}></div>
-           
-           {/* Heart Button */}
-           <button onClick={handleWishlist} className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md hover:scale-110 transition-transform">
-               <span className="text-xl">{saved ? '❤️' : '🤍'}</span>
-           </button>
-        </div>
-      );
-  }
-
-  // STYLE 2: POLAROID (Classic)
   return (
     <div 
       onClick={() => onClick && onClick(gift)}
-      className="relative group cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-20 bg-white p-3 pb-12 shadow-lifted"
-      style={{ transform: `rotate(${rotation}deg)` }}
+      className={`
+        relative cursor-pointer group rounded-3xl overflow-hidden transition-all duration-300
+        ${featured ? 'bg-white/60' : 'bg-white/40'}
+        backdrop-filter backdrop-blur-xl border border-white/60 shadow-glass
+        hover:shadow-glow hover:-translate-y-1 hover:bg-white/60
+      `}
     >
-      {/* Tape */}
-      <div className="tape" style={{ top: '-15px', left: '50%', transform: 'translateX(-50%) rotate(-3deg)', width: '60px', height: '30px' }}></div>
-
-      <div className="relative aspect-square bg-gray-100 mb-3 overflow-hidden shadow-inner">
+      {/* Image Container with Water Gloss */}
+      <div className="relative aspect-square m-2 rounded-2xl overflow-hidden shadow-inner">
         <img 
           src={gift.image} 
           alt={gift.title} 
-          className="w-full h-full object-cover filter sepia-[0.1] contrast-[1.1]"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
         />
-        {/* Glossy reflection */}
-        <div className="absolute inset-0 polaroid-shine"></div>
         
-        <div className={`absolute top-1 left-1 px-1.5 py-0.5 text-[8px] font-typewriter font-bold uppercase border border-black/20 ${gift.marketplace === 'Ozon' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
+        {/* Gloss Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/10 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 left-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none"></div>
+
+        {/* Marketplace Pill */}
+        <div className={`absolute top-2 left-2 px-2 py-1 text-[10px] font-bold uppercase rounded-full backdrop-blur-md shadow-sm text-white ${gift.marketplace === 'Ozon' ? 'bg-blue-500/80' : 'bg-purple-500/80'}`}>
           {gift.marketplace}
         </div>
+
+        {/* Wishlist Bubble */}
+        <button 
+          onClick={handleWishlist}
+          className={`absolute bottom-2 right-2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md shadow-sm transition-all active:scale-90 ${saved ? 'bg-red-500/90 text-white' : 'bg-white/70 text-gray-500 hover:bg-white'}`}
+        >
+           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+           </svg>
+        </button>
       </div>
       
-      <div className="text-center relative">
-        <h3 className="font-hand text-2xl font-bold text-gray-800 leading-none mb-1 line-clamp-2">
+      <div className={`px-4 pb-4 ${featured ? 'pt-2' : 'pt-0'}`}>
+        <h3 className="font-bold text-gray-800 leading-tight mb-1 line-clamp-2 drop-shadow-sm">
             {gift.title}
         </h3>
         
-        {/* Price written with red pen */}
-        <div className="font-hand text-xl text-marker-red transform -rotate-3 inline-block font-bold">
-            {gift.price}.-
+        <div className="flex items-center justify-between mt-2">
+             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 font-black text-lg">
+                {gift.price} ₽
+             </span>
+             {featured && (
+                 <span className="text-xs text-green-600 bg-green-100/50 px-2 py-0.5 rounded-full border border-green-200">
+                     Рекомендуем
+                 </span>
+             )}
         </div>
-
-        {/* Wishlist Scribble */}
-        <button 
-          onClick={handleWishlist}
-          className="absolute bottom-[-30px] right-0 w-8 h-8 transition-transform active:scale-125"
-        >
-           <svg viewBox="0 0 100 100" className={`w-full h-full drop-shadow-sm ${saved ? 'fill-red-600 animate-scribble' : 'fill-none stroke-gray-400 stroke-[3]'}`}>
-                <path d="M50 85 C 20 70 0 50 0 30 C 0 10 20 0 40 10 C 50 15 50 15 60 10 C 80 0 100 10 100 30 C 100 50 80 70 50 85 Z" />
-           </svg>
-        </button>
       </div>
     </div>
   );

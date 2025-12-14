@@ -19,9 +19,7 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
   const [gift, setGift] = useState<Gift>(initialGift);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [showFullDesc, setShowFullDesc] = useState(false);
 
-  // Reset & Load Logic
   useEffect(() => {
     if (isOpen) {
         setGift(initialGift);
@@ -31,7 +29,7 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
             .then(fullGift => {
                 setGift(fullGift);
             })
-            .catch(err => console.error("Failed to fetch full details", err))
+            .catch(err => console.error(err))
             .finally(() => setLoading(false));
     }
   }, [initialGift.id, isOpen]);
@@ -41,86 +39,80 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
   const handleWishlist = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-        if (saved) {
-            await api.wishlist.remove(gift.id);
-        } else {
-            await api.wishlist.add(gift.id);
-        }
+        if (saved) await api.wishlist.remove(gift.id);
+        else await api.wishlist.add(gift.id);
         setSaved(!saved);
         onWishlistChange();
     } catch (e) {
-        console.error("Wishlist action failed", e);
+        console.error(e);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Darkened room background */}
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+      {/* Blurred Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto transition-opacity opacity-100"
+        className="absolute inset-0 bg-blue-900/30 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* MANILA FOLDER CONTAINER */}
-      <div className="relative w-full max-w-lg max-h-[90vh] bg-[#f0e6d2] shadow-lifted overflow-y-auto no-scrollbar transform rotate-1 rounded-sm torn-edge">
+      {/* Modal Window */}
+      <div className="relative w-full max-w-lg max-h-[90vh] bg-white/80 backdrop-filter backdrop-blur-xl shadow-2xl overflow-y-auto no-scrollbar rounded-t-[2rem] sm:rounded-[2rem] border border-white/50 animate-slide-up">
         
-        {/* Folder Tab */}
-        <div className="absolute top-0 right-0 w-32 h-8 bg-[#e6dcc5] border-b border-black/10 flex items-center justify-center">
-            <span className="font-typewriter text-xs font-bold text-red-700">CONFIDENTIAL</span>
+        {/* Header Image */}
+        <div className="relative h-64 w-full">
+            <img src={gift.image} alt={gift.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+            
+            <button 
+                onClick={onClose} 
+                className="absolute top-4 right-4 w-10 h-10 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
+            >
+                ✕
+            </button>
         </div>
 
-        {/* Paper Clip SVG */}
-        <svg className="absolute top-[-10px] left-8 w-12 h-20 text-gray-400 z-50 drop-shadow-md" viewBox="0 0 50 100" fill="none" stroke="currentColor" strokeWidth="5">
-             <path d="M10 20 L10 80 A 15 15 0 0 0 40 80 L40 10 A 10 10 0 0 0 20 10 L20 70" />
-        </svg>
-
-        <div className="p-8 pt-12 relative">
-             {/* Close X (Hand drawn) */}
-             <button onClick={onClose} className="absolute top-4 right-4 font-marker text-2xl text-gray-500 hover:text-red-600">X</button>
-
-             {/* MAIN PHOTO: Taped to the folder */}
-             <div className="relative bg-white p-2 shadow-md transform -rotate-1 mb-6">
-                 <div className="tape" style={{ top: '-15px', left: '50%', width: '50px', height: '25px', '--tape-rot': '-2deg' } as any}></div>
-                 <img src={gift.image} alt={gift.title} className="w-full aspect-video object-cover filter contrast-110" />
-                 <div className="absolute bottom-2 right-2 bg-black text-white font-typewriter text-xs px-1">REF: {gift.id}</div>
+        <div className="p-6 sm:p-8 -mt-10 relative z-10">
+             <div className="flex justify-between items-start mb-2">
+                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+                     {gift.category}
+                 </span>
+                 <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
+                     {gift.price} ₽
+                 </span>
              </div>
 
-             {/* Title & Price */}
-             <h2 className="font-marker text-3xl mb-1 leading-none">{gift.title}</h2>
-             <div className="flex items-center gap-4 mb-6">
-                 <span className="font-hand text-3xl text-red-600 font-bold decoration-double underline">{gift.price} ₽</span>
-                 <span className="font-typewriter text-xs bg-gray-200 px-1 rounded">{gift.marketplace}</span>
+             <h2 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">{gift.title}</h2>
+
+             {/* AI Reason Box (Glass) */}
+             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 mb-8 relative overflow-hidden">
+                 <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200/30 rounded-full blur-xl"></div>
+                 <div className="flex gap-4">
+                     <div className="shrink-0 pt-1">
+                        <Mascot emotion="happy" className="w-12 h-12" />
+                     </div>
+                     <div>
+                         <h3 className="font-bold text-blue-900 text-sm mb-1 uppercase opacity-70">Почему это круто</h3>
+                         <p className="text-blue-900 leading-relaxed font-medium">"{gift.reason}"</p>
+                     </div>
+                 </div>
              </div>
 
-             {/* AI Analysis (Stuck on a post-it) */}
-             <div className="bg-yellow-100 p-4 shadow-sm transform rotate-1 mb-6 relative">
-                 <div className="tape" style={{ top: '-10px', right: '10px', width: '30px', height: '20px', '--tape-rot': '45deg' } as any}></div>
-                 <Mascot emotion="thinking" className="w-12 h-12 absolute -top-6 -left-4" />
-                 <h3 className="font-marker text-sm mb-1">Почему это круто:</h3>
-                 <p className="font-hand text-xl leading-6 text-gray-800">
-                    "{gift.reason}"
-                 </p>
-             </div>
+             <p className="text-gray-600 leading-relaxed mb-8">{gift.description}</p>
 
-             {/* Description (Typewriter text) */}
-             <div className="font-typewriter text-sm leading-relaxed text-gray-700 mb-8 border-l-2 border-gray-300 pl-4">
-                 {gift.description}
-             </div>
-
-             {/* Actions */}
-             <div className="flex gap-4">
+             {/* Footer Actions */}
+             <div className="flex gap-4 sticky bottom-0 bg-white/80 backdrop-blur-lg p-4 -mx-6 -mb-6 border-t border-gray-100">
                  <button 
                     onClick={handleWishlist}
-                    className={`flex-1 py-3 border-2 border-black font-marker text-lg transition-colors ${saved ? 'bg-red-500 text-white' : 'bg-transparent hover:bg-black/5'}`}
+                    className={`flex-1 py-3 rounded-full font-bold transition-all border ${saved ? 'bg-red-50 border-red-200 text-red-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                  >
-                    {saved ? 'В ИЗБРАННОМ' : 'В ИЗБРАННОЕ'}
+                    {saved ? '❤️ Сохранено' : '🤍 В избранное'}
                  </button>
                  <Button fullWidth onClick={() => window.open('#', '_blank')}>
-                    КУПИТЬ
+                    Купить сейчас
                  </Button>
              </div>
         </div>
-
       </div>
     </div>
   );
