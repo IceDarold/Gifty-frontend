@@ -12,17 +12,17 @@ export const Button: React.FC<ButtonProps> = ({
   className = '', 
   ...props 
 }) => {
-  const baseStyles = "py-3.5 px-6 rounded-xl font-display font-bold text-lg transition-all border-2 border-black active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "py-4 px-8 rounded-full font-sans font-semibold text-base transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95";
   
   const variants = {
-    // Pop Yellow with Hard Shadow
-    primary: "bg-pop-yellow text-black shadow-hard hover:bg-yellow-300",
+    // Gradient Glow
+    primary: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] border border-white/20",
     
-    // White with Hard Shadow
-    secondary: "bg-white text-black shadow-hard hover:bg-gray-50",
+    // Glassy
+    secondary: "bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10",
     
-    // Transparent but with border (Outline)
-    ghost: "bg-transparent border-dashed text-black hover:bg-black/5 shadow-none"
+    // Minimal
+    ghost: "bg-transparent text-white/70 hover:text-white hover:bg-white/5"
   };
 
   return (

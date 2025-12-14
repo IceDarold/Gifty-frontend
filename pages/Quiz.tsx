@@ -63,24 +63,22 @@ export const Quiz: React.FC = () => {
     }
   };
 
-  // Styles
-  const cardStyle = "bg-white border-2 border-black rounded-2xl shadow-hard p-6 min-h-[300px] flex flex-col items-center text-center justify-center relative overflow-hidden";
-  const labelStyle = "text-sm font-bold text-gray-500 uppercase tracking-widest mb-2";
-  const questionStyle = "text-3xl font-display font-black text-black mb-6 leading-none";
-  const inputStyle = "w-full bg-paper border-2 border-black text-black placeholder-gray-400 rounded-xl p-4 text-2xl font-bold outline-none focus:shadow-hard focus:-translate-y-1 transition-all text-center";
+  // Glassy Input Styles
+  const inputStyle = "w-full bg-white/5 border border-white/10 text-white placeholder-white/30 rounded-2xl p-6 text-2xl font-serif text-center outline-none focus:bg-white/10 focus:border-white/30 focus:shadow-[0_0_30px_rgba(100,100,255,0.2)] transition-all";
+  const labelStyle = "text-xs font-bold text-indigo-300 uppercase tracking-widest mb-4 block";
+  const questionStyle = "text-3xl md:text-4xl font-serif text-white mb-8 leading-tight";
 
   const renderContent = () => {
     switch (step) {
       case 0:
         return (
-          <div className={cardStyle}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-pop-pink"></div>
-            <Mascot emotion="happy" className="w-20 h-20 mb-4" />
-            <p className={labelStyle}>Вопрос 1/6</p>
+          <div className="text-center animate-fade-in">
+            <Mascot emotion="happy" className="w-24 h-24 mx-auto mb-6 opacity-90" />
+            <span className={labelStyle}>Персонализация</span>
             <h2 className={questionStyle}>Как зовут счастливчика?</h2>
             <input
               type="text"
-              placeholder="Имя..."
+              placeholder="Введите имя..."
               value={answers.name}
               onChange={(e) => updateAnswer('name', e.target.value)}
               className={inputStyle}
@@ -90,16 +88,15 @@ export const Quiz: React.FC = () => {
         );
       case 1:
         return (
-           <div className="space-y-4">
-              <div className="bg-white border-2 border-black p-4 rounded-xl shadow-sm text-center">
-                  <h2 className="text-2xl font-black font-display">Сколько лет?</h2>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+           <div className="text-center animate-fade-in">
+              <span className={labelStyle}>Возраст</span>
+              <h2 className={questionStyle}>Сколько лет {answers.name || 'ему/ей'}?</h2>
+              <div className="grid grid-cols-2 gap-4">
                 {AGE_GROUPS.map(age => (
                   <button
                     key={age}
                     onClick={() => updateAnswer('ageGroup', age)}
-                    className={`p-4 rounded-xl font-bold border-2 border-black transition-all ${answers.ageGroup === age ? 'bg-pop-yellow text-black shadow-hard translate-x-[-2px] translate-y-[-2px]' : 'bg-white hover:bg-gray-50'}`}
+                    className={`p-4 rounded-2xl font-medium transition-all duration-300 ${answers.ageGroup === age ? 'bg-indigo-600 text-white shadow-lg border border-indigo-400' : 'glass-panel text-white/80 hover:bg-white/10'}`}
                   >
                     {age}
                   </button>
@@ -109,16 +106,15 @@ export const Quiz: React.FC = () => {
         );
       case 2:
         return (
-          <div className="space-y-4">
-             <div className="bg-white border-2 border-black p-4 rounded-xl shadow-sm text-center">
-                  <h2 className="text-2xl font-black font-display">Кто он/она для тебя?</h2>
-             </div>
+          <div className="text-center animate-fade-in">
+             <span className={labelStyle}>Отношения</span>
+             <h2 className={questionStyle}>Кто этот человек для вас?</h2>
              <div className="grid grid-cols-2 gap-3">
               {RELATIONSHIPS.map(rel => (
                 <button
                   key={rel}
                   onClick={() => updateAnswer('relationship', rel)}
-                  className={`p-3 rounded-xl font-bold border-2 border-black transition-all ${answers.relationship === rel ? 'bg-pop-pink text-black shadow-hard' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-3 rounded-2xl font-medium transition-all duration-300 ${answers.relationship === rel ? 'bg-fuchsia-600 text-white shadow-lg border border-fuchsia-400' : 'glass-panel text-white/80 hover:bg-white/10'}`}
                 >
                   {rel}
                 </button>
@@ -128,12 +124,11 @@ export const Quiz: React.FC = () => {
         );
       case 3:
         return (
-          <div className={cardStyle}>
-             <div className="absolute top-0 left-0 w-full h-2 bg-pop-cyan"></div>
-             <Mascot emotion="thinking" className="w-20 h-20 mb-4" />
-             <p className={labelStyle}>Локация</p>
-             <h2 className={questionStyle}>Где живет?</h2>
-             <p className="text-gray-500 text-xs font-bold mb-4">Подберу доставку</p>
+          <div className="text-center animate-fade-in">
+             <Mascot emotion="thinking" className="w-24 h-24 mx-auto mb-6 opacity-90" />
+             <span className={labelStyle}>Локация</span>
+             <h2 className={questionStyle}>Где он или она живет?</h2>
+             <p className="text-white/50 text-sm mb-6 font-light">Это поможет подобрать доступные варианты доставки</p>
              <input
               type="text"
               placeholder="Город..."
@@ -145,34 +140,32 @@ export const Quiz: React.FC = () => {
         );
       case 4:
         return (
-          <div className={cardStyle}>
-             <div className="absolute top-0 left-0 w-full h-2 bg-pop-lime"></div>
-             <p className={labelStyle}>Интересы</p>
-             <h2 className={questionStyle}>Что любит?</h2>
+          <div className="text-center animate-fade-in">
+             <span className={labelStyle}>Интересы & Хобби</span>
+             <h2 className={questionStyle}>Чем увлекается?</h2>
              <textarea
-              placeholder="Спорт, аниме, рыбалка, сон..."
+              placeholder="Например: Любит готовить, фанат Marvel, занимается йогой..."
               value={answers.interests}
               onChange={(e) => updateAnswer('interests', e.target.value)}
-              className="w-full h-32 bg-paper border-2 border-black text-black placeholder-gray-400 rounded-xl p-4 text-xl font-bold outline-none focus:shadow-hard transition-all resize-none text-center"
+              className="w-full h-40 bg-white/5 border border-white/10 text-white placeholder-white/30 rounded-2xl p-6 text-xl font-medium outline-none focus:bg-white/10 focus:border-white/30 focus:shadow-[0_0_30px_rgba(100,100,255,0.2)] transition-all resize-none text-center"
             />
           </div>
         );
       case 5:
         return (
-           <div className="space-y-4">
-             <div className="bg-white border-2 border-black p-4 rounded-xl shadow-sm text-center">
-                  <h2 className="text-2xl font-black font-display">Бюджет?</h2>
-             </div>
+           <div className="text-center animate-fade-in">
+             <span className={labelStyle}>Финансы</span>
+             <h2 className={questionStyle}>Комфортный бюджет?</h2>
              <div className="flex flex-col gap-3">
               {BUDGETS.map(b => (
                 <button
                   key={b}
                   onClick={() => updateAnswer('budget', b)}
-                  className={`p-4 rounded-xl font-bold text-left border-2 border-black transition-all flex justify-between items-center ${answers.budget === b ? 'bg-pop-cyan text-black shadow-hard translate-x-[-2px]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-5 rounded-2xl font-medium text-left transition-all duration-300 flex justify-between items-center ${answers.budget === b ? 'bg-indigo-600 text-white shadow-lg border border-indigo-400' : 'glass-panel text-white/80 hover:bg-white/10'}`}
                 >
                   <span>{b}</span>
                   {answers.budget === b && (
-                     <span className="text-xl">✅</span>
+                     <span className="text-lg">✨</span>
                   )}
                 </button>
               ))}
@@ -184,29 +177,25 @@ export const Quiz: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-32 px-4 bg-paper">
-      <div className="max-w-md mx-auto relative">
+    <div className="min-h-screen pt-24 pb-32 px-6 relative">
+      
+      <div className="max-w-md mx-auto relative z-10">
         
-        {/* Progress Bar */}
-        <div className="fixed top-0 left-0 right-0 z-30 h-1.5 bg-gray-200">
-           <div 
-             className="h-full bg-black transition-all duration-300 ease-out"
-             style={{ width: `${((step + 1) / 6) * 100}%` }}
-           />
-        </div>
-
-        {/* Top Nav for Quiz */}
-        <div className="flex items-center justify-between mb-6">
-           <button onClick={prevStep} className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center bg-white shadow-hard-sm hover:translate-y-0.5 hover:shadow-none transition-all">
-             ←
+        {/* Top Nav */}
+        <div className="flex items-center justify-between mb-8">
+           <button onClick={prevStep} className="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-all">
+             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
            </button>
-           <div className="font-display font-black text-xl">
-             ШАГ {step + 1}
+           <div className="flex gap-1">
+              {[0,1,2,3,4,5].map(i => (
+                  <div key={i} className={`h-1 rounded-full transition-all duration-500 ${i <= step ? 'w-6 bg-white shadow-[0_0_10px_white]' : 'w-2 bg-white/20'}`} />
+              ))}
            </div>
            <div className="w-10"></div> 
         </div>
 
-        <div className="animate-pop">
+        {/* Content Card */}
+        <div className="glass-panel p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-xl border border-white/5 min-h-[450px] flex flex-col justify-center">
             {renderContent()}
         </div>
 
@@ -217,13 +206,19 @@ export const Quiz: React.FC = () => {
                     onClick={nextStep} 
                     disabled={!isCurrentStepValid()} 
                     fullWidth
-                    className={`shadow-hard-lg text-xl py-4 border-2 border-black ${!isCurrentStepValid() ? 'opacity-50 grayscale bg-gray-200' : 'bg-black text-white hover:bg-gray-800'}`}
+                    variant="primary"
+                    className={`${!isCurrentStepValid() ? 'opacity-50 grayscale' : 'animate-pulse-glow'}`}
                 >
-                    {step === 5 ? 'ПОКАЗАТЬ РЕЗУЛЬТАТЫ 🚀' : 'ДАЛЬШЕ'}
+                    {step === 5 ? 'Подобрать Подарки ✨' : 'Далее'}
                 </Button>
              </div>
         </div>
       </div>
+      
+      <style>{`
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
     </div>
   );
 };
