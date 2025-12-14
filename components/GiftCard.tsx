@@ -8,9 +8,10 @@ interface Props {
   featured?: boolean;
   onToggleWishlist?: () => void;
   onClick?: (gift: Gift) => void;
+  layout?: 'standard' | 'compact' | 'poster';
 }
 
-export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWishlist, onClick }) => {
+export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWishlist, onClick, layout = 'standard' }) => {
   const [saved, setSaved] = useState(isInWishlist(gift.id));
 
   useEffect(() => {
@@ -30,56 +31,87 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
     if (onToggleWishlist) onToggleWishlist();
   };
 
+  // POSTER LAYOUT (Featured)
+  if (layout === 'poster' || featured) {
+      return (
+        <div 
+          onClick={() => onClick && onClick(gift)}
+          className="group relative w-full cursor-pointer mb-16 border-b border-ink/10 pb-8"
+        >
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+               {/* Image Block */}
+               <div className="relative aspect-[4/5] bg-gray-100 overflow-hidden reticle text-ink">
+                    <img 
+                        src={gift.image} 
+                        alt={gift.title} 
+                        className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0"
+                    />
+                    <div className="absolute top-2 left-2 font-mono text-[10px] bg-white/80 px-1 uppercase tracking-widest">
+                        Fig. {gift.id}
+                    </div>
+               </div>
+
+               {/* Text Block */}
+               <div className="flex flex-col h-full justify-between pt-2">
+                   <div>
+                        <div className="flex justify-between items-start mb-4 border-b border-ink/20 pb-2">
+                            <span className="font-mono text-xs uppercase tracking-widest text-accent">Top Recommendation</span>
+                            <span className="font-mono text-xs">{gift.category}</span>
+                        </div>
+                        <h2 className="font-serif text-4xl font-light leading-none mb-6 group-hover:text-accent transition-colors">
+                            {gift.title}
+                        </h2>
+                        <p className="font-serif text-lg italic text-graphite mb-4 leading-relaxed pl-4 border-l border-ink/20">
+                            "{gift.reason}"
+                        </p>
+                   </div>
+                   
+                   <div className="flex justify-between items-end mt-8">
+                       <span className="font-mono text-2xl">{gift.price.toLocaleString()} RUB</span>
+                       <button onClick={handleWishlist} className="font-mono text-xs uppercase hover:underline hover:text-accent">
+                           [{saved ? 'SAVED' : 'SAVE TO ARCHIVE'}]
+                       </button>
+                   </div>
+               </div>
+           </div>
+        </div>
+      );
+  }
+
+  // STANDARD LAYOUT
   return (
     <div 
       onClick={() => onClick && onClick(gift)}
-      className={`
-        group relative cursor-pointer flex flex-col gap-3 mb-12 sm:mb-0
-        ${featured ? 'col-span-2' : ''}
-      `}
+      className="group relative flex flex-col gap-4 cursor-pointer mb-8"
     >
-      {/* 1. Meta Data (Top Line) */}
-      <div className="flex justify-between items-center border-t border-ink/10 pt-2 font-mono text-xxs uppercase tracking-wider text-gray-400 group-hover:text-ink transition-colors">
-          <span>#{gift.id.padStart(3, '0')}</span>
-          <span>{gift.category}</span>
-      </div>
-
-      {/* 2. Image Area (Sharp, Grayscale to Color) */}
-      <div className="relative aspect-[3/4] w-full bg-gray-100 overflow-hidden">
+      <div className="relative aspect-square w-full bg-gray-50 overflow-hidden reticle text-ink/50">
         <img 
           src={gift.image} 
           alt={gift.title} 
           className="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
           loading="lazy"
         />
-        
-        {/* Wishlist Indicator (Minimal) */}
-        <button 
-          onClick={handleWishlist}
-          className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-           <span className={`text-xl ${saved ? 'text-error' : 'text-white mix-blend-difference'}`}>
-               {saved ? '●' : '○'}
-           </span>
-        </button>
+        {/* Hover Info */}
+        <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+             <span className="bg-paper text-ink font-mono text-xs px-2 py-1 uppercase tracking-widest">View Data</span>
+        </div>
       </div>
       
-      {/* 3. Typography Content */}
-      <div className="flex flex-col gap-1 mt-1">
-        <div className="flex justify-between items-baseline gap-4">
-             <h3 className="font-serif text-lg leading-tight font-light text-ink group-hover:text-accent transition-colors">
+      <div className="flex flex-col gap-1 border-t border-ink/10 pt-2">
+        <div className="flex justify-between items-start">
+             <h3 className="font-serif text-lg leading-tight font-normal text-ink group-hover:text-accent transition-colors w-3/4">
                 {gift.title}
              </h3>
-             <span className="font-mono text-sm shrink-0">
+             <span className="font-mono text-xs shrink-0">
                 {gift.price.toLocaleString()}
              </span>
         </div>
-        
-        {featured && (
-            <p className="font-serif text-sm text-graphite italic mt-2 border-l border-accent pl-3">
-                "{gift.reason}"
-            </p>
-        )}
+        <div className="flex justify-between items-center mt-1">
+             <span className="font-mono text-[10px] text-graphite uppercase tracking-widest">{gift.category}</span>
+             <button onClick={handleWishlist} className="text-lg hover:text-accent transition-colors leading-none">
+                 {saved ? '●' : '○'}
+             </button>
+        </div>
       </div>
     </div>
   );
