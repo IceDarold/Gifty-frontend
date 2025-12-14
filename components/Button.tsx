@@ -13,23 +13,18 @@ export const Button: React.FC<ButtonProps> = ({
   ...props 
 }) => {
   
-  const baseStyles = "relative py-3 px-6 font-bold text-lg rounded-full transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden";
+  const baseStyles = "relative py-4 px-6 font-pixel text-xs uppercase tracking-widest transition-transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 group";
   
   const variants = {
-    // Frutiger Aero "Gel" Button
     primary: `
-        bg-gradient-to-b from-[#00bfff] to-[#0080ff] 
-        text-white border border-[#0070e0]
-        shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_4px_10px_rgba(0,128,255,0.3)]
-        hover:brightness-110
+        bg-retro-primary text-white border-4 border-black
+        shadow-pixel hover:bg-blue-600
     `,
     secondary: `
-        bg-white/50 backdrop-blur-md 
-        text-blue-700 border border-white 
-        shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_2px_5px_rgba(0,0,0,0.05)]
-        hover:bg-white/70
+        bg-white text-black border-4 border-black
+        shadow-pixel hover:bg-gray-100
     `,
-    ghost: "bg-transparent text-blue-700 hover:bg-white/20"
+    ghost: "bg-transparent text-white border-2 border-dashed border-white/50 hover:bg-white/10 hover:border-white"
   };
 
   return (
@@ -37,13 +32,11 @@ export const Button: React.FC<ButtonProps> = ({
       className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
       {...props}
     >
-      {/* Gloss Highlight (Top half) */}
+      {/* Selection Arrow on Hover */}
       {variant !== 'ghost' && (
-        <div className="absolute top-0 left-0 right-0 h-[45%] bg-gradient-to-b from-white/60 to-transparent opacity-80 pointer-events-none rounded-t-full mx-1 mt-0.5"></div>
+         <span className="absolute left-2 opacity-0 group-hover:opacity-100 transition-opacity">►</span>
       )}
-      
-      {/* Content */}
-      <span className="relative z-10 drop-shadow-sm">{children}</span>
+      <span className="relative z-10">{children}</span>
     </button>
   );
 };

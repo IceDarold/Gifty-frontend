@@ -49,67 +49,67 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      {/* Blurred Backdrop */}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Dim Background */}
       <div 
-        className="absolute inset-0 bg-blue-900/30 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/80 backdrop-grayscale"
         onClick={onClose}
       />
 
-      {/* Modal Window */}
-      <div className="relative w-full max-w-lg max-h-[90vh] bg-white/80 backdrop-filter backdrop-blur-xl shadow-2xl overflow-y-auto no-scrollbar rounded-t-[2rem] sm:rounded-[2rem] border border-white/50 animate-slide-up">
+      {/* ITEM WINDOW */}
+      <div className="relative w-full max-w-lg max-h-[90vh] bg-blue-900 border-[6px] border-white shadow-pixel-lg overflow-y-auto no-scrollbar animate-float-pixel">
         
-        {/* Header Image */}
-        <div className="relative h-64 w-full">
-            <img src={gift.image} alt={gift.title} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
-            
-            <button 
-                onClick={onClose} 
-                className="absolute top-4 right-4 w-10 h-10 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
-            >
-                ✕
-            </button>
+        {/* Title Bar */}
+        <div className="bg-white text-black p-2 font-pixel text-xs flex justify-between items-center sticky top-0 z-20">
+            <span>ITEM_INFO.EXE</span>
+            <button onClick={onClose} className="hover:bg-red-500 hover:text-white px-2">X</button>
         </div>
 
-        <div className="p-6 sm:p-8 -mt-10 relative z-10">
-             <div className="flex justify-between items-start mb-2">
-                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                     {gift.category}
-                 </span>
-                 <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
-                     {gift.price} ₽
-                 </span>
-             </div>
-
-             <h2 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">{gift.title}</h2>
-
-             {/* AI Reason Box (Glass) */}
-             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 mb-8 relative overflow-hidden">
-                 <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200/30 rounded-full blur-xl"></div>
-                 <div className="flex gap-4">
-                     <div className="shrink-0 pt-1">
-                        <Mascot emotion="happy" className="w-12 h-12" />
+        <div className="p-4">
+             {/* Header Section */}
+             <div className="flex gap-4 mb-6 items-start">
+                 <div className="w-24 h-24 bg-black border-4 border-gray-500 shrink-0">
+                     <img src={gift.image} alt="item" className="w-full h-full object-cover" style={{ imageRendering: 'pixelated' }} />
+                 </div>
+                 <div>
+                     <h2 className="font-pixel text-xs text-yellow-400 mb-2 leading-loose">{gift.title}</h2>
+                     <div className="font-pixel text-[10px] text-green-400 mb-1">
+                         COST: {gift.price} G
                      </div>
-                     <div>
-                         <h3 className="font-bold text-blue-900 text-sm mb-1 uppercase opacity-70">Почему это круто</h3>
-                         <p className="text-blue-900 leading-relaxed font-medium">"{gift.reason}"</p>
-                     </div>
+                     <span className="bg-gray-700 text-white px-1 font-console text-sm border border-gray-500">
+                         TYPE: {gift.category}
+                     </span>
                  </div>
              </div>
 
-             <p className="text-gray-600 leading-relaxed mb-8">{gift.description}</p>
+             {/* Description Box */}
+             <div className="bg-black border-2 border-gray-600 p-4 font-console text-lg text-gray-300 mb-6 leading-relaxed">
+                 <span className="text-blue-400 font-bold">DESCRIPTION:</span><br/>
+                 {gift.description}
+             </div>
 
-             {/* Footer Actions */}
-             <div className="flex gap-4 sticky bottom-0 bg-white/80 backdrop-blur-lg p-4 -mx-6 -mb-6 border-t border-gray-100">
-                 <button 
-                    onClick={handleWishlist}
-                    className={`flex-1 py-3 rounded-full font-bold transition-all border ${saved ? 'bg-red-50 border-red-200 text-red-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+             {/* AI Reason (Wizard Note) */}
+             <div className="bg-green-900/30 border-2 border-green-500 p-4 mb-6 relative">
+                 <div className="absolute -top-3 left-4 bg-blue-900 px-2 font-pixel text-[8px] text-green-400">WIZARD SAYS</div>
+                 <p className="font-console text-lg text-green-100 italic">"{gift.reason}"</p>
+             </div>
+
+             {/* Actions */}
+             <div className="flex flex-col gap-3">
+                 <Button 
+                    fullWidth 
+                    variant="primary" 
+                    onClick={() => window.open('#', '_blank')}
                  >
-                    {saved ? '❤️ Сохранено' : '🤍 В избранное'}
-                 </button>
-                 <Button fullWidth onClick={() => window.open('#', '_blank')}>
-                    Купить сейчас
+                    EQUIP (BUY NOW)
+                 </Button>
+                 
+                 <Button 
+                    fullWidth 
+                    variant="secondary"
+                    onClick={handleWishlist}
+                 >
+                    {saved ? 'DROP FROM INVENTORY' : 'ADD TO INVENTORY'}
                  </Button>
              </div>
         </div>

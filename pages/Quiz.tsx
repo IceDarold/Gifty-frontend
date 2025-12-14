@@ -15,6 +15,19 @@ const INITIAL_ANSWERS: QuizAnswers = {
   budget: ''
 };
 
+// RPG DIALOGUE BOX COMPONENT
+// Moved outside to avoid re-creation on every render and ensure proper typing for children prop
+const DialogueBox: React.FC<{ children: React.ReactNode; title: string }> = ({ children, title }) => (
+    <div className="bg-retro-black border-4 border-white p-4 shadow-pixel mb-6 relative">
+        <div className="absolute -top-3 left-4 bg-retro-black px-2 font-pixel text-[10px] text-yellow-400 border-x-2 border-white">
+            {title}
+        </div>
+        {children}
+        {/* Blinking cursor at end indicating waiting for input */}
+        <div className="absolute bottom-2 right-2 w-2 h-4 bg-white animate-blink"></div>
+    </div>
+);
+
 export const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,169 +79,161 @@ export const Quiz: React.FC = () => {
     switch (step) {
       case 0:
         return (
-          <div className="flex flex-col items-center text-center animate-shine">
-             <h2 className="text-2xl font-bold text-blue-900 mb-6">Как зовут счастливчика?</h2>
-             <div className="w-full relative">
+          <>
+             <DialogueBox title="WIZARD ASKS:">
+                 <p className="font-console text-xl leading-relaxed typing-effect">
+                    "Welcome, traveler! Before we begin our quest, tell me: <br/>
+                    <span className="text-green-400">What is the Target's Name?</span>"
+                 </p>
+             </DialogueBox>
+             <div className="mt-8">
                 <input
                     type="text"
-                    placeholder="Введите имя..."
+                    placeholder="ENTER NAME..."
                     value={answers.name}
                     onChange={(e) => updateAnswer('name', e.target.value)}
-                    className="w-full bg-white/50 border-2 border-white rounded-2xl px-6 py-4 text-2xl text-center text-blue-800 placeholder-blue-300 outline-none focus:bg-white/80 focus:shadow-glow transition-all"
+                    className="w-full bg-blue-900 border-4 border-white p-4 font-pixel text-sm text-white placeholder-blue-400 outline-none focus:bg-blue-800"
                     autoFocus
                 />
-                <div className="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
              </div>
-          </div>
+          </>
         );
       case 1:
         return (
-           <div>
-              <h2 className="text-2xl font-bold text-blue-900 mb-6 text-center">Сколько лет?</h2>
+           <>
+              <DialogueBox title="QUERY:">
+                  <p className="font-console text-xl">"Scan complete. Detecting Age Level... Select appropriate range:"</p>
+              </DialogueBox>
               <div className="grid grid-cols-2 gap-4">
                 {AGE_GROUPS.map(age => (
                   <button
                     key={age}
                     onClick={() => updateAnswer('ageGroup', age)}
                     className={`
-                        py-4 rounded-xl font-bold transition-all relative overflow-hidden group
-                        ${answers.ageGroup === age 
-                            ? 'bg-gradient-to-b from-blue-400 to-blue-600 text-white shadow-glow' 
-                            : 'bg-white/40 text-blue-800 hover:bg-white/60'}
+                        p-4 border-4 font-pixel text-[10px] text-left hover:bg-white hover:text-black transition-colors relative
+                        ${answers.ageGroup === age ? 'bg-white text-black border-yellow-400' : 'bg-transparent border-white text-white'}
                     `}
                   >
-                    {/* Gloss shine */}
-                    <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/20 rounded-t-xl pointer-events-none"></div>
+                    {answers.ageGroup === age && <span className="absolute right-2 top-2">◄</span>}
                     {age}
                   </button>
                 ))}
               </div>
-           </div>
+           </>
         );
       case 2:
         return (
-          <div>
-             <h2 className="text-2xl font-bold text-blue-900 mb-6 text-center">Кто это для тебя?</h2>
-             <div className="grid grid-cols-2 gap-3">
-              {RELATIONSHIPS.map(rel => (
+          <>
+             <DialogueBox title="RELATIONSHIP STATUS:">
+                 <p className="font-console text-xl">"Who is this ally to you?"</p>
+             </DialogueBox>
+             <div className="grid grid-cols-1 gap-2">
+              {RELATIONSHIPS.map((rel, i) => (
                 <button
                   key={rel}
                   onClick={() => updateAnswer('relationship', rel)}
                   className={`
-                    py-3 px-4 rounded-full text-sm font-bold border transition-all
+                    p-3 border-2 font-console text-xl text-left hover:pl-6 transition-all
                     ${answers.relationship === rel 
-                        ? 'bg-green-500 border-green-400 text-white shadow-md' 
-                        : 'bg-white/30 border-white/50 text-blue-900 hover:bg-white/50'}
+                        ? 'bg-green-800 border-green-500 text-white pl-6' 
+                        : 'bg-black border-gray-600 text-gray-400'}
                   `}
                 >
-                  {rel}
+                  {i+1}. {rel}
                 </button>
               ))}
             </div>
-          </div>
+          </>
         );
       case 3:
         return (
-          <div className="text-center">
-             <h2 className="text-2xl font-bold text-blue-900 mb-6">Из какого города?</h2>
+          <>
+             <DialogueBox title="LOCATION DATA:">
+                 <p className="font-console text-xl">"Target coordinates required for delivery drone."</p>
+             </DialogueBox>
              <input
                 type="text"
-                placeholder="Москва..."
+                placeholder="CITY..."
                 value={answers.city}
                 onChange={(e) => updateAnswer('city', e.target.value)}
-                className="w-full bg-white/50 border-2 border-white rounded-2xl px-6 py-4 text-xl text-center text-blue-800 outline-none focus:shadow-glow transition-all"
+                className="w-full bg-blue-900 border-4 border-white p-4 font-pixel text-sm text-white outline-none"
              />
-             <p className="mt-4 text-blue-800/60 text-sm">Мы проверим варианты доставки</p>
-          </div>
+          </>
         );
       case 4:
         return (
-          <div className="text-center">
-             <h2 className="text-2xl font-bold text-blue-900 mb-2">Чем увлекается?</h2>
-             <p className="text-blue-800/60 mb-6 text-sm">Игры, спорт, кулинария, сон...</p>
+          <>
+             <DialogueBox title="ANALYSIS:">
+                 <p className="font-console text-xl">"Input Target's Skills, Hobbies, and Weaknesses (Interests)."</p>
+             </DialogueBox>
              <textarea
               value={answers.interests}
               onChange={(e) => updateAnswer('interests', e.target.value)}
-              className="w-full h-40 bg-white/50 border-2 border-white rounded-2xl p-4 text-lg text-blue-900 outline-none focus:shadow-glow resize-none"
-              placeholder="Напишите всё, что придет в голову..."
+              className="w-full h-40 bg-blue-900 border-4 border-white p-4 font-console text-xl text-white outline-none resize-none"
+              placeholder="GAMES, PIZZA, SLEEPING..."
             />
-          </div>
+          </>
         );
       case 5:
         return (
-           <div>
-             <h2 className="text-2xl font-bold text-blue-900 mb-6 text-center">Бюджет?</h2>
+           <>
+             <DialogueBox title="MERCHANT:">
+                 <p className="font-console text-xl">"How much Gold are you willing to spend?"</p>
+             </DialogueBox>
              <div className="space-y-3">
               {BUDGETS.map(b => (
                 <button
                   key={b}
                   onClick={() => updateAnswer('budget', b)}
-                  className={`w-full text-left px-6 py-4 rounded-xl font-bold transition-all flex justify-between items-center ${answers.budget === b ? 'bg-white text-blue-600 shadow-lg scale-105' : 'bg-white/20 text-blue-900 hover:bg-white/30'}`}
+                  className={`w-full text-left p-4 border-4 font-pixel text-[10px] flex justify-between items-center hover:bg-white/10 ${answers.budget === b ? 'border-yellow-400 text-yellow-400' : 'border-gray-600 text-gray-400'}`}
                 >
-                  {b}
-                  {answers.budget === b && <span className="text-green-500 text-xl">✓</span>}
+                  <span>{b}</span>
+                  {answers.budget === b && <span className="animate-blink">💰</span>}
                 </button>
               ))}
             </div>
-           </div>
+           </>
         );
       default: return null;
     }
   };
 
   return (
-    <div className="min-h-screen pt-12 pb-32 px-4 flex flex-col items-center justify-center">
+    <div className="min-h-screen pt-20 pb-40 px-4 flex flex-col items-center">
       
-      {/* WINDOW CONTAINER (Glassmorphism) */}
+      {/* BATTLE SCENE LAYOUT */}
       <div className="w-full max-w-md relative">
          
-         {/* Top Bar / Progress */}
-         <div className="mb-6 flex items-center justify-between">
-            <button onClick={prevStep} className="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-blue-900 hover:bg-white transition-colors">
-                ←
-            </button>
-            
-            {/* Glossy Progress Tube */}
-            <div className="flex-1 mx-4 h-4 bg-black/10 rounded-full overflow-hidden shadow-inner border border-white/20 relative">
-                <div 
-                    className="h-full bg-gradient-to-r from-green-400 to-green-500 transition-all duration-500 relative"
-                    style={{ width: `${((step + 1) / 6) * 100}%` }}
-                >
-                    {/* Shine on progress bar */}
-                    <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/40"></div>
-                </div>
-            </div>
-
-            <div className="text-blue-900 font-bold font-sans">
-                {step + 1}/6
-            </div>
+         {/* Top Status Bar */}
+         <div className="flex justify-between items-end mb-4 px-2 border-b-2 border-white pb-2">
+             <div className="flex flex-col">
+                 <span className="font-pixel text-[8px] text-gray-400">QUEST PROGRESS</span>
+                 <div className="flex gap-1 mt-1">
+                     {[...Array(6)].map((_, i) => (
+                         <div key={i} className={`w-8 h-2 ${i <= step ? 'bg-green-500' : 'bg-gray-800'} border border-black`}></div>
+                     ))}
+                 </div>
+             </div>
+             <div className="font-pixel text-xs text-yellow-400">LVL {step + 1}</div>
          </div>
 
-         {/* MAIN GLASS PANEL */}
-         <div className="bg-white/30 backdrop-blur-xl border border-white/60 shadow-glass rounded-[2rem] p-8 min-h-[400px] flex flex-col relative overflow-hidden">
-            {/* Shine overlay */}
-            <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/20 rounded-full blur-3xl pointer-events-none"></div>
-            
-            <div className="flex-1 flex flex-col justify-center relative z-10">
-                {renderContent()}
-            </div>
-
-            {/* Mascot Helper */}
-            <div className="absolute bottom-4 right-4 opacity-50 transform scale-50 origin-bottom-right pointer-events-none">
-                <Mascot emotion="thinking" />
-            </div>
+         {/* Mascot in "Battle" position */}
+         <div className="flex justify-center mb-6">
+             <Mascot emotion="thinking" className="w-32 h-32" />
          </div>
 
-         {/* Action Button */}
-         <div className="mt-8">
-             <Button 
-                onClick={nextStep} 
-                disabled={!isCurrentStepValid()} 
-                fullWidth 
-                variant="primary"
-                className="h-16 text-xl shadow-xl"
-             >
-                {step === 5 ? 'Показать результаты ✨' : 'Дальше'}
+         {/* Content Area */}
+         <div className="mb-8">
+            {renderContent()}
+         </div>
+
+         {/* Controls */}
+         <div className="flex justify-between gap-4">
+             <Button variant="secondary" onClick={prevStep} disabled={step === 0} className="w-1/3 text-[10px]">
+                 BACK
+             </Button>
+             <Button variant="primary" onClick={nextStep} disabled={!isCurrentStepValid()} className="flex-1">
+                 {step === 5 ? 'FINISH QUEST' : 'NEXT >'}
              </Button>
          </div>
 

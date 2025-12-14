@@ -3,50 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Gifty AI - FRUTIGER AERO</title>
+    <title>Gifty Quest - 8BIT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Quicksand', 'sans-serif'],
+              pixel: ['"Press Start 2P"', 'cursive'],
+              console: ['"VT323"', 'monospace'],
             },
             colors: {
-              aero: {
-                sky: '#87CEEB',
-                grass: '#7CFC00',
-                glass: 'rgba(255, 255, 255, 0.25)',
-                glassBorder: 'rgba(255, 255, 255, 0.5)',
-                primary: '#00a8ff',
+              bit: {
+                dark: '#2d1b2e',
+                purple: '#b45252',
+                pink: '#d32773',
+                blue: '#4b692f', // Gameboy greenish tint replacement -> Retro Blue
+                bg: '#212529',
+                green: '#37946e',
+                cream: '#c7f0d8', // Gameboy light
+                gray: '#43523d', // Gameboy dark
+              },
+              retro: {
+                black: '#000000',
+                white: '#ffffff',
+                primary: '#4d6df3', // Sonic Blue
+                accent: '#ff0055', // Mario Red-ish
+                warning: '#e6ce00',
               }
             },
             boxShadow: {
-              'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-              'glow': '0 0 15px rgba(255, 255, 255, 0.6), inset 0 0 20px rgba(255,255,255,0.2)',
-              'gel': 'inset 0 1px 0 rgba(255,255,255,0.8), 0 1px 2px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1)',
+              'pixel': '4px 4px 0px 0px rgba(0,0,0,1)',
+              'pixel-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+              'pixel-lg': '8px 8px 0px 0px rgba(0,0,0,0.5)',
+              'pixel-inset': 'inset 4px 4px 0px 0px rgba(0,0,0,0.2)',
             },
             animation: {
-              'float': 'float 6s ease-in-out infinite',
-              'float-delayed': 'float 8s ease-in-out infinite 2s',
-              'shine': 'shine 3s infinite',
+              'blink': 'blink 1s steps(2) infinite',
+              'float-pixel': 'floatPixel 2s steps(4) infinite',
+              'scanline': 'scanline 8s linear infinite',
             },
             keyframes: {
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-20px)' },
+              blink: {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0' },
               },
-              shine: {
-                '0%': { transform: 'translateX(-100%) skewX(-15deg)' },
-                '100%': { transform: 'translateX(200%) skewX(-15deg)' },
+              floatPixel: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-4px)' },
+              },
+              scanline: {
+                '0%': { backgroundPosition: '0 0' },
+                '100%': { backgroundPosition: '0 100%' },
               }
-            },
-            backgroundImage: {
-              'aero-gradient': 'linear-gradient(180deg, #b0e0e6 0%, #87ceeb 100%)',
-              'gloss-gradient': 'linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0.2) 100%)',
             }
           }
         }
@@ -56,48 +68,53 @@
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
-        background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
-        min-height: 100vh;
-        color: #2c3e50;
-        overflow-x: hidden;
-      }
-
-      /* FRUTIGER AERO BACKGROUND BOKEH */
-      .bokeh {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        z-index: 0;
-        pointer-events: none;
-        background-image: 
-          radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 20%),
-          radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.3) 0%, transparent 25%),
-          radial-gradient(circle at 50% 50%, rgba(124, 252, 0, 0.2) 0%, transparent 40%);
-      }
-
-      /* AERO GLASS EFFECT */
-      .aero-glass {
-        background: rgba(255, 255, 255, 0.35);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-top: 1px solid rgba(255, 255, 255, 0.9);
-      }
-
-      /* SCROLLBAR */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: rgba(255,255,255,0.1);
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.5);
-        border-radius: 4px;
+        background-color: #212121;
+        image-rendering: pixelated;
+        color: #fff;
       }
       
+      /* PIXELATED IMAGES GLOBALLY */
+      img {
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+      }
+
+      /* CRT SCANLINE OVERLAY */
+      .scanlines {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(
+          to bottom,
+          rgba(255,255,255,0),
+          rgba(255,255,255,0) 50%,
+          rgba(0,0,0,0.1) 50%,
+          rgba(0,0,0,0.1)
+        );
+        background-size: 100% 4px;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* CUSTOM SCROLLBAR FOR CHROME/SAFARI */
+      ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+        background: #000;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #fff;
+        border: 2px solid #000;
+        box-shadow: inset -2px -2px 0px #aaa;
+      }
+      ::-webkit-scrollbar-track {
+        background: #222;
+        border-left: 2px solid #000;
+      }
+
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -112,8 +129,8 @@
 }
 </script>
 </head>
-  <body class="antialiased">
-    <div class="bokeh"></div>
+  <body class="antialiased min-h-screen">
+    <div class="scanlines"></div>
     <div id="root" class="relative z-10 h-full"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
