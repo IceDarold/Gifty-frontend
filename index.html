@@ -3,61 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Gifty Quest - 8BIT</title>
+    <title>Gifty Cloud 3D</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              pixel: ['"Press Start 2P"', 'cursive'],
-              console: ['"VT323"', 'monospace'],
+              sans: ['Nunito', 'sans-serif'],
             },
             colors: {
-              bit: {
-                dark: '#2d1b2e',
-                purple: '#b45252',
-                pink: '#d32773',
-                blue: '#4b692f', // Gameboy greenish tint replacement -> Retro Blue
-                bg: '#212529',
-                green: '#37946e',
-                cream: '#c7f0d8', // Gameboy light
-                gray: '#43523d', // Gameboy dark
-              },
-              retro: {
-                black: '#000000',
-                white: '#ffffff',
-                primary: '#4d6df3', // Sonic Blue
-                accent: '#ff0055', // Mario Red-ish
-                warning: '#e6ce00',
+              clay: {
+                bg: '#f0f2f5',
+                card: '#f0f2f5',
+                primary: '#6c5ce7',
+                accent: '#fd79a8',
+                text: '#2d3436',
+                subtext: '#636e72',
               }
             },
             boxShadow: {
-              'pixel': '4px 4px 0px 0px rgba(0,0,0,1)',
-              'pixel-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
-              'pixel-lg': '8px 8px 0px 0px rgba(0,0,0,0.5)',
-              'pixel-inset': 'inset 4px 4px 0px 0px rgba(0,0,0,0.2)',
+              'clay': '16px 16px 32px #c8c9cc, -16px -16px 32px #ffffff, inset 4px 4px 8px rgba(255,255,255,0.5), inset -4px -4px 8px rgba(166,171,189,0.2)',
+              'clay-sm': '8px 8px 16px #c8c9cc, -8px -8px 16px #ffffff, inset 2px 2px 4px rgba(255,255,255,0.5), inset -2px -2px 4px rgba(166,171,189,0.2)',
+              'clay-btn': '8px 8px 16px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.4), inset 2px 2px 4px rgba(255,255,255,0.2)',
+              'clay-pressed': 'inset 6px 6px 12px #c8c9cc, inset -6px -6px 12px #ffffff',
+              'float': '0 20px 40px rgba(108, 92, 231, 0.2)',
             },
             animation: {
-              'blink': 'blink 1s steps(2) infinite',
-              'float-pixel': 'floatPixel 2s steps(4) infinite',
-              'scanline': 'scanline 8s linear infinite',
+              'bounce-slow': 'bounceSlow 3s infinite',
+              'float': 'float 6s ease-in-out infinite',
+              'pop': 'pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
             },
             keyframes: {
-              blink: {
-                '0%, 100%': { opacity: '1' },
-                '50%': { opacity: '0' },
+              bounceSlow: {
+                '0%, 100%': { transform: 'translateY(-5%)' },
+                '50%': { transform: 'translateY(5%)' },
               },
-              floatPixel: {
+              float: {
                 '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-4px)' },
+                '50%': { transform: 'translateY(-15px)' },
               },
-              scanline: {
-                '0%': { backgroundPosition: '0 0' },
-                '100%': { backgroundPosition: '0 100%' },
+              pop: {
+                '0%': { transform: 'scale(0.8)', opacity: '0' },
+                '100%': { transform: 'scale(1)', opacity: '1' },
               }
             }
           }
@@ -68,55 +59,20 @@
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
-        background-color: #212121;
-        image-rendering: pixelated;
-        color: #fff;
+        background-color: #f0f2f5;
+        color: #2d3436;
       }
       
-      /* PIXELATED IMAGES GLOBALLY */
-      img {
-        image-rendering: pixelated;
-        image-rendering: -moz-crisp-edges;
-        image-rendering: crisp-edges;
-      }
-
-      /* CRT SCANLINE OVERLAY */
-      .scanlines {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: linear-gradient(
-          to bottom,
-          rgba(255,255,255,0),
-          rgba(255,255,255,0) 50%,
-          rgba(0,0,0,0.1) 50%,
-          rgba(0,0,0,0.1)
-        );
-        background-size: 100% 4px;
-        pointer-events: none;
-        z-index: 9999;
-      }
-
-      /* CUSTOM SCROLLBAR FOR CHROME/SAFARI */
+      /* Hide Scrollbar but allow scroll */
       ::-webkit-scrollbar {
-        width: 12px;
-        height: 12px;
-        background: #000;
+        width: 0px;
+        background: transparent;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #fff;
-        border: 2px solid #000;
-        box-shadow: inset -2px -2px 0px #aaa;
+      
+      /* Smooth transitions for shadows */
+      .clay-transition {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       }
-      ::-webkit-scrollbar-track {
-        background: #222;
-        border-left: 2px solid #000;
-      }
-
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
   <script type="importmap">
 {
@@ -129,9 +85,8 @@
 }
 </script>
 </head>
-  <body class="antialiased min-h-screen">
-    <div class="scanlines"></div>
-    <div id="root" class="relative z-10 h-full"></div>
+  <body class="antialiased h-full">
+    <div id="root" class="h-full"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>

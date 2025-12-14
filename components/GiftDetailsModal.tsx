@@ -49,67 +49,66 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Dim Background */}
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+      {/* Overlay */}
       <div 
-        className="absolute inset-0 bg-black/80 backdrop-grayscale"
+        className="absolute inset-0 bg-[#a29bfe]/20 backdrop-blur-md transition-opacity"
         onClick={onClose}
       />
 
-      {/* ITEM WINDOW */}
-      <div className="relative w-full max-w-lg max-h-[90vh] bg-blue-900 border-[6px] border-white shadow-pixel-lg overflow-y-auto no-scrollbar animate-float-pixel">
+      {/* CLAY MODAL */}
+      <div className="relative w-full max-w-lg max-h-[92vh] bg-[#f0f2f5] shadow-2xl overflow-y-auto no-scrollbar rounded-t-[3rem] sm:rounded-[3rem] animate-slide-up pb-8">
         
-        {/* Title Bar */}
-        <div className="bg-white text-black p-2 font-pixel text-xs flex justify-between items-center sticky top-0 z-20">
-            <span>ITEM_INFO.EXE</span>
-            <button onClick={onClose} className="hover:bg-red-500 hover:text-white px-2">X</button>
+        {/* Close Button */}
+        <button 
+            onClick={onClose} 
+            className="absolute top-6 right-6 w-12 h-12 bg-white/50 rounded-full flex items-center justify-center text-gray-500 z-20 backdrop-blur-md hover:bg-white transition-colors"
+        >
+            ✕
+        </button>
+
+        {/* Image Header */}
+        <div className="relative h-80 w-full p-4 pb-0">
+            <div className="w-full h-full rounded-[2.5rem] overflow-hidden shadow-[inset_4px_4px_10px_rgba(0,0,0,0.1),inset_-4px_-4px_10px_rgba(255,255,255,1)] p-2 bg-[#f0f2f5]">
+                 <img src={gift.image} alt={gift.title} className="w-full h-full object-cover rounded-[2rem]" />
+            </div>
         </div>
 
-        <div className="p-4">
-             {/* Header Section */}
-             <div className="flex gap-4 mb-6 items-start">
-                 <div className="w-24 h-24 bg-black border-4 border-gray-500 shrink-0">
-                     <img src={gift.image} alt="item" className="w-full h-full object-cover" style={{ imageRendering: 'pixelated' }} />
+        <div className="px-8 pt-6">
+             <div className="flex justify-between items-start mb-4">
+                 <span className="bg-[#dfe6e9] text-[#636e72] px-4 py-2 rounded-[1rem] text-sm font-bold shadow-inner">
+                     {gift.category}
+                 </span>
+                 <span className="text-3xl font-black text-[#6c5ce7]">
+                     {gift.price} ₽
+                 </span>
+             </div>
+
+             <h2 className="text-3xl font-black text-[#2d3436] mb-6 leading-tight">{gift.title}</h2>
+
+             {/* AI Reason Bubble */}
+             <div className="bg-[#f0f2f5] shadow-clay rounded-[2rem] p-6 mb-8 flex items-start gap-4">
+                 <div className="shrink-0">
+                    <Mascot emotion="excited" className="w-16 h-16" />
                  </div>
                  <div>
-                     <h2 className="font-pixel text-xs text-yellow-400 mb-2 leading-loose">{gift.title}</h2>
-                     <div className="font-pixel text-[10px] text-green-400 mb-1">
-                         COST: {gift.price} G
-                     </div>
-                     <span className="bg-gray-700 text-white px-1 font-console text-sm border border-gray-500">
-                         TYPE: {gift.category}
-                     </span>
+                     <h3 className="font-extrabold text-[#6c5ce7] text-sm mb-1 uppercase tracking-wide">Почему это круто</h3>
+                     <p className="text-[#2d3436] font-bold leading-relaxed">"{gift.reason}"</p>
                  </div>
              </div>
 
-             {/* Description Box */}
-             <div className="bg-black border-2 border-gray-600 p-4 font-console text-lg text-gray-300 mb-6 leading-relaxed">
-                 <span className="text-blue-400 font-bold">DESCRIPTION:</span><br/>
-                 {gift.description}
-             </div>
+             <p className="text-[#636e72] font-medium leading-relaxed mb-8 text-lg">{gift.description}</p>
 
-             {/* AI Reason (Wizard Note) */}
-             <div className="bg-green-900/30 border-2 border-green-500 p-4 mb-6 relative">
-                 <div className="absolute -top-3 left-4 bg-blue-900 px-2 font-pixel text-[8px] text-green-400">WIZARD SAYS</div>
-                 <p className="font-console text-lg text-green-100 italic">"{gift.reason}"</p>
-             </div>
-
-             {/* Actions */}
-             <div className="flex flex-col gap-3">
-                 <Button 
-                    fullWidth 
-                    variant="primary" 
-                    onClick={() => window.open('#', '_blank')}
-                 >
-                    EQUIP (BUY NOW)
-                 </Button>
-                 
-                 <Button 
-                    fullWidth 
-                    variant="secondary"
+             {/* Action Bar */}
+             <div className="flex gap-4 sticky bottom-4">
+                 <button 
                     onClick={handleWishlist}
+                    className={`flex-1 py-4 rounded-[2rem] font-bold transition-all shadow-clay active:shadow-clay-pressed ${saved ? 'bg-[#ff7675] text-white' : 'bg-[#f0f2f5] text-[#636e72]'}`}
                  >
-                    {saved ? 'DROP FROM INVENTORY' : 'ADD TO INVENTORY'}
+                    {saved ? '❤️' : '🤍 В избранное'}
+                 </button>
+                 <Button fullWidth onClick={() => window.open('#', '_blank')} className="shadow-[0_10px_20px_rgba(108,92,231,0.4)]">
+                    Купить
                  </Button>
              </div>
         </div>

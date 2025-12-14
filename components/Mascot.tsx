@@ -6,48 +6,49 @@ interface MascotProps {
 }
 
 export const Mascot: React.FC<MascotProps> = ({ 
-  className = "w-24 h-24", 
+  className = "w-32 h-32", 
   emotion = 'happy',
 }) => {
-  // Simple CSS Grid Pixel Art Representation of a robot face
-  const pixelColor = 'bg-retro-white';
-  const eyesColor = emotion === 'happy' ? 'bg-retro-accent' : 'bg-retro-primary';
-  
   return (
-    <div className={`${className} animate-float-pixel relative`}>
-        {/* Shadow */}
-        <div className="absolute -bottom-4 left-2 right-2 h-2 bg-black opacity-30 blur-none"></div>
-        
-        {/* Head Shape: 8x8 Grid Concept scaled up */}
-        <div className="w-full h-full bg-retro-black border-4 border-white p-2 relative shadow-pixel-sm">
-            {/* Antenna */}
-            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-2 h-4 bg-black border-l-2 border-r-2 border-white"></div>
-            <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-500 border-2 border-white animate-blink"></div>
+    <div className={`${className} relative flex items-center justify-center`}>
+       {/* 3D Body (Sphere) */}
+       <div className="w-full h-full rounded-full bg-[#a29bfe] relative animate-float shadow-[inset_-10px_-10px_20px_rgba(0,0,0,0.1),inset_10px_10px_20px_rgba(255,255,255,0.5),10px_20px_30px_rgba(108,92,231,0.3)]">
+          
+          {/* Face Area */}
+          <div className="absolute top-[25%] left-[15%] right-[15%] h-[50%] flex flex-col items-center justify-center">
+             
+             {/* Eyes Container */}
+             <div className="flex gap-4 mb-2">
+                 {/* Left Eye */}
+                 <div className="w-5 h-7 bg-[#2d3436] rounded-full relative overflow-hidden">
+                     <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></div>
+                 </div>
+                 {/* Right Eye */}
+                 <div className="w-5 h-7 bg-[#2d3436] rounded-full relative overflow-hidden">
+                     <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></div>
+                 </div>
+             </div>
 
-            {/* Face Screen */}
-            <div className="w-full h-full bg-green-900 border-2 border-green-700 relative overflow-hidden flex flex-col items-center justify-center gap-2">
-                {/* CRT Scanline inside face */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.2)_50%,transparent_50%)] bg-[size:100%_4px] pointer-events-none"></div>
-                
-                {/* Eyes */}
-                <div className="flex gap-4 z-10">
-                    {emotion === 'thinking' ? (
-                         <>
-                            <div className="w-4 h-2 bg-green-400"></div>
-                            <div className="w-4 h-4 bg-green-400 animate-bounce"></div>
-                         </>
-                    ) : (
-                        <>
-                            <div className={`w-4 h-4 ${eyesColor} shadow-[0_0_5px_currentColor]`}></div>
-                            <div className={`w-4 h-4 ${eyesColor} shadow-[0_0_5px_currentColor]`}></div>
-                        </>
-                    )}
-                </div>
+             {/* Mouth */}
+             {emotion === 'happy' && (
+                 <div className="w-6 h-3 border-b-4 border-[#2d3436] rounded-full"></div>
+             )}
+             {emotion === 'thinking' && (
+                 <div className="w-4 h-4 rounded-full border-4 border-[#2d3436]"></div>
+             )}
+             {emotion === 'cool' && (
+                 <div className="absolute top-[28%] w-20 h-8 bg-black rounded-lg border-2 border-white/50 shadow-sm"></div>
+             )}
 
-                {/* Mouth */}
-                <div className="w-12 h-2 bg-green-400 z-10 mt-1"></div>
-            </div>
-        </div>
+             {/* Cheeks */}
+             <div className="absolute top-[55%] left-0 w-4 h-2 bg-[#fd79a8] rounded-full opacity-60 blur-[2px]"></div>
+             <div className="absolute top-[55%] right-0 w-4 h-2 bg-[#fd79a8] rounded-full opacity-60 blur-[2px]"></div>
+
+          </div>
+
+          {/* Highlight (Gloss) */}
+          <div className="absolute top-[15%] left-[20%] w-[30%] h-[15%] bg-white rounded-full opacity-40 blur-[1px]"></div>
+       </div>
     </div>
   );
 };

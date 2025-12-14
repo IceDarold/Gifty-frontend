@@ -13,18 +13,24 @@ export const Button: React.FC<ButtonProps> = ({
   ...props 
 }) => {
   
-  const baseStyles = "relative py-4 px-6 font-pixel text-xs uppercase tracking-widest transition-transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 group";
+  const baseStyles = "relative py-4 px-8 font-extrabold text-lg rounded-[2rem] transition-all duration-200 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 disabled:active:scale-100";
   
   const variants = {
+    // Vibrant Clay
     primary: `
-        bg-retro-primary text-white border-4 border-black
-        shadow-pixel hover:bg-blue-600
+        bg-[#6c5ce7] text-white
+        shadow-[8px_8px_16px_rgba(108,92,231,0.4),-4px_-4px_12px_rgba(255,255,255,0.2),inset_2px_2px_4px_rgba(255,255,255,0.2)]
+        hover:bg-[#5f4dd0]
+        active:shadow-inner
     `,
+    // Soft Clay
     secondary: `
-        bg-white text-black border-4 border-black
-        shadow-pixel hover:bg-gray-100
+        bg-[#f0f2f5] text-[#2d3436]
+        shadow-clay
+        hover:translate-y-[-2px]
+        active:shadow-clay-pressed
     `,
-    ghost: "bg-transparent text-white border-2 border-dashed border-white/50 hover:bg-white/10 hover:border-white"
+    ghost: "bg-transparent text-[#6c5ce7] hover:bg-white/50"
   };
 
   return (
@@ -32,11 +38,7 @@ export const Button: React.FC<ButtonProps> = ({
       className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
       {...props}
     >
-      {/* Selection Arrow on Hover */}
-      {variant !== 'ghost' && (
-         <span className="absolute left-2 opacity-0 group-hover:opacity-100 transition-opacity">►</span>
-      )}
-      <span className="relative z-10">{children}</span>
+      {children}
     </button>
   );
 };
