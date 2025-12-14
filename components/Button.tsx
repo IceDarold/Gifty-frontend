@@ -12,17 +12,18 @@ export const Button: React.FC<ButtonProps> = ({
   className = '', 
   ...props 
 }) => {
-  const baseStyles = "py-4 px-8 rounded-full font-sans font-semibold text-base transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95";
+  // Sharp edges, borders, mono font
+  const baseStyles = "relative py-4 px-6 font-mono font-bold text-sm uppercase tracking-widest transition-all duration-100 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed group overflow-hidden";
   
   const variants = {
-    // Gradient Glow
-    primary: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] border border-white/20",
+    // Green solid
+    primary: "bg-cyber-green text-black border border-cyber-green hover:bg-white hover:text-black hover:shadow-[0_0_10px_#fff]",
     
-    // Glassy
-    secondary: "bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10",
+    // Outlined
+    secondary: "bg-transparent text-cyber-green border border-cyber-green hover:bg-cyber-green/10",
     
-    // Minimal
-    ghost: "bg-transparent text-white/70 hover:text-white hover:bg-white/5"
+    // Minimal with bracket style
+    ghost: "bg-transparent text-cyber-gray hover:text-cyber-green border border-transparent hover:border-cyber-gray/50"
   };
 
   return (
@@ -30,7 +31,14 @@ export const Button: React.FC<ButtonProps> = ({
       className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
       {...props}
     >
-      {children}
+      {/* Corner decorations */}
+      <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-current opacity-50"></span>
+      <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-current opacity-50"></span>
+      
+      <span className="relative z-10 flex items-center justify-center gap-2">
+        {variant === 'primary' && <span className="animate-blink mr-1">{'>'}</span>}
+        {children}
+      </span>
     </button>
   );
 };

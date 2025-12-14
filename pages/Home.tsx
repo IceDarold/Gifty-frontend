@@ -13,34 +13,36 @@ import { track } from '../utils/analytics';
 const SearchTrigger: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <div 
     onClick={onClick}
-    className="group glass-panel rounded-full p-2 pr-6 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all duration-500 mx-4 mb-10 border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.3)]"
+    className="group border border-cyber-green/50 bg-black p-4 cursor-pointer hover:bg-cyber-green/5 transition-all mx-4 mb-8 flex items-center gap-4 relative"
   >
-    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 shadow-lg group-hover:scale-105 transition-transform">
-       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
+    <div className="absolute -left-1 -top-1 w-2 h-2 border-l border-t border-cyber-green"></div>
+    <div className="absolute -right-1 -bottom-1 w-2 h-2 border-r border-b border-cyber-green"></div>
+
+    <span className="text-cyber-green font-mono font-bold animate-blink">{'>'}</span>
+    <div className="flex-grow font-mono text-sm">
+      <span className="text-cyber-gray">USER_QUERY: </span>
+      <span className="text-white group-hover:text-cyber-green">INITIATE_GIFT_PROTOCOL();</span>
     </div>
-    <div className="flex-grow text-left">
-      <p className="text-white/60 text-xs font-medium uppercase tracking-widest mb-0.5">AI Concierge</p>
-      <p className="text-white font-serif text-lg italic">Найти идеальный подарок...</p>
+    <div className="bg-cyber-green/20 px-2 py-1 text-[9px] text-cyber-green border border-cyber-green/50">
+        ENTER
     </div>
   </div>
 );
 
 const CategoryPills: React.FC<{ onSelect: (tag: string) => void }> = ({ onSelect }) => {
   const categories = [
-    'Тренды', 'Для неё', 'Для него', 'Дом', 'Технологии', 'Искусство', 'Дети'
+    'TRENDING', 'FOR_HER', 'FOR_HIM', 'HOME_OS', 'TECH', 'ART', 'KIDS_V2'
   ];
 
   return (
-    <div className="flex overflow-x-auto gap-3 px-6 pb-4 no-scrollbar -mx-2 mb-2">
+    <div className="flex overflow-x-auto gap-2 px-4 pb-4 no-scrollbar mb-4 border-b border-cyber-gray/20">
       {categories.map((cat, i) => (
         <button
           key={cat}
           onClick={() => onSelect(cat)}
-          className="glass-panel px-5 py-2.5 rounded-full font-medium text-sm whitespace-nowrap transition-all hover:bg-white/20 hover:border-white/30 text-white/90"
+          className="bg-black border border-cyber-gray text-cyber-gray px-4 py-2 font-mono text-xs hover:border-cyber-green hover:text-cyber-green transition-colors uppercase tracking-tight whitespace-nowrap"
         >
-          {cat}
+          [{cat}]
         </button>
       ))}
     </div>
@@ -57,20 +59,19 @@ const HorizontalSection: React.FC<{
   if (gifts.length === 0) return null;
 
   return (
-    <div id={id} className="mb-12 relative z-10 px-0">
-      <div className="px-6 mb-5">
-         <h2 className="text-2xl font-serif text-white">
+    <div id={id} className="mb-10 relative z-10 px-0">
+      <div className="px-4 mb-3 border-l-4 border-cyber-green ml-4">
+         <h2 className="text-lg font-mono font-bold text-white uppercase tracking-wider">
             {title}
          </h2>
-         {subtitle && <p className="text-white/50 text-sm mt-1">{subtitle}</p>}
+         {subtitle && <p className="text-cyber-dim text-[10px] font-mono">{subtitle}</p>}
       </div>
-      <div className="flex overflow-x-auto gap-4 px-6 pb-8 no-scrollbar snap-x">
+      <div className="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar">
          {gifts.map((gift) => (
-           <div key={gift.id} className="min-w-[180px] w-[180px] snap-center shrink-0">
+           <div key={gift.id} className="min-w-[160px] w-[160px] shrink-0">
               <GiftCard gift={gift} onClick={onGiftClick} />
            </div>
          ))}
-         <div className="w-2 shrink-0" />
       </div>
     </div>
   );
@@ -144,41 +145,30 @@ export const Home: React.FC = () => {
   return (
     <div className="min-h-screen relative overflow-x-hidden pb-12">
       
-      {/* Top Bar - Transparent & Minimal */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-b from-black/80 to-transparent px-6 py-4 flex justify-between items-center backdrop-blur-[2px]">
-          <div 
-            className="flex items-center gap-2 cursor-pointer opacity-90" 
-            onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-          >
-            <span className="font-serif italic font-bold text-2xl tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">
-                Gifty.
-            </span>
-        </div>
-      </div>
-
       {/* Hero Section */}
-      <div className="relative z-10 mb-8 mt-24 px-4 text-center">
-        <div className="flex justify-center mb-6">
-           <div className="relative animate-float">
+      <div className="relative z-10 mb-8 mt-4 px-4 text-center">
+        <div className="flex justify-center mb-4">
+           <div className="relative p-4 border border-cyber-green/20 bg-cyber-black/50 backdrop-blur-sm">
+              <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-cyber-green"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-cyber-green"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-cyber-green"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-cyber-green"></div>
               <Mascot 
-                  className="w-40 h-40 hover:scale-105 transition-transform duration-700 cursor-pointer" 
+                  className="w-32 h-32 cursor-pointer" 
                   emotion="happy"
                   eyesX={eyes.x}
                   eyesY={eyes.y}
               />
-              <div className="absolute inset-0 bg-indigo-500/20 blur-[50px] -z-10 rounded-full"></div>
            </div>
         </div>
         
-        <h1 className="text-4xl md:text-5xl font-serif text-white mb-2 leading-tight">
-          Искусство <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300">
-            Дарить Эмоции
-          </span>
+        <h1 className="text-3xl font-mono font-bold text-white mb-2 uppercase tracking-tight glitch-text">
+          GIFTY_PROTOCOL<span className="text-cyber-green">.exe</span>
         </h1>
         
-        <p className="text-white/60 text-sm mb-8 font-light max-w-xs mx-auto">
-          Ваш персональный AI ассистент для выбора незабываемых подарков.
+        <p className="text-cyber-dim text-xs font-mono mb-8 max-w-xs mx-auto">
+          > INITIALIZING AI ASSISTANT...<br/>
+          > OPTIMIZING FOR MAX_HAPPINESS...
         </p>
 
         <SearchTrigger onClick={startQuiz} />
@@ -186,51 +176,46 @@ export const Home: React.FC = () => {
       </div>
 
       <HorizontalSection 
-        id="section-cozy"
-        title="Уют и Тепло" 
-        subtitle="Атмосферные вещи для дома"
-        gifts={cozyGifts} 
-        onGiftClick={openGift}
-      />
-
-      <HorizontalSection 
         id="section-tech"
-        title="Технологии" 
-        subtitle="Инновации и гаджеты"
+        title=">> HARDWARE_UPGRADES" 
+        subtitle="[CATEGORY: TECH]"
         gifts={techGifts} 
         onGiftClick={openGift}
       />
 
-      {/* Feed Section - Masonry-ish */}
+      <HorizontalSection 
+        id="section-cozy"
+        title=">> COMFORT_MODULES" 
+        subtitle="[CATEGORY: HOME]"
+        gifts={cozyGifts} 
+        onGiftClick={openGift}
+      />
+
+      {/* Feed Section */}
       <div className="relative z-10 px-4 mt-8">
-        <div className="flex items-center gap-4 mb-8">
-           <div className="h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent flex-grow"></div>
-           <div className="font-serif text-xl italic text-white/80">Вдохновение</div>
-           <div className="h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent flex-grow"></div>
+        <div className="flex items-center gap-2 mb-6 border-b border-cyber-green pb-2">
+           <span className="text-cyber-green animate-blink">█</span>
+           <h3 className="font-mono font-bold text-white uppercase">Data_Stream</h3>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
            {/* CTA Card */}
            <div 
              onClick={startQuiz}
-             className="col-span-2 relative overflow-hidden rounded-3xl p-8 flex flex-col justify-center items-start min-h-[240px] cursor-pointer group border border-white/10"
+             className="col-span-2 relative border border-cyber-green bg-cyber-green/10 p-6 flex flex-col justify-center items-start min-h-[200px] cursor-pointer group hover:bg-cyber-green/20 transition-colors"
            >
-              {/* Animated Gradient Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-black opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
-
+              <div className="absolute top-0 right-0 p-2 text-[10px] text-cyber-green font-mono">
+                 SYS_MSG: HELP_NEEDED?
+              </div>
               <div className="relative z-10">
-                <span className="inline-block text-indigo-300 text-[10px] font-bold uppercase tracking-widest mb-2">
-                  AI Подбор
-                </span>
-                <h3 className="text-white font-serif text-3xl mb-4 leading-tight">
-                   Затрудняетесь <br/> с выбором?
+                <h3 className="text-white font-mono font-bold text-2xl mb-2 uppercase">
+                   Algorithm <br/> Assistant
                 </h3>
-                <p className="text-white/70 text-sm font-light mb-6 max-w-xs">
-                   Пройдите короткий опрос, и наш алгоритм подберет что-то особенное.
+                <p className="text-cyber-green/80 text-xs font-mono mb-4">
+                   Execute sequence to identify optimal gift parameters.
                 </p>
-                <button className="bg-white text-black px-6 py-3 rounded-full font-semibold text-sm hover:bg-indigo-50 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                    Начать подбор
+                <button className="bg-cyber-green text-black px-4 py-2 font-bold font-mono text-xs hover:bg-white uppercase">
+                    Start_Sequence
                 </button>
               </div>
            </div>
@@ -242,9 +227,9 @@ export const Home: React.FC = () => {
            ))}
         </div>
         
-        <div className="mt-16 text-center pb-8">
+        <div className="mt-12 text-center pb-8 border-t border-cyber-gray/20 pt-8">
             <Button variant="secondary" onClick={startQuiz}>
-               Показать еще
+               LOAD_MORE_DATA
             </Button>
         </div>
       </div>

@@ -5,7 +5,6 @@ interface MascotProps {
   emotion?: 'happy' | 'thinking' | 'surprised' | 'excited' | 'cool';
   eyesX?: number;
   eyesY?: number;
-  accessory?: 'none' | 'glasses' | 'scarf';
 }
 
 export const Mascot: React.FC<MascotProps> = ({ 
@@ -14,82 +13,39 @@ export const Mascot: React.FC<MascotProps> = ({
   eyesX = 0,
   eyesY = 0,
 }) => {
-  const pupilX = Math.max(-1, Math.min(1, eyesX)) * 3;
-  const pupilY = Math.max(-1, Math.min(1, eyesY)) * 3;
+  const pupilX = Math.max(-1, Math.min(1, eyesX)) * 5;
+  const pupilY = Math.max(-1, Math.min(1, eyesY)) * 5;
 
   return (
-    <div className={`${className} relative`}>
-      {/* Glow Filter */}
-      <svg width="0" height="0">
+    <div className={`${className} relative group`}>
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible drop-shadow-[0_0_10px_rgba(0,255,65,0.3)]">
+        
         <defs>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#818cf8" />
-            <stop offset="100%" stopColor="#c084fc" />
-          </linearGradient>
-           <linearGradient id="earGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#a78bfa" />
-            <stop offset="100%" stopColor="#e879f9" />
-          </linearGradient>
+            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#00ff41" strokeWidth="0.5" opacity="0.3"/>
+            </pattern>
         </defs>
-      </svg>
 
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible" filter="url(#glow)">
+        {/* Wireframe Head */}
+        <circle cx="50" cy="50" r="40" stroke="#00ff41" strokeWidth="1" fill="url(#grid)" className="animate-[pulse_4s_ease-in-out_infinite]" />
         
-        {/* Ears (Floating) */}
-        <g className="animate-[float_4s_ease-in-out_infinite]">
-            <path d="M22 28 C 5 20, -2 48, 18 55 C 18 55, 14 40, 22 28" fill="url(#earGrad)" opacity="0.9" />
-            <path d="M78 28 C 95 20, 102 48, 82 55 C 82 55, 86 40, 78 28" fill="url(#earGrad)" opacity="0.9" />
-        </g>
-        
-        {/* Head */}
-        <circle cx="50" cy="55" r="38" fill="url(#bodyGrad)" />
-        
-        {/* Highlight on head */}
-        <ellipse cx="35" cy="40" rx="10" ry="6" fill="white" opacity="0.2" transform="rotate(-45 35 40)" />
+        {/* Orbital Ring */}
+        <ellipse cx="50" cy="50" rx="50" ry="10" stroke="#008F11" strokeWidth="1" fill="none" className="animate-[spin_10s_linear_infinite] origin-center opacity-50" />
+        <ellipse cx="50" cy="50" rx="50" ry="10" stroke="#008F11" strokeWidth="1" fill="none" className="animate-[spin_8s_linear_infinite_reverse] origin-center opacity-30" transform="rotate(45 50 50)" />
 
-        {/* Snout Patch */}
-        <ellipse cx="50" cy="72" rx="22" ry="16" fill="white" opacity="0.15" />
-
-        {/* Eyes Container */}
-        <g>
-            <ellipse cx="32" cy="52" rx="10" ry="12" fill="#0f172a" />
-            <ellipse cx="68" cy="52" rx="10" ry="12" fill="#0f172a" />
-
-            {/* Glowing Pupils */}
-            <circle cx={32 + pupilX} cy={52 + pupilY} r="4" fill="#38bdf8" />
-            <circle cx={68 + pupilX} cy={52 + pupilY} r="4" fill="#38bdf8" />
-            
-            <circle cx={34 + pupilX} cy={50 + pupilY} r="1.5" fill="white" />
-            <circle cx={70 + pupilX} cy={50 + pupilY} r="1.5" fill="white" />
-        </g>
+        {/* Digital Eyes */}
+        <rect x="25" y="40" width="15" height="12" stroke="#00ff41" fill="#002200" />
+        <rect x="60" y="40" width="15" height="12" stroke="#00ff41" fill="#002200" />
         
-        {/* Nose */}
-        <path d="M46 68 Q 50 65 54 68 Q 50 74 46 68 Z" fill="#1e293b" />
+        {/* Pupils (Square pixels) */}
+        <rect x={30 + pupilX} y={44 + pupilY} width="5" height="4" fill="#00ff41" />
+        <rect x={65 + pupilX} y={44 + pupilY} width="5" height="4" fill="#00ff41" />
 
-        {/* Mouth */}
-        {emotion === 'happy' && (
-             <path d="M45 76 Q 50 80 55 76" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.6"/>
-        )}
-        {emotion === 'cool' && (
-           <path d="M46 78 Q 50 79 54 78" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.6"/>
-        )}
-        {emotion === 'thinking' && (
-           <circle cx="58" cy="78" r="2" fill="#1e293b" opacity="0.6"/>
-        )}
-        {emotion === 'surprised' && (
-           <ellipse cx="50" cy="80" rx="3" ry="5" stroke="#1e293b" strokeWidth="2" fill="#1e293b" opacity="0.6"/>
-        )}
-        
-        {/* Cheeks Glow */}
-        <circle cx="24" cy="62" r="6" fill="#f472b6" opacity="0.4" filter="blur(2px)" />
-        <circle cx="76" cy="62" r="6" fill="#f472b6" opacity="0.4" filter="blur(2px)" />
+        {/* Mouth (LED Display) */}
+        <path d="M35 70 L40 75 L60 75 L65 70" stroke="#00ff41" strokeWidth="2" fill="none" />
+
+        {/* Glitch Overlay Elements */}
+        <rect x="0" y="20" width="100" height="2" fill="#00ff41" className="animate-scan opacity-20" />
       </svg>
     </div>
   );
