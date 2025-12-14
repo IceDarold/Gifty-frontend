@@ -8,33 +8,22 @@ import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
 
-const SearchNote: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-  <div 
-    onClick={onClick}
-    className="mx-4 mb-10 bg-white border border-gray-200 p-4 shadow-paper transform rotate-1 cursor-pointer hover:rotate-0 transition-transform relative"
-  >
-    {/* Paper Clip */}
-    <div className="absolute -top-3 right-8 w-4 h-10 border-2 border-gray-400 rounded-full bg-transparent z-10"></div>
-    
-    <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-2xl bg-paper-bg">
-            🔍
-        </div>
-        <div>
-            <div className="font-display text-2xl font-bold text-paper-ink">Кому ищем подарок?</div>
-            <div className="font-sans text-gray-500 text-lg leading-none">Мама, друг или коллега...</div>
-        </div>
-    </div>
-  </div>
+const RansomChar: React.FC<{ char: string; color: string; rotate: string }> = ({ char, color, rotate }) => (
+    <span 
+        className={`inline-block w-10 h-12 ${color} text-center leading-[3rem] font-marker text-3xl text-[#2b2b2b] shadow-sm mx-0.5 border-2 border-dashed border-white/20`}
+        style={{ transform: rotate, clipPath: 'polygon(5% 0%, 100% 10%, 95% 100%, 0% 90%)' }}
+    >
+        {char}
+    </span>
 );
 
-const Sticker: React.FC<{ text: string; color: string; onClick: () => void }> = ({ text, color, onClick }) => (
+const StickerBtn: React.FC<{ text: string; color: string; onClick: () => void }> = ({ text, color, onClick }) => (
     <button 
         onClick={onClick}
-        className={`${color} px-4 py-2 font-display text-xl text-paper-ink shadow-sm transform hover:-translate-y-1 hover:scale-105 transition-all duration-200`}
+        className={`${color} px-4 py-2 font-marker text-lg text-white shadow-float transform hover:scale-110 hover:z-50 transition-all duration-200`}
         style={{ 
-            clipPath: 'polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%)',
-            transform: `rotate(${Math.random() * 6 - 3}deg)`
+            clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)',
+            transform: `rotate(${Math.random() * 10 - 5}deg)`
         }}
     >
         {text}
@@ -76,72 +65,87 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden">
+    <div className="min-h-screen relative">
       
-      {/* Hero Doodle */}
-      <div className="pt-8 px-4 text-center mb-8 relative">
-        <div className="absolute top-0 left-4 w-full h-full border-l border-dashed border-red-200 pointer-events-none"></div>
+      {/* Header Area: Ransom Note Style */}
+      <div className="pt-12 px-2 text-center mb-12 relative z-10">
         
-        <div className="inline-block relative">
-            <Mascot className="w-28 h-28" emotion="excited" />
-            <div className="absolute -top-4 -right-8">
-                <div className="bg-white border border-gray-300 p-2 rounded-xl rounded-bl-none shadow-sm text-sm font-sans transform rotate-6">
-                    Привет! 👋
-                </div>
-            </div>
+        {/* Mascot pinned to the side */}
+        <div className="absolute top-0 left-[-10px] transform -rotate-12 z-20">
+            <Mascot className="w-24 h-24" emotion="cool" />
+            <div className="tape-strip" style={{ top: '10px', left: '20px', width: '40px' }}></div>
         </div>
 
-        <h1 className="font-display font-bold text-5xl text-paper-ink mt-4 mb-2 relative z-10">
-          <span className="relative inline-block">
-             Gifty
-             <svg className="absolute -bottom-2 left-0 w-full h-3 text-paper-yellow opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" /></svg>
-          </span>
-        </h1>
-        <p className="font-sans text-xl text-gray-600 mb-8 max-w-xs mx-auto">
-          Я помогу найти что-то особенное.
+        {/* Title */}
+        <div className="flex justify-center flex-wrap gap-1 mb-4">
+            <RansomChar char="G" color="bg-[#ff6b6b]" rotate="rotate(-5deg)" />
+            <RansomChar char="I" color="bg-[#4d96ff]" rotate="rotate(3deg)" />
+            <RansomChar char="F" color="bg-[#ffeb3b]" rotate="rotate(-2deg)" />
+            <RansomChar char="T" color="bg-[#6bcb77]" rotate="rotate(4deg)" />
+            <RansomChar char="Y" color="bg-[#9c27b0]" rotate="rotate(-6deg)" />
+            <span className="w-4"></span>
+            <span className="font-doodle text-4xl mt-2 animate-wiggle-slow">?</span>
+        </div>
+        
+        <p className="font-sans text-2xl text-craft-ink mb-6 transform rotate-1 inline-block bg-white px-2 shadow-sm">
+          ИИ-помощник, который <span className="text-craft-red font-bold underline decoration-wavy">шарит</span>
         </p>
 
-        <SearchNote onClick={startQuiz} />
+        {/* Search Bar - Looks like a torn envelope */}
+        <div 
+            onClick={startQuiz}
+            className="mx-4 bg-white p-4 shadow-float cursor-pointer hover:scale-105 transition-transform relative group torn-bottom torn-top"
+        >
+             <div className="tape-strip" style={{ top: '-10px', left: '50%', transform: 'translateX(-50%) rotate(90deg)', width: '40px' }}></div>
+             <div className="flex items-center gap-4">
+                <span className="text-4xl group-hover:animate-spin">🔎</span>
+                <div className="text-left">
+                    <div className="font-marker text-xl text-[#2b2b2b]">НАЙТИ ПОДАРОК</div>
+                    <div className="font-sans text-lg text-gray-500">Маме, другу, коту...</div>
+                </div>
+             </div>
+        </div>
 
-        <div className="flex flex-wrap justify-center gap-4 px-2">
-            <Sticker text="🔥 Тренды" color="bg-paper-red/30" onClick={() => navigate('/quiz')} />
-            <Sticker text="🎮 Техно" color="bg-paper-blue/30" onClick={() => navigate('/quiz')} />
-            <Sticker text="🏡 Уют" color="bg-paper-green/30" onClick={() => navigate('/quiz')} />
+        {/* Stickers Navigation */}
+        <div className="flex flex-wrap justify-center gap-4 mt-8 px-4">
+            <StickerBtn text="🔥 ХАЙП" color="bg-[#ff6b6b]" onClick={() => navigate('/quiz')} />
+            <StickerBtn text="🎮 ГИК" color="bg-[#4d96ff]" onClick={() => navigate('/quiz')} />
+            <StickerBtn text="🏡 УЮТ" color="bg-[#6bcb77]" onClick={() => navigate('/quiz')} />
         </div>
       </div>
 
-      {/* "Pinned" Section (Featured) */}
-      <div className="mb-12 relative">
-          <div className="px-4 mb-4 flex items-center gap-2">
-              <span className="text-2xl">📌</span>
-              <h2 className="font-display font-bold text-3xl underline decoration-wavy decoration-paper-yellow">Популярное</h2>
-          </div>
-          <div className="flex overflow-x-auto gap-6 px-6 pb-12 pt-4 no-scrollbar">
+      {/* Featured Section: Corkboard style */}
+      <div className="mb-16 relative">
+          <h2 className="font-marker text-3xl ml-6 mb-4 transform -rotate-2 marker-highlight inline-block">
+              ТОПЧИК
+          </h2>
+          <div className="flex overflow-x-auto gap-8 px-8 pb-12 pt-4 no-scrollbar items-center">
             {techGifts.map((gift) => (
-                <div key={gift.id} className="min-w-[180px] w-[180px] shrink-0">
+                <div key={gift.id} className="min-w-[200px] w-[200px] shrink-0">
                     <GiftCard gift={gift} onClick={openGift} />
                 </div>
             ))}
           </div>
       </div>
 
-      {/* Scrapbook Grid */}
+      {/* Feed Section: Scattered papers */}
       <div className="px-4 pb-12">
-        <div className="flex items-center gap-2 mb-6 justify-center">
-            <div className="h-px bg-gray-300 flex-grow"></div>
-            <h2 className="font-display text-2xl text-gray-400">Свежие идеи</h2>
-            <div className="h-px bg-gray-300 flex-grow"></div>
+        <div className="text-center mb-8">
+            <h2 className="font-marker text-2xl inline-block border-b-4 border-[#2b2b2b] transform rotate-1">
+                ЕЩЕ ИДЕИ 👇
+            </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-           {/* Doodle CTA */}
+        <div className="grid grid-cols-2 gap-8">
+           {/* CTA Doodle */}
            <div 
              onClick={startQuiz}
-             className="col-span-2 bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-paper-blue transition-colors group"
+             className="col-span-2 bg-transparent border-4 border-dashed border-[#2b2b2b] rounded-none p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/20 transition-colors group h-40"
+             style={{ borderRadius: '255px 15px 225px 15px / 15px 225px 15px 255px' }}
            >
-              <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">🤔</div>
-              <h3 className="font-display text-2xl font-bold">Ничего не подошло?</h3>
-              <p className="font-sans text-lg text-gray-500 underline decoration-paper-blue decoration-2">Давай поищем вместе</p>
+              <h3 className="font-doodle text-3xl font-bold group-hover:scale-110 transition-transform">???</h3>
+              <p className="font-sans text-2xl text-[#2b2b2b]">Не знаешь что брать?</p>
+              <span className="font-marker text-craft-red mt-2">ЖМИ СЮДА</span>
            </div>
 
            {feedGifts.map((gift) => (
@@ -151,9 +155,9 @@ export const Home: React.FC = () => {
            ))}
         </div>
         
-        <div className="mt-12 text-center">
+        <div className="mt-16 text-center">
             <Button variant="ghost" onClick={startQuiz}>
-               Листать дальше...
+               БОЛЬШЕ НЕТ... (или есть?)
             </Button>
         </div>
       </div>

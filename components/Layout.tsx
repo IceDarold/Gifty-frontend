@@ -10,43 +10,51 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFooter = true }) => {
   return (
-    <div className="min-h-screen flex flex-col max-w-lg mx-auto relative shadow-2xl bg-paper-bg border-x border-gray-100">
+    <div className="min-h-screen flex flex-col max-w-xl mx-auto relative overflow-hidden">
       
-      {/* Header - Hand-drawn Logo */}
-      <header className="sticky top-0 z-40 bg-paper-bg/95 backdrop-blur-sm px-6 py-4 flex justify-between items-center border-b border-dashed border-gray-300">
-         <div className="flex items-center gap-2 transform -rotate-1">
-            <span className="font-display font-bold text-3xl text-paper-ink tracking-tight">
-                Gifty<span className="text-paper-red">.ai</span>
-            </span>
-            <span className="text-2xl animate-swing">✏️</span>
-         </div>
-      </header>
+      {/* Background Decor: Coffee Stain */}
+      <div className="fixed top-[-50px] right-[-50px] w-64 h-64 rounded-full border-[15px] border-[#6f4e37] opacity-10 blur-sm pointer-events-none z-0" style={{ transform: 'scale(1.2) rotate(25deg)' }}></div>
+      <div className="fixed top-[-50px] right-[-50px] w-64 h-64 rounded-full border-[2px] border-[#6f4e37] opacity-20 pointer-events-none z-0"></div>
 
-      <main className={`flex-grow flex flex-col ${showNav ? 'pb-32' : 'pb-8'} bg-[linear-gradient(#e5e7eb_1px,transparent_1px)] bg-[size:100%_2rem]`}>
-        <div className="flex-grow pt-4">
-          {children}
-        </div>
+      {/* Main Content Area - A sheet of paper on the desk */}
+      <main className={`flex-grow relative z-10 ${showNav ? 'pb-36' : 'pb-8'} px-2`}>
+        {children}
         {showFooter && <Footer />}
       </main>
 
       {showNav && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center max-w-lg mx-auto pointer-events-none">
-          {/* Notebook Tabs Navigation */}
-          <nav className="pointer-events-auto w-full px-2 flex items-end justify-center gap-2 pb-2">
+        <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center pointer-events-none">
+          {/* Navigation: Sticky Notes stuck to the bottom of the screen */}
+          <nav className="pointer-events-auto flex gap-4 items-end">
              
-             <NavLink to="/" className={({ isActive }) => `bg-white border-2 border-b-0 border-gray-200 rounded-t-xl p-4 w-20 h-20 flex flex-col items-center justify-start pt-3 transition-all transform origin-bottom hover:-translate-y-2 ${isActive ? 'h-24 -translate-y-2 z-10 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]' : 'opacity-90 hover:opacity-100 translate-y-4'}`}>
-                <span className="text-2xl mb-1">🏠</span>
-                <span className="font-display text-lg leading-none">Дом</span>
+             {/* Home Note */}
+             <NavLink to="/" className={({ isActive }) => `
+                w-20 h-20 bg-[#ffeb3b] shadow-float transform transition-transform duration-300 flex flex-col items-center justify-center
+                ${isActive ? 'rotate-[-3deg] -translate-y-4 scale-110 z-20' : 'rotate-2 hover:-translate-y-2 opacity-90'}
+             `} style={{ clipPath: 'polygon(0% 0%, 100% 0%, 95% 100%, 0% 95%)' }}>
+                <div className="tape-strip" style={{ top: '-10px', left: '20%', width: '40px', height: '20px' }}></div>
+                <span className="text-2xl">🏠</span>
+                <span className="font-marker text-xs">Дом</span>
              </NavLink>
 
-             <NavLink to="/quiz" className={({ isActive }) => `bg-paper-yellow border-2 border-b-0 border-yellow-500/20 rounded-t-xl p-4 w-24 h-24 flex flex-col items-center justify-start pt-4 transition-all transform origin-bottom -mx-1 hover:-translate-y-4 ${isActive ? 'h-28 -translate-y-4 z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]' : 'opacity-90 hover:opacity-100 translate-y-2'}`}>
-                <span className="text-3xl mb-1 animate-bounce">🎁</span>
-                <span className="font-display font-bold text-xl leading-none">Найти</span>
+             {/* Quiz Note - Main Action */}
+             <NavLink to="/quiz" className={({ isActive }) => `
+                w-24 h-24 bg-[#ff6b6b] shadow-deep transform transition-transform duration-300 flex flex-col items-center justify-center
+                ${isActive ? 'rotate-3 -translate-y-6 scale-110 z-30' : 'rotate-[-2deg] hover:-translate-y-4'}
+             `} style={{ clipPath: 'polygon(2% 2%, 98% 0%, 100% 98%, 0% 100%)' }}>
+                <div className="tape-strip" style={{ top: '-12px', left: '30%', width: '50px', height: '25px', transform: 'rotate(2deg)' }}></div>
+                <span className="text-4xl animate-bounce">🎁</span>
+                <span className="font-marker text-white text-lg mt-1">НАЙТИ!</span>
              </NavLink>
 
-             <NavLink to="/profile" className={({ isActive }) => `bg-white border-2 border-b-0 border-gray-200 rounded-t-xl p-4 w-20 h-20 flex flex-col items-center justify-start pt-3 transition-all transform origin-bottom hover:-translate-y-2 ${isActive ? 'h-24 -translate-y-2 z-10 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]' : 'opacity-90 hover:opacity-100 translate-y-4'}`}>
-                <span className="text-2xl mb-1">👤</span>
-                <span className="font-display text-lg leading-none">Я</span>
+             {/* Profile Note */}
+             <NavLink to="/profile" className={({ isActive }) => `
+                w-20 h-20 bg-[#4d96ff] shadow-float transform transition-transform duration-300 flex flex-col items-center justify-center
+                ${isActive ? 'rotate-2 -translate-y-4 scale-110 z-20' : 'rotate-[-3deg] hover:-translate-y-2 opacity-90'}
+             `} style={{ clipPath: 'polygon(5% 0%, 100% 5%, 95% 95%, 0% 100%)' }}>
+                <div className="tape-strip" style={{ top: '-10px', right: '20%', width: '40px', height: '20px', transform: 'rotate(-5deg)' }}></div>
+                <span className="text-2xl">👤</span>
+                <span className="font-marker text-white text-xs">Я</span>
              </NavLink>
 
           </nav>

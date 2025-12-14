@@ -13,8 +13,11 @@ interface Props {
 export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWishlist, onClick }) => {
   const [saved, setSaved] = useState(isInWishlist(gift.id));
 
-  // Random rotation for "scattered on table" look
-  const [rotation] = useState(() => Math.random() * 4 - 2); 
+  // Extreme random rotation for "messy desk" feel
+  const [style] = useState(() => ({
+    transform: `rotate(${Math.random() * 6 - 3}deg) translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`,
+    zIndex: Math.floor(Math.random() * 10)
+  }));
 
   useEffect(() => {
     setSaved(isInWishlist(gift.id));
@@ -36,47 +39,58 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
   return (
     <div 
       onClick={() => onClick && onClick(gift)}
-      className={`relative group cursor-pointer bg-white p-2 pb-8 shadow-paper hover:shadow-xl transition-all duration-300 hover:z-10 hover:scale-105`}
-      style={{ transform: `rotate(${rotation}deg)` }}
+      className={`relative group cursor-pointer bg-white p-3 pb-10 shadow-float hover:shadow-deep transition-all duration-300 hover:z-50 hover:scale-105`}
+      style={style}
     >
-      {/* Tape at top */}
-      <div className="tape"></div>
+      {/* Tape holding the card */}
+      <div className="tape-strip" style={{ top: '-15px', left: '35%', width: '60px', height: '25px' }}></div>
 
-      {/* Image Area (Polaroid Window) */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-100 border border-gray-100 mb-2">
+      {/* Image Area (Polaroid Frame) */}
+      <div className="relative aspect-[1/1] w-full bg-[#1a1a1a] mb-3 overflow-hidden">
         <img 
           src={gift.image} 
           alt={gift.title} 
-          className="w-full h-full object-cover filter sepia-[0.1] contrast-[0.9]"
+          className="w-full h-full object-cover filter contrast-[1.1] brightness-[0.95] sepia-[0.2]"
           loading="lazy"
         />
         
-        {/* Marketplace Stamp */}
-        <div className={`absolute bottom-2 left-2 px-2 py-1 rounded-sm border-2 border-paper-ink text-[10px] font-bold uppercase tracking-widest bg-white/90 transform -rotate-2 ${gift.marketplace === 'Ozon' ? 'text-blue-600' : 'text-purple-600'}`}>
+        {/* "Sticker" for Marketplace */}
+        <div className={`absolute -top-2 -left-2 w-10 h-10 rounded-full flex items-center justify-center font-marker text-[10px] text-white shadow-sticker border-2 border-white transform -rotate-12 ${gift.marketplace === 'Ozon' ? 'bg-blue-500' : 'bg-purple-600'}`}>
           {gift.marketplace}
         </div>
 
-        {/* Wishlist Heart - Hand drawn style */}
+        {/* Heart Scribble */}
         <button 
           onClick={handleWishlist}
-          className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center transition-transform active:scale-125`}
+          className={`absolute bottom-2 right-2 w-10 h-10 transition-transform active:scale-125`}
         >
-           <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 drop-shadow-md ${saved ? 'fill-paper-red stroke-none' : 'fill-white/50 stroke-white stroke-2'}`} viewBox="0 0 24 24">
-             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-           </svg>
+           {saved ? (
+             <svg viewBox="0 0 100 100" className="w-full h-full fill-craft-red stroke-none drop-shadow-md animate-scribble">
+                <path d="M50 85 C 20 70 0 50 0 30 C 0 10 20 0 40 10 C 50 15 50 15 60 10 C 80 0 100 10 100 30 C 100 50 80 70 50 85 Z" />
+             </svg>
+           ) : (
+             <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-white stroke-[4] drop-shadow-md opacity-70 hover:opacity-100">
+                <path d="M50 85 C 20 70 0 50 0 30 C 0 10 20 0 40 10 C 50 15 50 15 60 10 C 80 0 100 10 100 30 C 100 50 80 70 50 85 Z" />
+             </svg>
+           )}
         </button>
       </div>
       
-      {/* Handwritten Text Area */}
-      <div className="px-2 text-center">
-        <h3 className="font-sans text-lg font-bold text-paper-ink leading-tight line-clamp-2 mb-1">
+      {/* Handwritten Text */}
+      <div className="text-center relative">
+        <h3 className="font-sans text-2xl font-bold text-craft-ink leading-none mb-2">
             {gift.title}
         </h3>
 
-        <div className="flex items-center justify-center gap-2">
-            <span className="font-display font-bold text-xl text-paper-green bg-green-50 px-2 py-0.5 rounded-full transform -rotate-1">
-               ~{gift.price}₽
+        {/* Price circled in red marker */}
+        <div className="inline-block relative px-2">
+            <span className="font-marker text-xl text-craft-red">
+               {gift.price}₽
             </span>
+            <svg className="absolute top-[-5px] left-[-10px] w-[120%] h-[150%] pointer-events-none" viewBox="0 0 100 50" preserveAspectRatio="none">
+                <path d="M5,25 Q30,5 50,25 T95,25" fill="none" stroke="#d93025" strokeWidth="2" opacity="0.4" />
+                <path d="M10,40 Q50,45 90,35" fill="none" stroke="#d93025" strokeWidth="1" opacity="0.3" />
+            </svg>
         </div>
       </div>
     </div>

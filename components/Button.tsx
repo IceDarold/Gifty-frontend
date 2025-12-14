@@ -13,23 +13,29 @@ export const Button: React.FC<ButtonProps> = ({
   ...props 
 }) => {
   
-  // The "messy" border radius + sketch shadow creates the hand-drawn feel
-  const baseStyles = "relative py-3 px-6 font-display font-bold text-xl tracking-wide transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border-2";
+  const baseStyles = "relative py-3 px-6 font-marker tracking-wider text-xl transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group";
   
+  // Styles mimicking torn cardboard or paper scraps
   const variants = {
-    primary: "bg-paper-yellow text-paper-ink border-paper-ink rounded-messy shadow-sketch hover:shadow-sketch-lg hover:-rotate-1",
-    secondary: "bg-white text-paper-ink border-paper-ink rounded-messy-sm shadow-sketch hover:shadow-sketch-lg hover:rotate-1",
-    ghost: "bg-transparent border-transparent shadow-none hover:bg-gray-100/50 rounded-xl"
+    primary: "bg-[#2b2b2b] text-white shadow-deep rotate-[-1deg] hover:rotate-0 hover:scale-[1.02]",
+    secondary: "bg-white text-[#2b2b2b] border-2 border-[#2b2b2b] shadow-float rotate-[1deg] hover:rotate-0",
+    ghost: "bg-transparent text-[#2b2b2b] hover:bg-black/5 hover:rotate-1 decoration-wavy underline underline-offset-4"
   };
+
+  // Random rough clip-path for primary/secondary to look cut out
+  const clipStyle = variant !== 'ghost' ? {
+    clipPath: 'polygon(2% 5%, 98% 0%, 100% 95%, 95% 100%, 5% 98%, 0% 100%)'
+  } : {};
 
   return (
     <button 
       className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
+      style={clipStyle}
       {...props}
     >
-      {/* Scribble effect on hover for primary */}
+      {/* Tape Decoration for Primary buttons */}
       {variant === 'primary' && (
-         <span className="absolute inset-0 border-2 border-paper-ink rounded-messy opacity-0 group-hover:opacity-100 animate-scribble pointer-events-none"></span>
+         <div className="tape-strip" style={{ top: '-10px', left: '10px', width: '30px', height: '15px', transform: 'rotate(45deg)', opacity: 0.3 }}></div>
       )}
       {children}
     </button>

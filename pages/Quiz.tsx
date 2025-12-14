@@ -62,39 +62,55 @@ export const Quiz: React.FC = () => {
   };
 
   // Styles
-  const sheetStyle = "bg-white p-8 shadow-paper relative transform rotate-1 transition-all duration-500 min-h-[400px]";
-  const questionStyle = "font-display font-bold text-3xl text-paper-ink mb-6";
-  const inputStyle = "w-full bg-transparent border-b-2 border-gray-300 text-2xl font-sans py-2 px-1 outline-none focus:border-paper-blue transition-colors placeholder-gray-300";
+  const notebookPage = "bg-white p-6 shadow-deep relative transform min-h-[450px] mx-2 transition-all duration-300";
+  // CSS Grid for lines
+  const linedPaper = {
+      backgroundImage: 'repeating-linear-gradient(transparent, transparent 39px, #94a3b8 40px)',
+      backgroundAttachment: 'local',
+      lineHeight: '40px'
+  };
 
   const renderContent = () => {
     switch (step) {
       case 0:
         return (
-          <div className={sheetStyle}>
-            <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-9xl pointer-events-none">#1</div>
-            <h2 className={questionStyle}>Кого будем радовать?</h2>
-            <p className="font-sans text-gray-500 text-lg mb-4">Напиши имя:</p>
-            <input
-              type="text"
-              placeholder="Например: Аня"
-              value={answers.name}
-              onChange={(e) => updateAnswer('name', e.target.value)}
-              className={inputStyle}
-              autoFocus
-            />
+          <div className={`${notebookPage} rotate-1 torn-top`}>
+            <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#1</div>
+            <h2 className="font-marker text-3xl mb-8 mt-4">Кто счастливчик?</h2>
+            <div className="relative">
+                <input
+                    type="text"
+                    placeholder="Имя..."
+                    value={answers.name}
+                    onChange={(e) => updateAnswer('name', e.target.value)}
+                    className="w-full bg-transparent font-sans text-4xl text-blue-700 outline-none pl-4"
+                    style={{ background: 'repeating-linear-gradient(transparent, transparent 39px, #94a3b8 40px)', lineHeight: '40px' }}
+                    autoFocus
+                />
+                <div className="absolute left-0 bottom-0 w-full h-1 bg-blue-200 transform -skew-x-12 opacity-50"></div>
+            </div>
+            <div className="mt-8 transform -rotate-2">
+                <span className="bg-yellow-200 px-2 font-doodle text-sm">Не забудь проверить орфографию!</span>
+            </div>
           </div>
         );
       case 1:
         return (
-           <div className={`${sheetStyle} -rotate-1`}>
-              <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-9xl pointer-events-none">#2</div>
-              <h2 className={questionStyle}>Сколько лет?</h2>
-              <div className="grid grid-cols-2 gap-4">
+           <div className={`${notebookPage} -rotate-1 torn-bottom`}>
+              <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#2</div>
+              <h2 className="font-marker text-3xl mb-6">Сколько лет?</h2>
+              <div className="flex flex-wrap gap-4 justify-center">
                 {AGE_GROUPS.map(age => (
                   <button
                     key={age}
                     onClick={() => updateAnswer('ageGroup', age)}
-                    className={`p-3 font-sans text-xl border-2 rounded-messy-sm transition-all ${answers.ageGroup === age ? 'border-paper-ink bg-paper-yellow shadow-sketch' : 'border-gray-200 text-gray-500 hover:border-gray-400'}`}
+                    className={`
+                        w-24 h-24 rounded-full flex items-center justify-center font-sans text-2xl transition-all border-4
+                        ${answers.ageGroup === age 
+                            ? 'bg-craft-red text-white border-craft-red scale-110 shadow-float' 
+                            : 'bg-white text-gray-400 border-gray-200 hover:border-gray-400'}
+                    `}
+                    style={{ borderRadius: '50% 50% 50% 50% / 60% 40% 60% 40%' }} // Imperfect circle
                   >
                     {age}
                   </button>
@@ -104,15 +120,19 @@ export const Quiz: React.FC = () => {
         );
       case 2:
         return (
-          <div className={sheetStyle}>
-             <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-9xl pointer-events-none">#3</div>
-             <h2 className={questionStyle}>Кто этот человек для тебя?</h2>
-             <div className="flex flex-wrap gap-3">
+          <div className={`${notebookPage} rotate-2`}>
+             <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#3</div>
+             <div className="tape-strip" style={{ top: '-15px', left: '40%', width: '60px' }}></div>
+             <h2 className="font-marker text-3xl mb-6">Кто это для тебя?</h2>
+             <div className="grid grid-cols-2 gap-4">
               {RELATIONSHIPS.map(rel => (
                 <button
                   key={rel}
                   onClick={() => updateAnswer('relationship', rel)}
-                  className={`px-4 py-2 font-display text-xl border-b-2 transition-all ${answers.relationship === rel ? 'border-paper-red text-paper-red font-bold' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                  className={`
+                    py-2 px-1 font-marker text-xl uppercase tracking-widest border-2 border-black
+                    ${answers.relationship === rel ? 'bg-black text-white transform -rotate-1' : 'bg-transparent text-black hover:bg-gray-100'}
+                  `}
                 >
                   {rel}
                 </button>
@@ -122,45 +142,46 @@ export const Quiz: React.FC = () => {
         );
       case 3:
         return (
-          <div className={`${sheetStyle} rotate-1`}>
-             <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-9xl pointer-events-none">#4</div>
-             <h2 className={questionStyle}>Где он/она живет?</h2>
+          <div className={`${notebookPage} -rotate-1 torn-top`}>
+             <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#4</div>
+             <h2 className="font-marker text-3xl mb-6">Город?</h2>
              <input
                 type="text"
-                placeholder="Город..."
+                placeholder="Москва..."
                 value={answers.city}
                 onChange={(e) => updateAnswer('city', e.target.value)}
-                className={inputStyle}
+                className="w-full bg-transparent font-sans text-4xl text-blue-700 outline-none border-b-4 border-black pb-2"
              />
+             <div className="mt-4 text-right">
+                 <span className="font-doodle text-gray-400 text-sm">🚚 Доставка решает</span>
+             </div>
           </div>
         );
       case 4:
         return (
-          <div className={sheetStyle}>
-             <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-9xl pointer-events-none">#5</div>
-             <h2 className={questionStyle}>Что любит?</h2>
-             <p className="font-sans text-gray-400 mb-2 text-sm">(игры, котиков, спать...)</p>
+          <div className={`${notebookPage} rotate-1`} style={linedPaper}>
+             <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#5</div>
+             <h2 className="font-marker text-3xl mb-2 bg-white inline-block px-2">Интересы?</h2>
+             <p className="font-sans text-gray-500 mb-4 bg-white inline-block px-2">Пиши всё что знаешь (игры, еда, спорт)...</p>
              <textarea
               value={answers.interests}
               onChange={(e) => updateAnswer('interests', e.target.value)}
-              className="w-full h-40 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')] bg-white border border-gray-200 p-4 font-sans text-xl outline-none focus:shadow-md resize-none leading-loose"
-              style={{ lineHeight: '2rem' }}
+              className="w-full h-60 bg-transparent font-sans text-3xl text-blue-800 outline-none resize-none leading-[40px]"
             />
           </div>
         );
       case 5:
         return (
-           <div className={`${sheetStyle} -rotate-1`}>
-             <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-9xl pointer-events-none">#6</div>
-             <h2 className={questionStyle}>Бюджет?</h2>
-             <div className="flex flex-col gap-2 pl-4 border-l-2 border-red-300">
+           <div className={`${notebookPage} -rotate-1 torn-bottom`}>
+             <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#6</div>
+             <h2 className="font-marker text-3xl mb-6">Бюджет?</h2>
+             <div className="flex flex-col gap-3">
               {BUDGETS.map(b => (
                 <button
                   key={b}
                   onClick={() => updateAnswer('budget', b)}
-                  className={`text-left font-sans text-xl py-2 px-2 transition-all flex items-center gap-2 ${answers.budget === b ? 'text-paper-ink font-bold translate-x-2' : 'text-gray-400 hover:text-gray-600'}`}
+                  className={`text-left font-sans text-3xl transition-all pl-4 border-l-4 ${answers.budget === b ? 'border-craft-red text-craft-red font-bold pl-6' : 'border-gray-300 text-gray-400'}`}
                 >
-                  <span className={`w-4 h-4 border-2 rounded-full inline-block ${answers.budget === b ? 'bg-paper-ink border-paper-ink' : 'border-gray-300'}`}></span>
                   {b}
                 </button>
               ))}
@@ -172,37 +193,35 @@ export const Quiz: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-4 pb-32 px-4 bg-paper-dark">
+    <div className="min-h-screen pt-8 pb-40 px-2 overflow-hidden">
       
       <div className="max-w-md mx-auto">
-         {/* Simple Back button */}
-         <button onClick={prevStep} className="mb-4 font-display text-xl text-gray-500 hover:text-black">
-            ← Назад
-         </button>
+         {/* Navigation Controls */}
+         <div className="flex justify-between items-center mb-6 px-4">
+            <button onClick={prevStep} className="font-marker text-xl hover:underline decoration-wavy">
+                ← НАЗАД
+            </button>
+            <div className="font-doodle bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200">
+                {step + 1} / 6
+            </div>
+         </div>
 
-         {/* Paper Stack Container */}
-         <div className="relative z-10">
-            {/* Pages beneath decoration */}
-            <div className="absolute top-2 left-1 w-full h-full bg-white shadow-sm rotate-2 rounded-sm opacity-50"></div>
-            <div className="absolute top-1 left-2 w-full h-full bg-white shadow-sm -rotate-1 rounded-sm opacity-70"></div>
-            
+         {/* The "Paper" */}
+         <div className="relative z-10 perspective-1000">
             {renderContent()}
          </div>
 
-         {/* Action */}
+         {/* Next Button - A big sticker */}
          <div className="mt-8 flex justify-center">
              <Button 
                 onClick={nextStep} 
                 disabled={!isCurrentStepValid()} 
                 variant="primary"
-                className="w-48 !text-2xl"
+                className="w-full !text-2xl !py-4 shadow-deep !bg-[#2b2b2b]"
+                style={{ clipPath: 'polygon(0% 0%, 100% 5%, 95% 100%, 5% 95%)' }}
              >
-                {step === 5 ? 'Готово! 🎉' : 'Дальше ->'}
+                {step === 5 ? 'ГОТОВО! 🎉' : 'ДАЛЬШЕ 👉'}
              </Button>
-         </div>
-
-         <div className="mt-4 text-center font-sans text-gray-400">
-            Страница {step + 1} из 6
          </div>
       </div>
     </div>
