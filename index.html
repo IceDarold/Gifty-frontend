@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -17,8 +17,7 @@
             },
             colors: {
               clay: {
-                bg: '#f0f2f5',
-                card: '#f0f2f5',
+                bg: '#eef2f6', // Slightly cooler white for better contrast
                 primary: '#6c5ce7',
                 accent: '#fd79a8',
                 text: '#2d3436',
@@ -26,29 +25,38 @@
               }
             },
             boxShadow: {
-              'clay': '16px 16px 32px #c8c9cc, -16px -16px 32px #ffffff, inset 4px 4px 8px rgba(255,255,255,0.5), inset -4px -4px 8px rgba(166,171,189,0.2)',
-              'clay-sm': '8px 8px 16px #c8c9cc, -8px -8px 16px #ffffff, inset 2px 2px 4px rgba(255,255,255,0.5), inset -2px -2px 4px rgba(166,171,189,0.2)',
-              'clay-btn': '8px 8px 16px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.4), inset 2px 2px 4px rgba(255,255,255,0.2)',
-              'clay-pressed': 'inset 6px 6px 12px #c8c9cc, inset -6px -6px 12px #ffffff',
-              'float': '0 20px 40px rgba(108, 92, 231, 0.2)',
+              // Deeper, softer shadows
+              'clay': '20px 20px 60px #c8c9cc, -20px -20px 60px #ffffff, inset 2px 2px 4px rgba(255,255,255,0.5)',
+              'clay-sm': '10px 10px 20px #d1d5db, -10px -10px 20px #ffffff, inset 1px 1px 2px rgba(255,255,255,0.7)',
+              // High gloss button
+              'clay-btn': '12px 12px 24px rgba(108,92,231,0.3), -8px -8px 20px rgba(255,255,255,0.8), inset 2px 2px 2px rgba(255,255,255,0.4)',
+              'clay-pressed': 'inset 10px 10px 20px #d1d5db, inset -10px -10px 20px #ffffff',
+              'float': '0 25px 50px -12px rgba(108, 92, 231, 0.4)',
             },
             animation: {
-              'bounce-slow': 'bounceSlow 3s infinite',
-              'float': 'float 6s ease-in-out infinite',
-              'pop': 'pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+              'blob': 'blob 10s infinite',
+              'float-slow': 'float 6s ease-in-out infinite',
+              'blink': 'blink 4s infinite',
+              'squeeze': 'squeeze 2s cubic-bezier(0.25, 1, 0.5, 1) infinite',
             },
             keyframes: {
-              bounceSlow: {
-                '0%, 100%': { transform: 'translateY(-5%)' },
-                '50%': { transform: 'translateY(5%)' },
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
               },
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-15px)' },
               },
-              pop: {
-                '0%': { transform: 'scale(0.8)', opacity: '0' },
-                '100%': { transform: 'scale(1)', opacity: '1' },
+              blink: {
+                '0%, 96%, 100%': { transform: 'scaleY(1)' },
+                '98%': { transform: 'scaleY(0.1)' },
+              },
+              squeeze: {
+                '0%, 100%': { transform: 'scale(1, 1)' },
+                '50%': { transform: 'scale(1.05, 0.95)' },
               }
             }
           }
@@ -59,19 +67,38 @@
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
-        background-color: #f0f2f5;
+        background-color: #eef2f6;
         color: #2d3436;
       }
       
-      /* Hide Scrollbar but allow scroll */
+      /* NOISE TEXTURE OVERLAY - The Secret Sauce */
+      .noise-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+
+      /* Hide Scrollbar */
       ::-webkit-scrollbar {
         width: 0px;
         background: transparent;
       }
       
-      /* Smooth transitions for shadows */
-      .clay-transition {
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      .clay-card-hover {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .clay-card-hover:hover {
+        transform: translateY(-8px) scale(1.02);
+      }
+      .clay-card-hover:active {
+        transform: scale(0.98);
+        box-shadow: inset 5px 5px 10px #d1d5db, inset -5px -5px 10px #ffffff;
       }
     </style>
   <script type="importmap">
@@ -85,7 +112,8 @@
 }
 </script>
 </head>
-  <body class="antialiased h-full">
+  <body class="antialiased h-full font-sans">
+    <div class="noise-overlay"></div>
     <div id="root" class="h-full"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
