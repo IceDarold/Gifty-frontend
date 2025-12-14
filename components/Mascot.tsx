@@ -19,40 +19,42 @@ export const Mascot: React.FC<MascotProps> = ({
 
   return (
     <div className={`${className} relative`}>
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible filter drop-shadow-sm">
         
-        {/* Drop Shadow */}
-        <path d="M15 20 H85 V85 H15 Z" fill="#121212" transform="translate(4, 4) rotate(-3 50 50)" className="opacity-100" />
+        {/* Doodle Body - Irregular Circle */}
+        <path 
+            d="M50 10 C 80 10, 95 30, 90 50 C 85 80, 70 95, 50 90 C 20 85, 5 70, 10 50 C 15 20, 30 10, 50 10 Z" 
+            fill="#FFFFFF" 
+            stroke="#2C2C2C" 
+            strokeWidth="3"
+            strokeLinecap="round"
+        />
+        
+        {/* Antenna */}
+        <path d="M50 10 Q 45 0, 50 -10" stroke="#2C2C2C" strokeWidth="3" fill="none" />
+        <circle cx="50" cy="-10" r="4" fill="#FFD93D" stroke="#2C2C2C" strokeWidth="2" />
 
-        {/* Main Body - Square shape with rounded corners (Sticker style) */}
-        <rect x="10" y="10" width="80" height="80" rx="15" fill="#FFFFFF" stroke="#121212" strokeWidth="3" transform="rotate(-3 50 50)" />
-        
-        {/* Screen/Face */}
-        <rect x="20" y="25" width="60" height="45" rx="8" fill="#5CE1E6" stroke="#121212" strokeWidth="2.5" transform="rotate(-3 50 50)" />
+        {/* Face Screen - Scribble fill */}
+        <rect x="25" y="30" width="50" height="40" rx="5" fill="#E0F2F1" stroke="#2C2C2C" strokeWidth="2" transform="rotate(-2 50 50)" />
 
         {/* Eyes Group */}
-        <g transform="translate(0, 0) rotate(-3 50 50)">
+        <g transform="translate(0, 0) rotate(-2 50 50)">
             {/* Left Eye */}
-            <circle cx="35" cy="45" r="8" fill="white" stroke="#121212" strokeWidth="2" />
-            <circle cx={35 + pupilX} cy={45 + pupilY} r="3" fill="#121212" />
-
-            {/* Right Eye */}
-            <circle cx="65" cy="45" r="8" fill="white" stroke="#121212" strokeWidth="2" />
-            <circle cx={65 + pupilX} cy={45 + pupilY} r="3" fill="#121212" />
+            <circle cx="38" cy="45" r="5" fill="#2C2C2C" />
             
-            {/* Blush */}
-            <ellipse cx="30" cy="55" rx="3" ry="2" fill="#FF66C4" opacity="0.6" />
-            <ellipse cx="70" cy="55" rx="3" ry="2" fill="#FF66C4" opacity="0.6" />
+            {/* Right Eye */}
+            <circle cx="62" cy="45" r="5" fill="#2C2C2C" />
             
             {/* Mouth */}
-            {emotion === 'happy' && <path d="M42 55 Q50 62 58 55" stroke="#121212" strokeWidth="2.5" strokeLinecap="round" />}
-            {emotion === 'thinking' && <line x1="42" y1="58" x2="58" y2="58" stroke="#121212" strokeWidth="2.5" strokeLinecap="round" />}
-            {emotion === 'surprised' && <circle cx="50" cy="58" r="4" stroke="#121212" strokeWidth="2.5" />}
+            {emotion === 'happy' && <path d="M42 55 Q50 60 58 55" stroke="#2C2C2C" strokeWidth="3" strokeLinecap="round" fill="none" />}
+            {emotion === 'thinking' && <path d="M42 58 L58 55" stroke="#2C2C2C" strokeWidth="3" strokeLinecap="round" />}
+            {emotion === 'surprised' && <ellipse cx="50" cy="58" rx="4" ry="6" stroke="#2C2C2C" strokeWidth="3" fill="none" />}
+            {emotion === 'excited' && <path d="M42 55 Q50 65 58 55 Z" fill="#FF6B6B" stroke="#2C2C2C" strokeWidth="1" />}
         </g>
 
-        {/* Antenna */}
-        <line x1="50" y1="10" x2="50" y2="0" stroke="#121212" strokeWidth="3" transform="rotate(-3 50 50)" />
-        <circle cx="50" cy="-3" r="4" fill="#FFDE59" stroke="#121212" strokeWidth="2.5" transform="rotate(-3 50 50)" />
+        {/* Blush - Scribble */}
+        <path d="M25 60 l5 0 M26 62 l4 0" stroke="#FF6B6B" strokeWidth="2" opacity="0.6" />
+        <path d="M70 60 l5 0 M71 62 l4 0" stroke="#FF6B6B" strokeWidth="2" opacity="0.6" />
 
       </svg>
     </div>

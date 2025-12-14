@@ -8,46 +8,38 @@ import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
 
-const SearchBar: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+const SearchNote: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <div 
     onClick={onClick}
-    className="mx-4 mb-8 bg-white border-2 border-pop-black rounded-2xl p-2 shadow-hard flex items-center gap-3 cursor-pointer hover:-translate-y-1 hover:shadow-hard-lg transition-all"
+    className="mx-4 mb-10 bg-white border border-gray-200 p-4 shadow-paper transform rotate-1 cursor-pointer hover:rotate-0 transition-transform relative"
   >
-    <div className="bg-pop-yellow p-3 rounded-xl border-2 border-pop-black">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pop-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-    </div>
-    <div className="flex-grow">
-        <div className="font-bold text-pop-black">Найти подарок...</div>
-        <div className="text-xs text-gray-500 font-medium">Маме, другу, коллеге</div>
+    {/* Paper Clip */}
+    <div className="absolute -top-3 right-8 w-4 h-10 border-2 border-gray-400 rounded-full bg-transparent z-10"></div>
+    
+    <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-2xl bg-paper-bg">
+            🔍
+        </div>
+        <div>
+            <div className="font-display text-2xl font-bold text-paper-ink">Кому ищем подарок?</div>
+            <div className="font-sans text-gray-500 text-lg leading-none">Мама, друг или коллега...</div>
+        </div>
     </div>
   </div>
 );
 
-const CategoryPills: React.FC<{ onSelect: (tag: string) => void }> = ({ onSelect }) => {
-  const categories = [
-    { name: '🔥 Тренды', color: 'bg-pop-pink' }, 
-    { name: '🎮 Техно', color: 'bg-pop-blue' }, 
-    { name: '🏡 Уют', color: 'bg-pop-yellow' }, 
-    { name: '🎨 Хобби', color: 'bg-purple-200' },
-    { name: '🧸 Детям', color: 'bg-green-200' }
-  ];
-
-  return (
-    <div className="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar mb-4">
-      {categories.map((cat, i) => (
-        <button
-          key={cat.name}
-          onClick={() => onSelect(cat.name)}
-          className={`${cat.color} border-2 border-pop-black px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap shadow-hard-sm hover:-translate-y-1 transition-transform`}
-        >
-          {cat.name}
-        </button>
-      ))}
-    </div>
-  );
-};
+const Sticker: React.FC<{ text: string; color: string; onClick: () => void }> = ({ text, color, onClick }) => (
+    <button 
+        onClick={onClick}
+        className={`${color} px-4 py-2 font-display text-xl text-paper-ink shadow-sm transform hover:-translate-y-1 hover:scale-105 transition-all duration-200`}
+        style={{ 
+            clipPath: 'polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%)',
+            transform: `rotate(${Math.random() * 6 - 3}deg)`
+        }}
+    >
+        {text}
+    </button>
+);
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -55,19 +47,6 @@ export const Home: React.FC = () => {
   const [techGifts, setTechGifts] = useState<Gift[]>([]);
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Simple eye tracking for mascot
-  const [eyes, setEyes] = useState({ x: 0, y: 0 });
-  useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      setEyes({ 
-          x: (e.clientX - window.innerWidth / 2) / 100, 
-          y: (e.clientY - 200) / 100 
-      });
-    };
-    window.addEventListener('mousemove', handleMove);
-    return () => window.removeEventListener('mousemove', handleMove);
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,61 +76,72 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-12 overflow-x-hidden">
+    <div className="min-h-screen relative overflow-x-hidden">
       
-      {/* Hero Section */}
-      <div className="pt-8 px-4 text-center mb-6 relative">
-        <div className="absolute top-4 right-8 text-4xl animate-bounce-slow opacity-20 rotate-12">🎁</div>
-        <div className="absolute top-20 left-4 text-3xl animate-bounce-slow opacity-20 -rotate-12" style={{ animationDelay: '0.5s' }}>✨</div>
-
-        <div className="flex justify-center mb-6">
-           <Mascot className="w-32 h-32" eyesX={eyes.x} eyesY={eyes.y} />
-        </div>
+      {/* Hero Doodle */}
+      <div className="pt-8 px-4 text-center mb-8 relative">
+        <div className="absolute top-0 left-4 w-full h-full border-l border-dashed border-red-200 pointer-events-none"></div>
         
-        <h1 className="text-4xl font-display font-black text-pop-black mb-2 leading-tight">
-          Gifty <span className="bg-pop-yellow px-2 transform -rotate-2 inline-block border-2 border-pop-black shadow-sm">AI</span>
+        <div className="inline-block relative">
+            <Mascot className="w-28 h-28" emotion="excited" />
+            <div className="absolute -top-4 -right-8">
+                <div className="bg-white border border-gray-300 p-2 rounded-xl rounded-bl-none shadow-sm text-sm font-sans transform rotate-6">
+                    Привет! 👋
+                </div>
+            </div>
+        </div>
+
+        <h1 className="font-display font-bold text-5xl text-paper-ink mt-4 mb-2 relative z-10">
+          <span className="relative inline-block">
+             Gifty
+             <svg className="absolute -bottom-2 left-0 w-full h-3 text-paper-yellow opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" /></svg>
+          </span>
         </h1>
-        <p className="text-gray-600 font-medium mb-6 max-w-xs mx-auto">
-          Подберем идеальный подарок за пару кликов. Без стресса!
+        <p className="font-sans text-xl text-gray-600 mb-8 max-w-xs mx-auto">
+          Я помогу найти что-то особенное.
         </p>
 
-        <SearchBar onClick={startQuiz} />
-        <CategoryPills onSelect={() => navigate('/quiz')} />
+        <SearchNote onClick={startQuiz} />
+
+        <div className="flex flex-wrap justify-center gap-4 px-2">
+            <Sticker text="🔥 Тренды" color="bg-paper-red/30" onClick={() => navigate('/quiz')} />
+            <Sticker text="🎮 Техно" color="bg-paper-blue/30" onClick={() => navigate('/quiz')} />
+            <Sticker text="🏡 Уют" color="bg-paper-green/30" onClick={() => navigate('/quiz')} />
+        </div>
       </div>
 
-      {/* Featured Section */}
-      <div className="mb-10">
-          <div className="flex items-center justify-between px-4 mb-4">
-              <h2 className="text-xl font-display font-bold border-b-4 border-pop-yellow inline-block">
-                  Популярное
-              </h2>
+      {/* "Pinned" Section (Featured) */}
+      <div className="mb-12 relative">
+          <div className="px-4 mb-4 flex items-center gap-2">
+              <span className="text-2xl">📌</span>
+              <h2 className="font-display font-bold text-3xl underline decoration-wavy decoration-paper-yellow">Популярное</h2>
           </div>
-          <div className="flex overflow-x-auto gap-4 px-4 pb-8 no-scrollbar">
+          <div className="flex overflow-x-auto gap-6 px-6 pb-12 pt-4 no-scrollbar">
             {techGifts.map((gift) => (
-                <div key={gift.id} className="min-w-[160px] w-[160px] shrink-0">
+                <div key={gift.id} className="min-w-[180px] w-[180px] shrink-0">
                     <GiftCard gift={gift} onClick={openGift} />
                 </div>
             ))}
           </div>
       </div>
 
-      {/* Feed Grid */}
-      <div className="px-4">
-        <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-            <span className="text-2xl">👀</span> Лента идей
-        </h2>
+      {/* Scrapbook Grid */}
+      <div className="px-4 pb-12">
+        <div className="flex items-center gap-2 mb-6 justify-center">
+            <div className="h-px bg-gray-300 flex-grow"></div>
+            <h2 className="font-display text-2xl text-gray-400">Свежие идеи</h2>
+            <div className="h-px bg-gray-300 flex-grow"></div>
+        </div>
 
-        <div className="grid grid-cols-2 gap-4">
-           {/* CTA Block */}
+        <div className="grid grid-cols-2 gap-6">
+           {/* Doodle CTA */}
            <div 
              onClick={startQuiz}
-             className="col-span-2 bg-pop-purple border-2 border-pop-black rounded-2xl p-6 shadow-hard cursor-pointer hover:-translate-y-1 transition-transform relative overflow-hidden"
+             className="col-span-2 bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-paper-blue transition-colors group"
            >
-              <div className="relative z-10 flex flex-col items-start text-white">
-                  <h3 className="font-display font-black text-2xl mb-2">Не знаешь что выбрать?</h3>
-                  <Button variant="secondary" className="text-xs">Пройти квиз</Button>
-              </div>
-              <div className="absolute -right-4 -bottom-4 text-8xl opacity-20 rotate-12">🤔</div>
+              <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">🤔</div>
+              <h3 className="font-display text-2xl font-bold">Ничего не подошло?</h3>
+              <p className="font-sans text-lg text-gray-500 underline decoration-paper-blue decoration-2">Давай поищем вместе</p>
            </div>
 
            {feedGifts.map((gift) => (
@@ -161,9 +151,9 @@ export const Home: React.FC = () => {
            ))}
         </div>
         
-        <div className="mt-8 text-center">
+        <div className="mt-12 text-center">
             <Button variant="ghost" onClick={startQuiz}>
-               Загрузить еще...
+               Листать дальше...
             </Button>
         </div>
       </div>
