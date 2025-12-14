@@ -3,37 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Gifty AI - SYSTEM_READY</title>
+    <title>Gifty AI - TERMINAL_V3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Space Mono', 'monospace'],
-              mono: ['JetBrains Mono', 'monospace'],
-              display: ['JetBrains Mono', 'monospace'],
+              sans: ['JetBrains Mono', 'monospace'],
+              mono: ['Share Tech Mono', 'monospace'], // More techy font
             },
             colors: {
               cyber: {
-                black: '#050505',
-                dark: '#0a0a0a',
-                green: '#00ff41',
+                black: '#020202',
+                dark: '#0a0f0a',
+                green: '#00ff41', // Classic Terminal Green
                 dim: '#008F11',
-                alert: '#ff0055',
-                gray: '#333333'
+                alert: '#ff003c', // Cyberpunk Red
+                cyan: '#0ea5e9',
+                gray: '#2d332d'
               }
             },
             backgroundImage: {
-              'grid-pattern': "linear-gradient(to right, #111 1px, transparent 1px), linear-gradient(to bottom, #111 1px, transparent 1px)",
+              'grid-pattern': "linear-gradient(to right, rgba(0, 255, 65, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 255, 65, 0.05) 1px, transparent 1px)",
+            },
+            boxShadow: {
+              'neon': '0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.3)',
+              'neon-alert': '0 0 10px rgba(255, 0, 60, 0.5), 0 0 20px rgba(255, 0, 60, 0.3)',
             },
             animation: {
               'blink': 'blink 1s step-end infinite',
-              'glitch': 'glitch 1s linear infinite',
-              'scan': 'scan 8s linear infinite',
+              'scan': 'scan 6s linear infinite',
+              'flicker': 'flicker 0.15s infinite',
             },
             keyframes: {
               blink: {
@@ -41,13 +45,13 @@
                 '50%': { opacity: 0 },
               },
               scan: {
-                '0%': { backgroundPosition: '0 0' },
-                '100%': { backgroundPosition: '0 100vh' },
+                '0%': { transform: 'translateY(-100%)' },
+                '100%': { transform: 'translateY(100vh)' },
               },
-              glitch: {
-                '2%, 64%': { transform: 'translate(2px,0) skew(0deg)' },
-                '4%, 60%': { transform: 'translate(-2px,0) skew(0deg)' },
-                '62%': { transform: 'translate(0,0) skew(5deg)' },
+              flicker: {
+                '0%': { opacity: 0.97 },
+                '50%': { opacity: 1 },
+                '100%': { opacity: 0.98 },
               }
             }
           }
@@ -58,48 +62,57 @@
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
-        background-color: #050505;
+        background-color: #020202;
         color: #00ff41;
+        /* Phosphor Glow Effect */
+        text-shadow: 0 0 2px rgba(0, 255, 65, 0.4); 
       }
       
-      /* CRT Scanline Overlay */
-      .crt::before {
-        content: " ";
-        display: block;
+      /* Vignette (Screen edges darkening) */
+      .vignette {
         position: fixed;
         top: 0;
         left: 0;
-        bottom: 0;
-        right: 0;
-        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-        z-index: 2;
-        background-size: 100% 2px, 3px 100%;
+        width: 100%;
+        height: 100%;
+        box-shadow: 0 0 150px rgba(0,0,0,0.9) inset;
         pointer-events: none;
+        z-index: 5;
       }
 
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+      /* Scanline moving bar */
+      .scanline {
+        width: 100%;
+        height: 20px;
+        z-index: 6;
+        background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0, 255, 65, 0.1) 50%, rgba(0,0,0,0) 100%);
+        opacity: 0.1;
+        position: fixed;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        animation: scan 6s linear infinite;
       }
-      ::-webkit-scrollbar-track {
-        background: #000; 
+
+      /* Fine mesh overlay */
+      .crt-mesh {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 3px, 3px 100%;
+        pointer-events: none;
+        z-index: 4;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #008F11; 
-        border-radius: 0;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #00ff41; 
-      }
+
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: #0a0f0a; }
+      ::-webkit-scrollbar-thumb { background: #00ff41; }
 
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      
-      .glitch-text:hover {
-        animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-        color: #ff0055;
-      }
     </style>
   <script type="importmap">
 {
@@ -112,7 +125,10 @@
 }
 </script>
 </head>
-  <body class="min-h-screen antialiased selection:bg-cyber-green selection:text-black crt">
+  <body class="min-h-screen antialiased selection:bg-cyber-green selection:text-black">
+    <div class="vignette"></div>
+    <div class="crt-mesh"></div>
+    <div class="scanline"></div>
     <div id="root" class="relative z-10"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
