@@ -3,60 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Gifty Cloud 3D</title>
+    <title>Gifty.ai / Data-Poetry</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Nunito', 'sans-serif'],
+              mono: ['"IBM Plex Mono"', 'monospace'],
+              serif: ['"Spectral"', 'serif'],
             },
             colors: {
-              clay: {
-                bg: '#eef2f6', // Slightly cooler white for better contrast
-                primary: '#6c5ce7',
-                accent: '#fd79a8',
-                text: '#2d3436',
-                subtext: '#636e72',
-              }
+              ink: '#0F0F0F', // Almost black
+              graphite: '#4A4A4A', // Secondary text
+              paper: '#F7F5F2', // Warm off-white
+              accent: '#3A57E8', // Intellectual Blue
+              error: '#D93025',
             },
-            boxShadow: {
-              // Deeper, softer shadows
-              'clay': '20px 20px 60px #c8c9cc, -20px -20px 60px #ffffff, inset 2px 2px 4px rgba(255,255,255,0.5)',
-              'clay-sm': '10px 10px 20px #d1d5db, -10px -10px 20px #ffffff, inset 1px 1px 2px rgba(255,255,255,0.7)',
-              // High gloss button
-              'clay-btn': '12px 12px 24px rgba(108,92,231,0.3), -8px -8px 20px rgba(255,255,255,0.8), inset 2px 2px 2px rgba(255,255,255,0.4)',
-              'clay-pressed': 'inset 10px 10px 20px #d1d5db, inset -10px -10px 20px #ffffff',
-              'float': '0 25px 50px -12px rgba(108, 92, 231, 0.4)',
+            spacing: {
+              '128': '32rem',
+            },
+            fontSize: {
+              'xxs': '0.65rem',
             },
             animation: {
-              'blob': 'blob 10s infinite',
-              'float-slow': 'float 6s ease-in-out infinite',
-              'blink': 'blink 4s infinite',
-              'squeeze': 'squeeze 2s cubic-bezier(0.25, 1, 0.5, 1) infinite',
+              'reveal': 'reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'drift': 'drift 10s ease-in-out infinite',
             },
             keyframes: {
-              blob: {
-                '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              reveal: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
               },
-              float: {
+              drift: {
                 '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-15px)' },
-              },
-              blink: {
-                '0%, 96%, 100%': { transform: 'scaleY(1)' },
-                '98%': { transform: 'scaleY(0.1)' },
-              },
-              squeeze: {
-                '0%, 100%': { transform: 'scale(1, 1)' },
-                '50%': { transform: 'scale(1.05, 0.95)' },
+                '50%': { transform: 'translateY(-4px)' },
               }
             }
           }
@@ -65,40 +49,38 @@
     </script>
     <style>
       body {
-        -webkit-tap-highlight-color: transparent;
-        overscroll-behavior-y: none;
-        background-color: #eef2f6;
-        color: #2d3436;
+        background-color: #F7F5F2;
+        color: #0F0F0F;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: "ss01", "ss02";
       }
-      
-      /* NOISE TEXTURE OVERLAY - The Secret Sauce */
-      .noise-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        pointer-events: none;
-        z-index: 9999;
-        opacity: 0.04;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+
+      /* Custom Selection */
+      ::selection {
+        background: #3A57E8;
+        color: #F7F5F2;
       }
 
       /* Hide Scrollbar */
       ::-webkit-scrollbar {
-        width: 0px;
+        width: 4px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #0F0F0F;
+      }
+      ::-webkit-scrollbar-track {
         background: transparent;
       }
-      
-      .clay-card-hover {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
       }
-      .clay-card-hover:hover {
-        transform: translateY(-8px) scale(1.02);
-      }
-      .clay-card-hover:active {
-        transform: scale(0.98);
-        box-shadow: inset 5px 5px 10px #d1d5db, inset -5px -5px 10px #ffffff;
+
+      /* Utilities */
+      .writing-vertical {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
       }
     </style>
   <script type="importmap">
@@ -112,8 +94,7 @@
 }
 </script>
 </head>
-  <body class="antialiased h-full font-sans">
-    <div class="noise-overlay"></div>
+  <body class="antialiased min-h-screen">
     <div id="root" class="h-full"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

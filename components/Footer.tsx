@@ -2,10 +2,13 @@ import React from 'react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full py-8 text-center border-t-2 border-pop-black bg-white mt-auto">
-       <div className="font-display font-bold text-lg mb-2">Gifty.ai</div>
-       <div className="text-sm font-medium text-gray-500">
-          Сделано с ❤️ и 🤖
+    <footer className="w-full py-12 border-t border-ink/10 flex flex-col sm:flex-row justify-between items-start gap-4 text-xs font-mono text-graphite uppercase tracking-widest">
+       <div>
+           Gifty.ai © 2025
+       </div>
+       <div className="flex gap-4">
+           <a href="#" className="hover:text-ink">Manifesto</a>
+           <a href="#" className="hover:text-ink">Privacy_Protocol</a>
        </div>
     </footer>
   );
