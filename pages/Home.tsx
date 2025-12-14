@@ -8,24 +8,25 @@ import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
 
-const RansomChar: React.FC<{ char: string; color: string; rotate: string }> = ({ char, color, rotate }) => (
+const CutoutLetter: React.FC<{ char: string; color: string; rot: number }> = ({ char, color, rot }) => (
     <span 
-        className={`inline-block w-10 h-12 ${color} text-center leading-[3rem] font-marker text-3xl text-[#2b2b2b] shadow-sm mx-0.5 border-2 border-dashed border-white/20`}
-        style={{ transform: rotate, clipPath: 'polygon(5% 0%, 100% 10%, 95% 100%, 0% 90%)' }}
+        className={`inline-flex items-center justify-center w-10 h-12 ${color} shadow-sm border border-black/10 font-marker text-4xl text-black`}
+        style={{ 
+            transform: `rotate(${rot}deg)`, 
+            clipPath: 'polygon(0% 5%, 100% 0%, 95% 100%, 5% 95%)' 
+        }}
     >
         {char}
     </span>
 );
 
-const StickerBtn: React.FC<{ text: string; color: string; onClick: () => void }> = ({ text, color, onClick }) => (
+const PaperSticker: React.FC<{ text: string; onClick: () => void; rotate: number }> = ({ text, onClick, rotate }) => (
     <button 
         onClick={onClick}
-        className={`${color} px-4 py-2 font-marker text-lg text-white shadow-float transform hover:scale-110 hover:z-50 transition-all duration-200`}
-        style={{ 
-            clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)',
-            transform: `rotate(${Math.random() * 10 - 5}deg)`
-        }}
+        className="bg-white texture-paper border border-gray-200 px-4 py-2 shadow-close font-typewriter text-sm font-bold hover:scale-105 transition-transform"
+        style={{ transform: `rotate(${rotate}deg)` }}
     >
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-6 bg-green-200/50 backdrop-blur-sm" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' }}></div>
         {text}
     </button>
 );
@@ -65,61 +66,63 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen pb-20">
       
-      {/* Header Area: Ransom Note Style */}
-      <div className="pt-12 px-2 text-center mb-12 relative z-10">
-        
-        {/* Mascot pinned to the side */}
-        <div className="absolute top-0 left-[-10px] transform -rotate-12 z-20">
-            <Mascot className="w-24 h-24" emotion="cool" />
-            <div className="tape-strip" style={{ top: '10px', left: '20px', width: '40px' }}></div>
-        </div>
-
-        {/* Title */}
-        <div className="flex justify-center flex-wrap gap-1 mb-4">
-            <RansomChar char="G" color="bg-[#ff6b6b]" rotate="rotate(-5deg)" />
-            <RansomChar char="I" color="bg-[#4d96ff]" rotate="rotate(3deg)" />
-            <RansomChar char="F" color="bg-[#ffeb3b]" rotate="rotate(-2deg)" />
-            <RansomChar char="T" color="bg-[#6bcb77]" rotate="rotate(4deg)" />
-            <RansomChar char="Y" color="bg-[#9c27b0]" rotate="rotate(-6deg)" />
-            <span className="w-4"></span>
-            <span className="font-doodle text-4xl mt-2 animate-wiggle-slow">?</span>
+      {/* HEADER: Ransom Note Style */}
+      <div className="pt-12 px-4 text-center mb-16 relative">
+        <div className="flex justify-center gap-1 mb-2 transform -rotate-2">
+            <CutoutLetter char="G" color="bg-marker-red" rot={-5} />
+            <CutoutLetter char="I" color="bg-white" rot={3} />
+            <CutoutLetter char="F" color="bg-marker-yellow" rot={-2} />
+            <CutoutLetter char="T" color="bg-black text-white" rot={4} />
+            <CutoutLetter char="Y" color="bg-marker-blue" rot={-6} />
         </div>
         
-        <p className="font-sans text-2xl text-craft-ink mb-6 transform rotate-1 inline-block bg-white px-2 shadow-sm">
-          ИИ-помощник, который <span className="text-craft-red font-bold underline decoration-wavy">шарит</span>
-        </p>
+        <div className="inline-block bg-white p-2 shadow-lifted transform rotate-2">
+            <p className="font-typewriter text-xs tracking-widest uppercase">ИИ-Помощник v.2.0</p>
+        </div>
 
-        {/* Search Bar - Looks like a torn envelope */}
+        {/* Mascot pinned */}
+        <div className="absolute top-0 right-2 w-24 h-24 transform rotate-12 z-20">
+             <div className="tape" style={{top: '-10px', left: '30%', width: '40px'} as any}></div>
+             <Mascot emotion="cool" />
+        </div>
+
+        {/* SEARCH: Napkin Doodle */}
         <div 
             onClick={startQuiz}
-            className="mx-4 bg-white p-4 shadow-float cursor-pointer hover:scale-105 transition-transform relative group torn-bottom torn-top"
+            className="mt-8 mx-auto max-w-xs bg-white texture-paper p-6 shadow-lifted cursor-pointer hover:rotate-1 transition-transform relative"
+            style={{ borderRadius: '2px', clipPath: 'polygon(0 0, 100% 2%, 98% 100%, 2% 98%)' }}
         >
-             <div className="tape-strip" style={{ top: '-10px', left: '50%', transform: 'translateX(-50%) rotate(90deg)', width: '40px' }}></div>
+             {/* Coffee ring stain */}
+             <div className="absolute -top-4 -right-4 w-20 h-20 border-[6px] border-[#d7ccc8] rounded-full opacity-40 pointer-events-none"></div>
+             
              <div className="flex items-center gap-4">
-                <span className="text-4xl group-hover:animate-spin">🔎</span>
-                <div className="text-left">
-                    <div className="font-marker text-xl text-[#2b2b2b]">НАЙТИ ПОДАРОК</div>
-                    <div className="font-sans text-lg text-gray-500">Маме, другу, коту...</div>
-                </div>
+                 <div className="text-5xl animate-bounce">🧐</div>
+                 <div className="text-left">
+                     <div className="font-hand text-3xl font-bold leading-none">Найти...</div>
+                     <div className="font-hand text-xl text-gray-500">подарок срочно!</div>
+                 </div>
              </div>
+             
+             <div className="absolute bottom-2 right-2 font-marker text-red-500 transform -rotate-12 opacity-80">ЖМИ!</div>
         </div>
 
-        {/* Stickers Navigation */}
-        <div className="flex flex-wrap justify-center gap-4 mt-8 px-4">
-            <StickerBtn text="🔥 ХАЙП" color="bg-[#ff6b6b]" onClick={() => navigate('/quiz')} />
-            <StickerBtn text="🎮 ГИК" color="bg-[#4d96ff]" onClick={() => navigate('/quiz')} />
-            <StickerBtn text="🏡 УЮТ" color="bg-[#6bcb77]" onClick={() => navigate('/quiz')} />
+        {/* Stickers */}
+        <div className="flex justify-center gap-6 mt-10">
+            <PaperSticker text="#тренды" onClick={() => navigate('/quiz')} rotate={-5} />
+            <PaperSticker text="#для_гиков" onClick={() => navigate('/quiz')} rotate={5} />
         </div>
       </div>
 
-      {/* Featured Section: Corkboard style */}
-      <div className="mb-16 relative">
-          <h2 className="font-marker text-3xl ml-6 mb-4 transform -rotate-2 marker-highlight inline-block">
-              ТОПЧИК
-          </h2>
-          <div className="flex overflow-x-auto gap-8 px-8 pb-12 pt-4 no-scrollbar items-center">
+      {/* HORIZONTAL SCROLL: Corkboard Strip */}
+      <div className="mb-16 py-8 bg-paper-kraft texture-kraft relative shadow-inner border-y-4 border-[#8d6e63]">
+          <div className="absolute -top-5 left-4 bg-white p-2 shadow-md transform -rotate-3 z-10">
+              <span className="font-marker text-2xl text-red-600">ТОПЧИК 🔥</span>
+              <div className="absolute -top-3 left-1/2 w-3 h-3 bg-gray-400 rounded-full shadow-sm border border-gray-500"></div> {/* Pushpin */}
+          </div>
+          
+          <div className="flex overflow-x-auto gap-8 px-8 pb-4 pt-2 no-scrollbar items-center">
             {techGifts.map((gift) => (
                 <div key={gift.id} className="min-w-[200px] w-[200px] shrink-0">
                     <GiftCard gift={gift} onClick={openGift} />
@@ -128,24 +131,22 @@ export const Home: React.FC = () => {
           </div>
       </div>
 
-      {/* Feed Section: Scattered papers */}
-      <div className="px-4 pb-12">
-        <div className="text-center mb-8">
-            <h2 className="font-marker text-2xl inline-block border-b-4 border-[#2b2b2b] transform rotate-1">
-                ЕЩЕ ИДЕИ 👇
-            </h2>
+      {/* GRID: Scattered on Desk */}
+      <div className="px-4">
+        <div className="text-center mb-10">
+            <span className="bg-black text-white px-4 py-2 font-typewriter text-xl font-bold transform rotate-1 inline-block">
+                ЕЩЁ ИДЕИ
+            </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
-           {/* CTA Doodle */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-12">
+           {/* CTA Card */}
            <div 
              onClick={startQuiz}
-             className="col-span-2 bg-transparent border-4 border-dashed border-[#2b2b2b] rounded-none p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/20 transition-colors group h-40"
-             style={{ borderRadius: '255px 15px 225px 15px / 15px 225px 15px 255px' }}
+             className="col-span-2 bg-transparent border-4 border-dashed border-gray-400 p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/10 transition-colors h-48 rounded-3xl"
            >
-              <h3 className="font-doodle text-3xl font-bold group-hover:scale-110 transition-transform">???</h3>
-              <p className="font-sans text-2xl text-[#2b2b2b]">Не знаешь что брать?</p>
-              <span className="font-marker text-craft-red mt-2">ЖМИ СЮДА</span>
+              <h3 className="font-marker text-3xl text-gray-600 mb-2">Ничего не нравится?</h3>
+              <Button variant="primary">ПРОЙТИ ТЕСТ</Button>
            </div>
 
            {feedGifts.map((gift) => (
@@ -155,10 +156,10 @@ export const Home: React.FC = () => {
            ))}
         </div>
         
-        <div className="mt-16 text-center">
-            <Button variant="ghost" onClick={startQuiz}>
-               БОЛЬШЕ НЕТ... (или есть?)
-            </Button>
+        <div className="mt-20 text-center">
+            <button onClick={startQuiz} className="font-hand text-3xl text-gray-500 hover:text-black underline decoration-wavy decoration-red-400">
+               Показать больше...
+            </button>
         </div>
       </div>
 

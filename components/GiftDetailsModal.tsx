@@ -20,19 +20,12 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
-  const [matchScore, setMatchScore] = useState(0);
 
   // Reset & Load Logic
   useEffect(() => {
     if (isOpen) {
         setGift(initialGift);
         setSaved(isInWishlist(initialGift.id));
-        setMatchScore(0);
-        
-        // Animate score
-        const targetScore = Math.floor(Math.random() * (98 - 85) + 85);
-        setTimeout(() => setMatchScore(targetScore), 300);
-
         setLoading(true);
         api.gifts.getById(initialGift.id)
             .then(fullGift => {
@@ -43,21 +36,6 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
     }
   }, [initialGift.id, isOpen]);
 
-  // Lock scroll
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      const handleEsc = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
-      };
-      window.addEventListener('keydown', handleEsc);
-      return () => {
-        document.body.style.overflow = 'unset';
-        window.removeEventListener('keydown', handleEsc);
-      };
-    }
-  }, [isOpen, onClose]);
-
   if (!isOpen) return null;
 
   const handleWishlist = async (e: React.MouseEvent) => {
@@ -65,10 +43,8 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
     try {
         if (saved) {
             await api.wishlist.remove(gift.id);
-            track('remove_wishlist_modal', { id: gift.id });
         } else {
             await api.wishlist.add(gift.id);
-            track('add_wishlist_modal', { id: gift.id });
         }
         setSaved(!saved);
         onWishlistChange();
@@ -77,227 +53,75 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
     }
   };
 
-  const handleShare = () => {
-    const text = `Смотри, что я нашел: ${gift.title} - ${gift.price}₽`;
-    if (navigator.share) {
-      navigator.share({ title: gift.title, text: text, url: window.location.href });
-    } else {
-      alert("Ссылка скопирована!");
-    }
-  };
-
-  const getPersonalizedReasons = () => {
-    const reasons = [];
-    if (answers) {
-      if (answers.interests && answers.interests.length > 3) {
-        reasons.push(`Подходит под: "${answers.interests.split(',')[0].trim()}"`);
-      }
-      reasons.push(`Отличный выбор для: ${answers.relationship}`);
-    } else {
-      reasons.push('Хит продаж в категории ' + gift.category);
-      reasons.push('Высокий рейтинг у покупателей');
-    }
-    return reasons;
-  };
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center pointer-events-none">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Darkened room background */}
       <div 
-        className="absolute inset-0 bg-indigo-900/60 backdrop-blur-sm pointer-events-auto transition-opacity opacity-100 animate-fade-in"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto transition-opacity opacity-100"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
-      <div className="bg-white w-full md:w-[600px] h-[92vh] md:h-[85vh] md:rounded-3xl rounded-t-[2rem] shadow-2xl overflow-hidden flex flex-col pointer-events-auto transform transition-transform animate-slide-up-mobile md:animate-pop relative">
+      {/* MANILA FOLDER CONTAINER */}
+      <div className="relative w-full max-w-lg max-h-[90vh] bg-[#f0e6d2] shadow-lifted overflow-y-auto no-scrollbar transform rotate-1 rounded-sm torn-edge">
         
-        {/* --- Immersive Header --- */}
-        <div className="relative h-72 md:h-80 shrink-0 bg-gray-100 group">
-          <img 
-            src={gift.image} 
-            alt={gift.title} 
-            className="w-full h-full object-cover"
-          />
-          {/* Top Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent opacity-80" />
-          
-          {/* Navigation Controls */}
-          <div className="absolute top-4 left-0 right-0 px-4 flex justify-between items-start z-20">
-             <button 
-                onClick={onClose}
-                className="bg-white/20 hover:bg-white/40 backdrop-blur-md w-10 h-10 rounded-full flex items-center justify-center text-white transition-all active:scale-90"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-
-              <button 
-                onClick={handleShare}
-                className="bg-white/20 hover:bg-white/40 backdrop-blur-md w-10 h-10 rounded-full flex items-center justify-center text-white transition-all active:scale-90"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-              </button>
-          </div>
-
-          {/* Bottom Gradient for Text Contrast */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent" />
-          
-          {/* Main Title Block (Overlapping Image) */}
-          <div className="absolute bottom-4 left-6 right-6 z-10">
-              <div className="flex items-start justify-between gap-4">
-                 <div>
-                    <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider mb-2 text-white shadow-sm ${gift.marketplace === 'Ozon' ? 'bg-blue-500' : gift.marketplace === 'WB' ? 'bg-purple-600' : 'bg-gray-800'}`}>
-                        {gift.marketplace}
-                    </span>
-                    <h2 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight drop-shadow-sm">{gift.title}</h2>
-                 </div>
-              </div>
-          </div>
+        {/* Folder Tab */}
+        <div className="absolute top-0 right-0 w-32 h-8 bg-[#e6dcc5] border-b border-black/10 flex items-center justify-center">
+            <span className="font-typewriter text-xs font-bold text-red-700">CONFIDENTIAL</span>
         </div>
 
-        {/* --- Content Scroll --- */}
-        <div className="flex-1 overflow-y-auto no-scrollbar bg-white relative">
-          <div className="px-6 pb-28 pt-2">
-            
-            {/* Price & Score Row */}
-            <div className="flex items-center justify-between mb-8">
-               <div>
-                  <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                    {gift.price.toLocaleString('ru-RU')} ₽
-                  </div>
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wide mt-1">Средняя цена</div>
-               </div>
-               
-               {/* Match Score Indicator */}
-               <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="text-xs font-bold text-gray-400 uppercase">Совпадение</div>
-                    <div className="text-sm font-bold text-green-500">Отличный выбор</div>
-                  </div>
-                  <div className="relative w-14 h-14 flex items-center justify-center">
-                     <svg className="w-full h-full transform -rotate-90">
-                       <circle cx="28" cy="28" r="24" stroke="#e5e7eb" strokeWidth="4" fill="transparent" />
-                       <circle 
-                         cx="28" cy="28" r="24" stroke="#22c55e" strokeWidth="4" fill="transparent" 
-                         strokeDasharray={2 * Math.PI * 24}
-                         strokeDashoffset={2 * Math.PI * 24 * (1 - matchScore / 100)}
-                         className="transition-all duration-1000 ease-out"
-                         strokeLinecap="round"
-                       />
-                     </svg>
-                     <span className="absolute text-sm font-black text-gray-800">{matchScore}%</span>
-                  </div>
-               </div>
-            </div>
+        {/* Paper Clip SVG */}
+        <svg className="absolute top-[-10px] left-8 w-12 h-20 text-gray-400 z-50 drop-shadow-md" viewBox="0 0 50 100" fill="none" stroke="currentColor" strokeWidth="5">
+             <path d="M10 20 L10 80 A 15 15 0 0 0 40 80 L40 10 A 10 10 0 0 0 20 10 L20 70" />
+        </svg>
 
-            {/* AI Assistant Insight */}
-            <div className="mb-8 animate-slide-up-mobile" style={{ animationDelay: '0.1s' }}>
-                <div className="flex items-end gap-3 mb-2">
-                    <Mascot className="w-14 h-14 shrink-0 -mb-2 z-10" emotion="happy" />
-                    <div className="bg-indigo-50 rounded-2xl rounded-bl-none p-4 relative border border-indigo-100/50 shadow-sm flex-grow">
-                        <p className="text-sm text-indigo-900 font-medium leading-relaxed">
-                           <span className="block font-bold text-indigo-500 text-xs uppercase mb-1">Мнение AI</span>
-                           "{gift.reason}"
-                        </p>
-                    </div>
-                </div>
-                {/* Visual Reasons Tags */}
-                <div className="flex flex-wrap gap-2 pl-[4.5rem]">
-                   {getPersonalizedReasons().map((r, i) => (
-                     <span key={i} className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold border border-green-100">
-                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 fill-current" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-                       {r}
-                     </span>
-                   ))}
-                </div>
-            </div>
+        <div className="p-8 pt-12 relative">
+             {/* Close X (Hand drawn) */}
+             <button onClick={onClose} className="absolute top-4 right-4 font-marker text-2xl text-gray-500 hover:text-red-600">X</button>
 
-            {/* Visual Specs Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-8">
-               <div className="bg-gray-50 p-3 rounded-2xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm">🎯</div>
-                  <div>
-                     <div className="text-[10px] text-gray-400 font-bold uppercase">Категория</div>
-                     <div className="text-sm font-bold text-gray-800">{gift.category}</div>
-                  </div>
-               </div>
-               <div className="bg-gray-50 p-3 rounded-2xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm">🎂</div>
-                  <div>
-                     <div className="text-[10px] text-gray-400 font-bold uppercase">Возраст</div>
-                     <div className="text-sm font-bold text-gray-800">{gift.ageRange[0]}-{gift.ageRange[1]} лет</div>
-                  </div>
-               </div>
-            </div>
+             {/* MAIN PHOTO: Taped to the folder */}
+             <div className="relative bg-white p-2 shadow-md transform -rotate-1 mb-6">
+                 <div className="tape" style={{ top: '-15px', left: '50%', width: '50px', height: '25px', '--tape-rot': '-2deg' } as any}></div>
+                 <img src={gift.image} alt={gift.title} className="w-full aspect-video object-cover filter contrast-110" />
+                 <div className="absolute bottom-2 right-2 bg-black text-white font-typewriter text-xs px-1">REF: {gift.id}</div>
+             </div>
 
-            {/* Reviews Section */}
-            {gift.reviews && <ReviewsSection reviews={gift.reviews} />}
+             {/* Title & Price */}
+             <h2 className="font-marker text-3xl mb-1 leading-none">{gift.title}</h2>
+             <div className="flex items-center gap-4 mb-6">
+                 <span className="font-hand text-3xl text-red-600 font-bold decoration-double underline">{gift.price} ₽</span>
+                 <span className="font-typewriter text-xs bg-gray-200 px-1 rounded">{gift.marketplace}</span>
+             </div>
 
-            {/* Description */}
-            <div className="mb-6">
-              <h3 className="font-bold text-gray-900 text-lg mb-3">О товаре</h3>
-              <div className={`relative overflow-hidden transition-all duration-300 ${showFullDesc ? 'max-h-[500px]' : 'max-h-24'}`}>
-                 <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-                   {gift.description || "Описание товара загружается..."}
+             {/* AI Analysis (Stuck on a post-it) */}
+             <div className="bg-yellow-100 p-4 shadow-sm transform rotate-1 mb-6 relative">
+                 <div className="tape" style={{ top: '-10px', right: '10px', width: '30px', height: '20px', '--tape-rot': '45deg' } as any}></div>
+                 <Mascot emotion="thinking" className="w-12 h-12 absolute -top-6 -left-4" />
+                 <h3 className="font-marker text-sm mb-1">Почему это круто:</h3>
+                 <p className="font-hand text-xl leading-6 text-gray-800">
+                    "{gift.reason}"
                  </p>
-                 {!showFullDesc && (
-                   <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
-                 )}
-              </div>
-              <button 
-                 onClick={() => setShowFullDesc(!showFullDesc)} 
-                 className="text-indigo-600 text-sm font-bold mt-2 hover:underline flex items-center gap-1"
-               >
-                 {showFullDesc ? 'Свернуть описание' : 'Читать полностью'}
-                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform ${showFullDesc ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                 </svg>
-               </button>
-            </div>
+             </div>
 
-          </div>
-        </div>
+             {/* Description (Typewriter text) */}
+             <div className="font-typewriter text-sm leading-relaxed text-gray-700 mb-8 border-l-2 border-gray-300 pl-4">
+                 {gift.description}
+             </div>
 
-        {/* --- Floating Action Bar --- */}
-        <div className="absolute bottom-6 left-6 right-6 z-30">
-           <div className="bg-white/80 backdrop-blur-md border border-white/50 p-2 rounded-[1.5rem] shadow-2xl flex items-center gap-2 pr-2">
-              <button 
-                onClick={handleWishlist}
-                className={`w-14 h-14 flex items-center justify-center rounded-full transition-all duration-300 active:scale-90 shrink-0 ${saved ? 'bg-red-50 text-red-500 shadow-inner' : 'bg-gray-100 text-gray-400 hover:text-red-400'}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-7 w-7 transition-transform ${saved ? 'scale-110 fill-current' : ''}`} viewBox="0 0 20 20" fill={saved ? "currentColor" : "none"} stroke="currentColor">
-                  <path strokeWidth={saved ? 0 : 2} fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                </svg>
-              </button>
-              
-              <Button 
-                variant="primary" 
-                fullWidth 
-                onClick={() => { track('buy_link_click', {id: gift.id}); window.open('#', '_blank'); }}
-                className="h-14 !rounded-[1.2rem] text-lg shadow-yellow-200/50"
-              >
-                В магазин
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 inline-block opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </Button>
-           </div>
+             {/* Actions */}
+             <div className="flex gap-4">
+                 <button 
+                    onClick={handleWishlist}
+                    className={`flex-1 py-3 border-2 border-black font-marker text-lg transition-colors ${saved ? 'bg-red-500 text-white' : 'bg-transparent hover:bg-black/5'}`}
+                 >
+                    {saved ? 'В ИЗБРАННОМ' : 'В ИЗБРАННОЕ'}
+                 </button>
+                 <Button fullWidth onClick={() => window.open('#', '_blank')}>
+                    КУПИТЬ
+                 </Button>
+             </div>
         </div>
 
       </div>
-      
-      <style>{`
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.2s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

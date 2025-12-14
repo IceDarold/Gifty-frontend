@@ -61,56 +61,48 @@ export const Quiz: React.FC = () => {
     }
   };
 
-  // Styles
-  const notebookPage = "bg-white p-6 shadow-deep relative transform min-h-[450px] mx-2 transition-all duration-300";
-  // CSS Grid for lines
-  const linedPaper = {
-      backgroundImage: 'repeating-linear-gradient(transparent, transparent 39px, #94a3b8 40px)',
-      backgroundAttachment: 'local',
+  // Notebook Styles
+  const notebookStyle = {
+      background: 'linear-gradient(to bottom, transparent 39px, #94a3b8 40px)',
+      backgroundSize: '100% 40px',
+      backgroundColor: 'white',
       lineHeight: '40px'
   };
+
+  const inputClass = "w-full bg-transparent font-hand text-4xl text-blue-800 outline-none leading-[40px]";
 
   const renderContent = () => {
     switch (step) {
       case 0:
         return (
-          <div className={`${notebookPage} rotate-1 torn-top`}>
-            <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#1</div>
-            <h2 className="font-marker text-3xl mb-8 mt-4">Кто счастливчик?</h2>
-            <div className="relative">
-                <input
-                    type="text"
-                    placeholder="Имя..."
-                    value={answers.name}
-                    onChange={(e) => updateAnswer('name', e.target.value)}
-                    className="w-full bg-transparent font-sans text-4xl text-blue-700 outline-none pl-4"
-                    style={{ background: 'repeating-linear-gradient(transparent, transparent 39px, #94a3b8 40px)', lineHeight: '40px' }}
-                    autoFocus
-                />
-                <div className="absolute left-0 bottom-0 w-full h-1 bg-blue-200 transform -skew-x-12 opacity-50"></div>
-            </div>
-            <div className="mt-8 transform -rotate-2">
-                <span className="bg-yellow-200 px-2 font-doodle text-sm">Не забудь проверить орфографию!</span>
-            </div>
+          <div className="relative">
+             <div className="font-marker text-2xl mb-8 transform -rotate-1 text-gray-800">1. Как зовут счастливчика?</div>
+             <input
+                type="text"
+                placeholder="Имя..."
+                value={answers.name}
+                onChange={(e) => updateAnswer('name', e.target.value)}
+                className={inputClass}
+                autoFocus
+             />
+             <div className="absolute -right-4 top-20 text-red-500 font-doodle text-sm opacity-60 transform rotate-12">
+                 *пиши разборчиво!
+             </div>
           </div>
         );
       case 1:
         return (
-           <div className={`${notebookPage} -rotate-1 torn-bottom`}>
-              <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#2</div>
-              <h2 className="font-marker text-3xl mb-6">Сколько лет?</h2>
-              <div className="flex flex-wrap gap-4 justify-center">
+           <div>
+              <div className="font-marker text-2xl mb-6 transform rotate-1 text-gray-800">2. Сколько лет?</div>
+              <div className="flex flex-wrap gap-4 pl-4">
                 {AGE_GROUPS.map(age => (
                   <button
                     key={age}
                     onClick={() => updateAnswer('ageGroup', age)}
                     className={`
-                        w-24 h-24 rounded-full flex items-center justify-center font-sans text-2xl transition-all border-4
-                        ${answers.ageGroup === age 
-                            ? 'bg-craft-red text-white border-craft-red scale-110 shadow-float' 
-                            : 'bg-white text-gray-400 border-gray-200 hover:border-gray-400'}
+                        font-hand text-2xl px-3 py-1 border-2 border-black rounded-lg transform transition-all hover:scale-105
+                        ${answers.ageGroup === age ? 'bg-marker-yellow rotate-[-2deg] shadow-sticker' : 'bg-white rotate-1 hover:bg-gray-50'}
                     `}
-                    style={{ borderRadius: '50% 50% 50% 50% / 60% 40% 60% 40%' }} // Imperfect circle
                   >
                     {age}
                   </button>
@@ -120,21 +112,19 @@ export const Quiz: React.FC = () => {
         );
       case 2:
         return (
-          <div className={`${notebookPage} rotate-2`}>
-             <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#3</div>
-             <div className="tape-strip" style={{ top: '-15px', left: '40%', width: '60px' }}></div>
-             <h2 className="font-marker text-3xl mb-6">Кто это для тебя?</h2>
-             <div className="grid grid-cols-2 gap-4">
-              {RELATIONSHIPS.map(rel => (
+          <div>
+             <div className="font-marker text-2xl mb-6 text-gray-800">3. Кто это для тебя?</div>
+             <div className="grid grid-cols-2 gap-y-4 gap-x-2">
+              {RELATIONSHIPS.map((rel, i) => (
                 <button
                   key={rel}
                   onClick={() => updateAnswer('relationship', rel)}
                   className={`
-                    py-2 px-1 font-marker text-xl uppercase tracking-widest border-2 border-black
-                    ${answers.relationship === rel ? 'bg-black text-white transform -rotate-1' : 'bg-transparent text-black hover:bg-gray-100'}
+                    text-left font-typewriter text-lg border-b border-dashed border-gray-400 pb-1
+                    ${answers.relationship === rel ? 'text-red-600 font-bold decoration-wavy underline' : 'text-gray-600'}
                   `}
                 >
-                  {rel}
+                  {i+1}. {rel}
                 </button>
               ))}
             </div>
@@ -142,46 +132,42 @@ export const Quiz: React.FC = () => {
         );
       case 3:
         return (
-          <div className={`${notebookPage} -rotate-1 torn-top`}>
-             <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#4</div>
-             <h2 className="font-marker text-3xl mb-6">Город?</h2>
+          <div>
+             <div className="font-marker text-2xl mb-8 transform -rotate-1 text-gray-800">4. Из какого города?</div>
              <input
                 type="text"
-                placeholder="Москва..."
+                placeholder="Город..."
                 value={answers.city}
                 onChange={(e) => updateAnswer('city', e.target.value)}
-                className="w-full bg-transparent font-sans text-4xl text-blue-700 outline-none border-b-4 border-black pb-2"
+                className={inputClass}
              />
-             <div className="mt-4 text-right">
-                 <span className="font-doodle text-gray-400 text-sm">🚚 Доставка решает</span>
-             </div>
           </div>
         );
       case 4:
         return (
-          <div className={`${notebookPage} rotate-1`} style={linedPaper}>
-             <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#5</div>
-             <h2 className="font-marker text-3xl mb-2 bg-white inline-block px-2">Интересы?</h2>
-             <p className="font-sans text-gray-500 mb-4 bg-white inline-block px-2">Пиши всё что знаешь (игры, еда, спорт)...</p>
+          <div>
+             <div className="font-marker text-2xl mb-2 text-gray-800">5. Чем увлекается?</div>
+             <p className="font-hand text-xl text-gray-500 mb-4">(игры, готовка, спать...)</p>
              <textarea
               value={answers.interests}
               onChange={(e) => updateAnswer('interests', e.target.value)}
-              className="w-full h-60 bg-transparent font-sans text-3xl text-blue-800 outline-none resize-none leading-[40px]"
+              className={`${inputClass} h-60 resize-none`}
+              style={{ lineHeight: '40px' }}
             />
           </div>
         );
       case 5:
         return (
-           <div className={`${notebookPage} -rotate-1 torn-bottom`}>
-             <div className="absolute top-4 right-4 text-6xl opacity-10 font-marker">#6</div>
-             <h2 className="font-marker text-3xl mb-6">Бюджет?</h2>
-             <div className="flex flex-col gap-3">
-              {BUDGETS.map(b => (
+           <div>
+             <div className="font-marker text-2xl mb-6 text-gray-800">6. Бюджет?</div>
+             <div className="flex flex-col gap-4">
+              {BUDGETS.map((b, i) => (
                 <button
                   key={b}
                   onClick={() => updateAnswer('budget', b)}
-                  className={`text-left font-sans text-3xl transition-all pl-4 border-l-4 ${answers.budget === b ? 'border-craft-red text-craft-red font-bold pl-6' : 'border-gray-300 text-gray-400'}`}
+                  className={`flex items-center gap-3 font-hand text-3xl transition-all ${answers.budget === b ? 'text-green-700 font-bold translate-x-4' : 'text-gray-400 hover:text-gray-600'}`}
                 >
+                  <div className={`w-6 h-6 border-2 border-black rounded-sm ${answers.budget === b ? 'bg-black' : ''}`}></div>
                   {b}
                 </button>
               ))}
@@ -193,35 +179,42 @@ export const Quiz: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-8 pb-40 px-2 overflow-hidden">
+    <div className="min-h-screen pt-10 pb-40 px-4">
       
-      <div className="max-w-md mx-auto">
-         {/* Navigation Controls */}
-         <div className="flex justify-between items-center mb-6 px-4">
-            <button onClick={prevStep} className="font-marker text-xl hover:underline decoration-wavy">
-                ← НАЗАД
-            </button>
-            <div className="font-doodle bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200">
-                {step + 1} / 6
-            </div>
+      {/* SPIRAL NOTEBOOK CONTAINER */}
+      <div className="max-w-md mx-auto relative group">
+         
+         {/* Notebook Binding */}
+         <div className="absolute top-0 left-4 w-8 h-full z-20 flex flex-col gap-4 py-6">
+             {[...Array(12)].map((_, i) => (
+                 <div key={i} className="w-8 h-4 bg-gray-300 rounded-full border border-gray-400 shadow-inner"></div>
+             ))}
          </div>
 
-         {/* The "Paper" */}
-         <div className="relative z-10 perspective-1000">
+         {/* The Paper Page */}
+         <div 
+            className="bg-white min-h-[500px] shadow-lifted pl-16 pr-6 py-10 relative torn-edge"
+            style={notebookStyle}
+         >
+            {/* Red margin line */}
+            <div className="absolute top-0 left-12 w-0.5 h-full bg-red-200/80"></div>
+
+            {/* Content */}
             {renderContent()}
-         </div>
 
-         {/* Next Button - A big sticker */}
-         <div className="mt-8 flex justify-center">
-             <Button 
-                onClick={nextStep} 
-                disabled={!isCurrentStepValid()} 
-                variant="primary"
-                className="w-full !text-2xl !py-4 shadow-deep !bg-[#2b2b2b]"
-                style={{ clipPath: 'polygon(0% 0%, 100% 5%, 95% 100%, 5% 95%)' }}
-             >
-                {step === 5 ? 'ГОТОВО! 🎉' : 'ДАЛЬШЕ 👉'}
-             </Button>
+            {/* Navigation Arrows */}
+            <div className="absolute bottom-8 right-6 flex gap-4">
+                <button onClick={prevStep} className="font-marker text-gray-400 hover:text-black">
+                    НАЗАД
+                </button>
+                <button 
+                    onClick={nextStep} 
+                    disabled={!isCurrentStepValid()} 
+                    className={`font-marker text-xl ${isCurrentStepValid() ? 'text-red-600 animate-pulse' : 'text-gray-300'}`}
+                >
+                    {step === 5 ? 'ГОТОВО!' : 'ДАЛЬШЕ ->'}
+                </button>
+            </div>
          </div>
       </div>
     </div>

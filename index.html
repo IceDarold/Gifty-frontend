@@ -3,50 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Gifty AI - EXTREME CRAFT</title>
+    <title>Gifty AI - ULTIMATE SCRAPBOOK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Permanent+Marker&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Permanent+Marker&family=Courier+Prime:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Nanum Pen Script', 'cursive'], // Main text (looks like ballpoint pen)
-              marker: ['Permanent Marker', 'cursive'], // Headings (thick marker)
-              doodle: ['Gloria Hallelujah', 'cursive'], // Accents
+              hand: ['Nanum Pen Script', 'cursive'],
+              marker: ['Permanent Marker', 'cursive'],
+              doodle: ['Gloria Hallelujah', 'cursive'],
+              typewriter: ['Courier Prime', 'monospace'],
             },
             colors: {
-              craft: {
-                bg: '#f0e6d2', // Old paper/Cardboard
-                white: '#fcfcfc',
-                card: '#ffffff',
-                ink: '#2b2b2b',
-                red: '#d93025', // Marker red
-                blue: '#1a73e8', // Ballpoint blue
-                tape: 'rgba(255, 255, 255, 0.5)',
-                shadow: 'rgba(0, 0, 0, 0.15)',
+              paper: {
+                base: '#f4f1ea', // Warm white paper
+                kraft: '#d3c0a3', // Cardboard
+                dark: '#231f20', // Ink
+              },
+              marker: {
+                red: '#ff4d4d',
+                yellow: '#fff200',
+                blue: '#00a8ff',
+                green: '#009432',
               }
             },
             boxShadow: {
-              'float': '5px 5px 15px rgba(0,0,0,0.15)',
-              'deep': '10px 10px 30px rgba(0,0,0,0.2)',
-              'sticker': '2px 2px 0 rgba(0,0,0,0.1)',
+              'lifted': '0 10px 20px -5px rgba(0,0,0,0.3), 0 5px 10px -3px rgba(0,0,0,0.1)',
+              'close': '0 2px 5px rgba(0,0,0,0.2)',
             },
             animation: {
-              'wiggle-slow': 'wiggle 3s ease-in-out infinite',
-              'wiggle-fast': 'wiggle 0.3s ease-in-out infinite',
-              'float': 'float 5s ease-in-out infinite',
+              'float-random': 'floatRandom 6s ease-in-out infinite',
+              'scribble': 'scribble 0.4s steps(1) infinite',
             },
             keyframes: {
-              wiggle: {
-                '0%, 100%': { transform: 'rotate(-2deg)' },
-                '50%': { transform: 'rotate(2deg)' },
+              floatRandom: {
+                '0%, 100%': { transform: 'translate(0, 0) rotate(var(--rot))' },
+                '33%': { transform: 'translate(2px, -3px) rotate(var(--rot))' },
+                '66%': { transform: 'translate(-2px, 2px) rotate(var(--rot))' },
               },
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-5px)' },
+              scribble: {
+                 '0%': { transform: 'translate(0,0)' },
+                 '25%': { transform: 'translate(1px, 1px)' },
+                 '50%': { transform: 'translate(-1px, -1px)' },
+                 '75%': { transform: 'translate(-1px, 1px)' }
               }
             }
           }
@@ -54,70 +57,77 @@
       }
     </script>
     <style>
+      :root {
+        --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+      }
+
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
-        background-color: #f0e6d2;
-        color: #2b2b2b;
-        /* Noise Texture + Grid Line Pattern */
+        background-color: #2b2b2b; /* Dark desk background */
+        /* Corkboard / Dark Wood Texture simulation */
         background-image: 
-          url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
-          linear-gradient(#e5e5e5 1px, transparent 1px),
-          linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
-        background-size: 200px 200px, 40px 40px, 40px 40px;
+          url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E"),
+          radial-gradient(circle at 50% 50%, #444 0%, #222 100%);
+        color: #231f20;
+        font-family: 'Courier Prime', monospace;
       }
 
-      /* TORN PAPER EDGE EFFECT via Clip-Path */
-      .torn-top {
-        clip-path: polygon(0% 10px, 5% 0px, 10% 12px, 15% 2px, 20% 10px, 25% 0px, 30% 12px, 35% 2px, 40% 12px, 45% 0px, 50% 12px, 55% 0px, 60% 12px, 65% 0px, 70% 10px, 75% 0px, 80% 12px, 85% 0px, 90% 10px, 95% 0px, 100% 12px, 100% 100%, 0% 100%);
-      }
-      .torn-bottom {
-        clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 10px), 95% 100%, 90% calc(100% - 10px), 85% 100%, 80% calc(100% - 12px), 75% 100%, 70% calc(100% - 10px), 65% 100%, 60% calc(100% - 12px), 55% 100%, 50% calc(100% - 10px), 45% 100%, 40% calc(100% - 12px), 35% 100%, 30% calc(100% - 10px), 25% 100%, 20% calc(100% - 12px), 15% 100%, 10% calc(100% - 10px), 5% 100%, 0% calc(100% - 10px));
-      }
-
-      /* REALISTIC TAPE */
-      .tape-strip {
+      /* --- REALISTIC TAPE --- */
+      .tape {
         position: absolute;
-        height: 25px;
-        width: 80px;
-        background-color: rgba(255, 255, 255, 0.35);
-        box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        background-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         backdrop-filter: blur(1px);
-        border-left: 1px dashed rgba(255,255,255,0.6);
-        border-right: 1px dashed rgba(255,255,255,0.6);
-        transform: rotate(-2deg);
-        z-index: 20;
-        pointer-events: none;
+        transform: rotate(var(--tape-rot, -5deg));
+        z-index: 10;
+        /* Jagged edges via mask */
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L100 0 L100 100 L0 100 Z' fill='black'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L100 0 L100 100 L0 100 Z' fill='black'/%3E%3C/svg%3E");
+        border-left: 1px solid rgba(255,255,255,0.3);
+        border-right: 1px solid rgba(255,255,255,0.3);
+      }
+      /* Tape texture overlay */
+      .tape::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+        opacity: 0.4;
+      }
+
+      /* --- PAPER TEXTURE CLASS --- */
+      .texture-paper {
+        background-color: #f4f1ea;
+        background-image: var(--paper-texture);
       }
       
-      .tape-strip::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+      .texture-kraft {
+        background-color: #d3c0a3;
+        background-image: 
+          var(--paper-texture),
+          linear-gradient(45deg, rgba(0,0,0,0.02) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.02) 75%, rgba(0,0,0,0.02));
+        background-size: 200px 200px, 4px 4px;
       }
 
-      .marker-highlight {
-        position: relative;
-        z-index: 1;
-      }
-      .marker-highlight::before {
-        content: '';
-        position: absolute;
-        z-index: -1;
-        top: 40%;
-        left: -5px;
-        right: -5px;
-        bottom: 5px;
-        background: #ffff00;
-        opacity: 0.4;
-        transform: rotate(-1deg);
-        border-radius: 4px;
+      /* --- TORN EDGES (SVG Clip Paths are cleaner) --- */
+      .torn-edge {
+        clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 98% 97%, 95% 95%, 92% 98%, 90% 95%, 85% 97%, 80% 95%, 75% 98%, 70% 95%, 65% 97%, 60% 95%, 55% 98%, 50% 95%, 45% 98%, 40% 95%, 35% 98%, 30% 95%, 25% 98%, 20% 95%, 15% 98%, 10% 95%, 5% 98%, 2% 95%, 0% 100%);
       }
 
-      /* Custom Scrollbar hidden */
+      .torn-top {
+         clip-path: polygon(0% 5%, 2% 2%, 5% 5%, 10% 2%, 15% 5%, 20% 2%, 25% 5%, 30% 2%, 35% 5%, 40% 2%, 45% 5%, 50% 2%, 55% 5%, 60% 2%, 65% 5%, 70% 2%, 75% 5%, 80% 2%, 85% 5%, 90% 2%, 95% 5%, 98% 2%, 100% 5%, 100% 100%, 0% 100%);
+      }
+
+      /* --- NO SCROLLBAR --- */
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* --- POLAROID SHINE --- */
+      .polaroid-shine {
+        background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 60%, rgba(255,255,255,0) 100%);
+        pointer-events: none;
+      }
     </style>
   <script type="importmap">
 {
@@ -130,8 +140,8 @@
 }
 </script>
 </head>
-  <body class="min-h-screen antialiased">
-    <div id="root" class="relative z-10"></div>
+  <body class="min-h-screen antialiased overflow-hidden">
+    <div id="root" class="relative z-10 h-full"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
