@@ -5,6 +5,7 @@ import { Home } from './pages/Home';
 import { Quiz } from './pages/Quiz';
 import { Results } from './pages/Results';
 import { Wishlist } from './pages/Wishlist';
+import { Profile } from './pages/Profile';
 
 const AppRoutes = () => {
     const location = useLocation();
@@ -21,6 +22,7 @@ const AppRoutes = () => {
                 <Route path="/quiz" element={<Quiz />} />
                 <Route path="/results" element={<Results />} />
                 <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
         </Layout>
     );

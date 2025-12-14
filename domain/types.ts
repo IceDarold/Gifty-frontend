@@ -1,3 +1,4 @@
+
 export interface ReviewItem {
   id: string;
   author: string;
@@ -48,4 +49,19 @@ export interface FilterState {
   budget: string;
   category: string;
   marketplace: string;
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string; // e.g. "Мамин ДР"
+  date: string; // ISO date string YYYY-MM-DD
+  personName: string; // "Мама"
+  relationship: string; // For quiz pre-fill
+}
+
+export interface UserProfile {
+  name: string;
+  avatarEmoji: string;
+  level: string; // "Novice", "Expert", etc.
+  events: CalendarEvent[];
 }

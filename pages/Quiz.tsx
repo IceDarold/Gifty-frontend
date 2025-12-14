@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Mascot } from '../components/Mascot';
 import { AGE_GROUPS, RELATIONSHIPS, BUDGETS } from '../constants';
@@ -17,12 +17,22 @@ const INITIAL_ANSWERS: QuizAnswers = {
 
 export const Quiz: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>(() => {
+    // Check if we came from Profile with pre-filled data
+    if (location.state) {
+        const { name, relationship } = location.state as { name: string, relationship: string };
+        return { ...INITIAL_ANSWERS, name: name || '', relationship: relationship || '' };
+    }
+
     const saved = localStorage.getItem('gifty_draft');
     return saved ? JSON.parse(saved) : INITIAL_ANSWERS;
   });
 
+  // If we have pre-filled data, maybe skip the first step? 
+  // For now, let's just let the user confirm it.
+  
   useEffect(() => {
     localStorage.setItem('gifty_draft', JSON.stringify(answers));
   }, [answers]);

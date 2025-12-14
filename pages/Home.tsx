@@ -132,7 +132,6 @@ const HorizontalSection: React.FC<{
 
 const useMascotBehavior = () => {
   const [eyes, setEyes] = useState({ x: 0, y: 0 });
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [docked, setDocked] = useState(false);
   const [accessory, setAccessory] = useState<'none' | 'glasses' | 'scarf'>('none');
   const [emotion, setEmotion] = useState<'happy' | 'cool' | 'excited' | 'thinking'>('happy');
@@ -164,9 +163,6 @@ const useMascotBehavior = () => {
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
-      const height = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = Math.min(Math.max(y / height, 0), 1);
-      setScrollProgress(progress);
       
       const isDocked = y > 220; // Threshold to switch mascots
       setDocked(isDocked);
@@ -213,7 +209,7 @@ const useMascotBehavior = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  return { eyes, scrollProgress, docked, accessory, emotion, isMenuOpen, setIsMenuOpen };
+  return { eyes, docked, accessory, emotion, isMenuOpen, setIsMenuOpen };
 };
 
 
@@ -221,7 +217,7 @@ const useMascotBehavior = () => {
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { eyes, scrollProgress, docked, accessory, emotion, isMenuOpen, setIsMenuOpen } = useMascotBehavior();
+  const { eyes, docked, accessory, emotion, isMenuOpen, setIsMenuOpen } = useMascotBehavior();
   
   // Data States
   const [feedGifts, setFeedGifts] = useState<Gift[]>([]);
@@ -331,11 +327,14 @@ export const Home: React.FC = () => {
                         </div>
                     </button>
                     
-                     <button className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 text-left transition-colors group">
+                     <button 
+                        onClick={(e) => { e.stopPropagation(); navigate('/profile'); }}
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 text-left transition-colors group"
+                     >
                         <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-sm shadow-sm group-hover:scale-110 transition-transform">👤</span>
                         <div className="leading-none">
                             <div className="font-bold text-gray-800 text-sm">Профиль</div>
-                            <div className="text-[10px] text-gray-400">Войти</div>
+                            <div className="text-[10px] text-gray-400">Календарь</div>
                         </div>
                     </button>
                  </div>
@@ -343,24 +342,9 @@ export const Home: React.FC = () => {
 
             {/* The Floating Mascot (Trigger) */}
             <div className={`relative w-16 h-16 transition-transform duration-300 z-20 ${isMenuOpen ? 'scale-110' : 'scale-100 hover:scale-105'}`}>
-                {/* Status Ring */}
-                <div className={`absolute inset-0 rounded-full border-2 transition-all duration-300 ${isMenuOpen ? 'border-indigo-400 bg-white' : 'border-white/30 bg-white/10 backdrop-blur-md'}`}></div>
+                {/* Status Ring / Border */}
+                <div className={`absolute inset-0 rounded-full border-2 transition-all duration-300 ${isMenuOpen ? 'border-indigo-400 bg-white' : 'border-white/30 bg-white/10 backdrop-blur-md shadow-sm'}`}></div>
                 
-                {/* Progress Ring (visible when closed) */}
-                {!isMenuOpen && (
-                   <svg className="absolute inset-0 w-full h-full -rotate-90">
-                      <circle 
-                        cx="32" cy="32" r="30" 
-                        stroke="#FCD34D" 
-                        strokeWidth="3" 
-                        fill="none" 
-                        strokeDasharray={2 * Math.PI * 30}
-                        strokeDashoffset={2 * Math.PI * 30 * (1 - scrollProgress)}
-                        strokeLinecap="round"
-                      />
-                   </svg>
-                )}
-
                 {/* Close Icon (visible when open) */}
                 <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0' : 'opacity-0 rotate-90 scale-50'}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -1,4 +1,4 @@
-import { QuizAnswers, Gift } from '../domain/types';
+import { QuizAnswers, Gift, UserProfile, CalendarEvent } from '../domain/types';
 import { mapGiftDTOToGift } from '../mappers/gift';
 import { MockServer } from './mock/server';
 
@@ -37,5 +37,11 @@ export const api = {
     remove: async (id: string): Promise<void> => {
       return MockServer.removeFromWishlist(id);
     }
+  },
+  user: {
+    get: async (): Promise<UserProfile> => MockServer.getUserProfile(),
+    update: async (data: Partial<UserProfile>): Promise<UserProfile> => MockServer.updateUserProfile(data),
+    addEvent: async (event: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent> => MockServer.addEvent(event),
+    removeEvent: async (id: string): Promise<void> => MockServer.removeEvent(id)
   }
 };

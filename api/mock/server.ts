@@ -1,6 +1,6 @@
 import { MOCK_DB_GIFTS } from './data';
 import { GiftDTO, RecommendationResponseDTO } from '../dto/types';
-import { QuizAnswers, Gift } from '../../domain/types';
+import { QuizAnswers, Gift, UserProfile, CalendarEvent } from '../../domain/types';
 
 // Helper to simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -36,6 +36,13 @@ const toDTO = (gift: Gift): GiftDTO => ({
     }))
   } : undefined
 });
+
+const DEFAULT_PROFILE: UserProfile = {
+  name: 'Друг',
+  avatarEmoji: '😎',
+  level: 'Новичок',
+  events: []
+};
 
 export const MockServer = {
   // New method for fetching filtered lists (for showcases)
@@ -168,5 +175,40 @@ export const MockServer = {
     const list: string[] = stored ? JSON.parse(stored) : [];
     const newList = list.filter(id => id !== giftId);
     localStorage.setItem('gifty_wishlist', JSON.stringify(newList));
+  },
+
+  // --- Profile Methods ---
+  async getUserProfile(): Promise<UserProfile> {
+    await delay(300);
+    const stored = localStorage.getItem('gifty_profile');
+    if (!stored) {
+       localStorage.setItem('gifty_profile', JSON.stringify(DEFAULT_PROFILE));
+       return DEFAULT_PROFILE;
+    }
+    return JSON.parse(stored);
+  },
+
+  async updateUserProfile(data: Partial<UserProfile>): Promise<UserProfile> {
+     await delay(300);
+     const current = await this.getUserProfile();
+     const updated = { ...current, ...data };
+     localStorage.setItem('gifty_profile', JSON.stringify(updated));
+     return updated;
+  },
+
+  async addEvent(event: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent> {
+    await delay(200);
+    const profile = await this.getUserProfile();
+    const newEvent = { ...event, id: Date.now().toString() };
+    const updatedEvents = [...profile.events, newEvent].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    await this.updateUserProfile({ events: updatedEvents });
+    return newEvent;
+  },
+
+  async removeEvent(id: string): Promise<void> {
+    await delay(200);
+    const profile = await this.getUserProfile();
+    const updatedEvents = profile.events.filter(e => e.id !== id);
+    await this.updateUserProfile({ events: updatedEvents });
   }
 };
