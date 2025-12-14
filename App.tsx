@@ -8,10 +8,14 @@ import { Wishlist } from './pages/Wishlist';
 
 const AppRoutes = () => {
     const location = useLocation();
+    
+    // Logic for UI elements visibility
     const showNav = location.pathname !== '/' && location.pathname !== '/quiz';
+    // Show footer everywhere except the Quiz flow to avoid distraction
+    const showFooter = location.pathname !== '/quiz';
 
     return (
-        <Layout showNav={showNav}>
+        <Layout showNav={showNav} showFooter={showFooter}>
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/quiz" element={<Quiz />} />

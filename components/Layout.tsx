@@ -1,20 +1,25 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { Footer } from './Footer';
 
 interface LayoutProps {
   children: React.ReactNode;
   showNav?: boolean;
+  showFooter?: boolean;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, showNav = true }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFooter = true }) => {
   return (
     <div className="min-h-screen flex flex-col max-w-lg mx-auto bg-gradient-to-b from-indigo-500/10 to-transparent relative shadow-2xl overflow-hidden">
       {/* Decorative background blurs */}
       <div className="fixed top-20 left-10 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
       <div className="fixed top-40 right-10 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
-      <main className="flex-grow relative z-10 pb-24">
-        {children}
+      <main className={`flex-grow relative z-10 flex flex-col ${showNav ? 'pb-24' : 'pb-8'}`}>
+        <div className="flex-grow">
+          {children}
+        </div>
+        {showFooter && <Footer />}
       </main>
 
       {showNav && (
