@@ -13,39 +13,47 @@ export const Mascot: React.FC<MascotProps> = ({
   eyesX = 0,
   eyesY = 0,
 }) => {
-  const pupilX = Math.max(-1, Math.min(1, eyesX)) * 5;
-  const pupilY = Math.max(-1, Math.min(1, eyesY)) * 5;
+  // Eye tracking movement limited range
+  const pupilX = Math.max(-2, Math.min(2, eyesX)) * 2;
+  const pupilY = Math.max(-2, Math.min(2, eyesY)) * 2;
 
   return (
-    <div className={`${className} relative group`}>
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible drop-shadow-[0_0_10px_rgba(0,255,65,0.3)]">
+    <div className={`${className} relative`}>
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible">
         
-        <defs>
-            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#00ff41" strokeWidth="0.5" opacity="0.3"/>
-            </pattern>
-        </defs>
+        {/* Drop Shadow */}
+        <path d="M15 20 H85 V85 H15 Z" fill="#121212" transform="translate(4, 4) rotate(-3 50 50)" className="opacity-100" />
 
-        {/* Wireframe Head */}
-        <circle cx="50" cy="50" r="40" stroke="#00ff41" strokeWidth="1" fill="url(#grid)" className="animate-[pulse_4s_ease-in-out_infinite]" />
+        {/* Main Body - Square shape with rounded corners (Sticker style) */}
+        <rect x="10" y="10" width="80" height="80" rx="15" fill="#FFFFFF" stroke="#121212" strokeWidth="3" transform="rotate(-3 50 50)" />
         
-        {/* Orbital Ring */}
-        <ellipse cx="50" cy="50" rx="50" ry="10" stroke="#008F11" strokeWidth="1" fill="none" className="animate-[spin_10s_linear_infinite] origin-center opacity-50" />
-        <ellipse cx="50" cy="50" rx="50" ry="10" stroke="#008F11" strokeWidth="1" fill="none" className="animate-[spin_8s_linear_infinite_reverse] origin-center opacity-30" transform="rotate(45 50 50)" />
+        {/* Screen/Face */}
+        <rect x="20" y="25" width="60" height="45" rx="8" fill="#5CE1E6" stroke="#121212" strokeWidth="2.5" transform="rotate(-3 50 50)" />
 
-        {/* Digital Eyes */}
-        <rect x="25" y="40" width="15" height="12" stroke="#00ff41" fill="#002200" />
-        <rect x="60" y="40" width="15" height="12" stroke="#00ff41" fill="#002200" />
-        
-        {/* Pupils (Square pixels) */}
-        <rect x={30 + pupilX} y={44 + pupilY} width="5" height="4" fill="#00ff41" />
-        <rect x={65 + pupilX} y={44 + pupilY} width="5" height="4" fill="#00ff41" />
+        {/* Eyes Group */}
+        <g transform="translate(0, 0) rotate(-3 50 50)">
+            {/* Left Eye */}
+            <circle cx="35" cy="45" r="8" fill="white" stroke="#121212" strokeWidth="2" />
+            <circle cx={35 + pupilX} cy={45 + pupilY} r="3" fill="#121212" />
 
-        {/* Mouth (LED Display) */}
-        <path d="M35 70 L40 75 L60 75 L65 70" stroke="#00ff41" strokeWidth="2" fill="none" />
+            {/* Right Eye */}
+            <circle cx="65" cy="45" r="8" fill="white" stroke="#121212" strokeWidth="2" />
+            <circle cx={65 + pupilX} cy={45 + pupilY} r="3" fill="#121212" />
+            
+            {/* Blush */}
+            <ellipse cx="30" cy="55" rx="3" ry="2" fill="#FF66C4" opacity="0.6" />
+            <ellipse cx="70" cy="55" rx="3" ry="2" fill="#FF66C4" opacity="0.6" />
+            
+            {/* Mouth */}
+            {emotion === 'happy' && <path d="M42 55 Q50 62 58 55" stroke="#121212" strokeWidth="2.5" strokeLinecap="round" />}
+            {emotion === 'thinking' && <line x1="42" y1="58" x2="58" y2="58" stroke="#121212" strokeWidth="2.5" strokeLinecap="round" />}
+            {emotion === 'surprised' && <circle cx="50" cy="58" r="4" stroke="#121212" strokeWidth="2.5" />}
+        </g>
 
-        {/* Glitch Overlay Elements */}
-        <rect x="0" y="20" width="100" height="2" fill="#00ff41" className="animate-scan opacity-20" />
+        {/* Antenna */}
+        <line x1="50" y1="10" x2="50" y2="0" stroke="#121212" strokeWidth="3" transform="rotate(-3 50 50)" />
+        <circle cx="50" cy="-3" r="4" fill="#FFDE59" stroke="#121212" strokeWidth="2.5" transform="rotate(-3 50 50)" />
+
       </svg>
     </div>
   );

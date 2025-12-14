@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../components/Button';
-import { Mascot } from '../components/Mascot';
 import { AGE_GROUPS, RELATIONSHIPS, BUDGETS } from '../constants';
 import { QuizAnswers } from '../types';
 import { track } from '../utils/analytics';
@@ -21,8 +20,7 @@ export const Quiz: React.FC = () => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>(() => {
     if (location.state) {
-        const { name, relationship } = location.state as { name: string, relationship: string };
-        return { ...INITIAL_ANSWERS, name: name || '', relationship: relationship || '' };
+        return { ...INITIAL_ANSWERS, ...(location.state as any) };
     }
     const saved = localStorage.getItem('gifty_draft');
     return saved ? JSON.parse(saved) : INITIAL_ANSWERS;
@@ -63,45 +61,41 @@ export const Quiz: React.FC = () => {
     }
   };
 
-  // CLI Input Style
-  const inputStyle = "w-full bg-black border-b-2 border-cyber-green text-cyber-green placeholder-cyber-gray/30 py-2 px-0 text-xl font-mono outline-none focus:border-white transition-all uppercase rounded-none";
-  const labelStyle = "text-[10px] font-bold text-cyber-dim font-mono mb-2 block uppercase tracking-widest";
-  const questionStyle = "text-xl md:text-2xl font-mono font-bold text-white mb-8 uppercase leading-tight typing-effect";
+  // Styles
+  const cardStyle = "bg-white border-2 border-pop-black rounded-2xl p-6 shadow-hard animate-slide-up";
+  const titleStyle = "text-2xl font-display font-black text-pop-black mb-6 leading-tight";
+  const inputStyle = "w-full bg-gray-50 border-2 border-pop-black rounded-xl p-4 text-lg font-bold outline-none focus:shadow-hard transition-all";
 
   const renderContent = () => {
     switch (step) {
       case 0:
         return (
-          <div className="animate-flicker">
-            <span className={labelStyle}>// CONFIG_STEP_01: IDENTITY</span>
-            <h2 className={questionStyle}>ENTER_TARGET_ID:</h2>
-            <div className="relative">
-                <span className="absolute -left-5 top-2 text-cyber-green animate-blink">{'>'}</span>
-                <input
-                type="text"
-                placeholder="NAME..."
-                value={answers.name}
-                onChange={(e) => updateAnswer('name', e.target.value)}
-                className={inputStyle}
-                autoFocus
-                />
-            </div>
+          <div className={cardStyle}>
+            <div className="text-4xl mb-4">👋</div>
+            <h2 className={titleStyle}>Как зовут счастливчика?</h2>
+            <input
+              type="text"
+              placeholder="Имя..."
+              value={answers.name}
+              onChange={(e) => updateAnswer('name', e.target.value)}
+              className={inputStyle}
+              autoFocus
+            />
           </div>
         );
       case 1:
         return (
-           <div className="animate-flicker">
-              <span className={labelStyle}>// CONFIG_STEP_02: LIFECYCLE</span>
-              <h2 className={questionStyle}>SELECT_AGE_BRACKET:</h2>
+           <div className={cardStyle}>
+              <div className="text-4xl mb-4">🎂</div>
+              <h2 className={titleStyle}>Сколько лет получателю?</h2>
               <div className="grid grid-cols-2 gap-3">
                 {AGE_GROUPS.map(age => (
                   <button
                     key={age}
                     onClick={() => updateAnswer('ageGroup', age)}
-                    className={`p-3 border font-mono text-xs uppercase text-left relative overflow-hidden group transition-all ${answers.ageGroup === age ? 'bg-cyber-green text-black border-cyber-green' : 'bg-transparent text-cyber-green border-cyber-gray/50 hover:border-cyber-green'}`}
+                    className={`p-3 rounded-xl border-2 border-pop-black font-bold text-sm transition-all ${answers.ageGroup === age ? 'bg-pop-yellow shadow-hard' : 'bg-white hover:bg-gray-50'}`}
                   >
-                    {answers.ageGroup === age && <span className="absolute right-2 top-2">●</span>}
-                    [{age}]
+                    {age}
                   </button>
                 ))}
               </div>
@@ -109,15 +103,15 @@ export const Quiz: React.FC = () => {
         );
       case 2:
         return (
-          <div className="animate-flicker">
-             <span className={labelStyle}>// CONFIG_STEP_03: RELATION</span>
-             <h2 className={questionStyle}>DEFINE_CONNECTION:</h2>
-             <div className="grid grid-cols-2 gap-3">
+          <div className={cardStyle}>
+             <div className="text-4xl mb-4">❤️</div>
+             <h2 className={titleStyle}>Кем он вам приходится?</h2>
+             <div className="flex flex-wrap gap-3">
               {RELATIONSHIPS.map(rel => (
                 <button
                   key={rel}
                   onClick={() => updateAnswer('relationship', rel)}
-                  className={`p-3 border font-mono text-xs uppercase transition-all ${answers.relationship === rel ? 'bg-cyber-alert text-black border-cyber-alert shadow-neon-alert' : 'bg-transparent text-cyber-green border-cyber-gray/50 hover:border-cyber-alert hover:text-cyber-alert'}`}
+                  className={`px-4 py-2 rounded-xl border-2 border-pop-black font-bold text-sm transition-all ${answers.relationship === rel ? 'bg-pop-pink text-white shadow-hard' : 'bg-white hover:bg-gray-50'}`}
                 >
                   {rel}
                 </button>
@@ -127,53 +121,45 @@ export const Quiz: React.FC = () => {
         );
       case 3:
         return (
-          <div className="animate-flicker">
-             <span className={labelStyle}>// CONFIG_STEP_04: GEO_DATA</span>
-             <h2 className={questionStyle}>TARGET_COORDINATES:</h2>
-             <div className="relative">
-                <span className="absolute -left-5 top-2 text-cyber-green animate-blink">{'>'}</span>
-                <input
+          <div className={cardStyle}>
+             <div className="text-4xl mb-4">📍</div>
+             <h2 className={titleStyle}>Из какого города?</h2>
+             <input
                 type="text"
-                placeholder="CITY..."
+                placeholder="Москва, Питер..."
                 value={answers.city}
                 onChange={(e) => updateAnswer('city', e.target.value)}
                 className={inputStyle}
-                />
-             </div>
-             <div className="mt-4 p-2 border border-dashed border-cyber-dim bg-cyber-dim/10 text-[9px] font-mono text-cyber-green">
-                <span className="animate-pulse">●</span> OPTIMIZING_LOGISTICS_NETWORK
-             </div>
+             />
+             <p className="mt-3 text-sm text-gray-500 font-medium">Это поможет с доставкой 🚚</p>
           </div>
         );
       case 4:
         return (
-          <div className="animate-flicker">
-             <span className={labelStyle}>// CONFIG_STEP_05: PSYCH_PROFILE</span>
-             <h2 className={questionStyle}>INPUT_DATA_POINTS:</h2>
+          <div className={cardStyle}>
+             <div className="text-4xl mb-4">🧠</div>
+             <h2 className={titleStyle}>Чем увлекается?</h2>
              <textarea
-              placeholder="KEYWORDS: GAMING, SPACE, ART..."
+              placeholder="Например: Любит рыбалку, играет в Доту, готовит бургеры..."
               value={answers.interests}
               onChange={(e) => updateAnswer('interests', e.target.value)}
-              className="w-full h-40 bg-black border border-cyber-green text-cyber-green placeholder-cyber-gray/30 p-4 text-lg font-mono outline-none focus:bg-cyber-green/5 resize-none uppercase"
+              className={`${inputStyle} h-32 resize-none`}
             />
           </div>
         );
       case 5:
         return (
-           <div className="animate-flicker">
-             <span className={labelStyle}>// CONFIG_STEP_06: RESOURCES</span>
-             <h2 className={questionStyle}>MAX_CREDITS:</h2>
-             <div className="flex flex-col gap-2">
+           <div className={cardStyle}>
+             <div className="text-4xl mb-4">💰</div>
+             <h2 className={titleStyle}>Какой бюджет?</h2>
+             <div className="flex flex-col gap-3">
               {BUDGETS.map(b => (
                 <button
                   key={b}
                   onClick={() => updateAnswer('budget', b)}
-                  className={`p-3 border font-mono text-xs uppercase text-left transition-all flex justify-between items-center ${answers.budget === b ? 'bg-cyber-green text-black border-cyber-green' : 'bg-transparent text-cyber-green border-cyber-gray/50 hover:border-cyber-green hover:bg-cyber-green/10'}`}
+                  className={`p-4 rounded-xl border-2 border-pop-black font-bold text-left transition-all ${answers.budget === b ? 'bg-pop-blue shadow-hard' : 'bg-white hover:bg-gray-50'}`}
                 >
-                  <span>{b}</span>
-                  {answers.budget === b && (
-                     <span className="font-bold text-[10px]">[SELECTED]</span>
-                  )}
+                  {b}
                 </button>
               ))}
             </div>
@@ -184,41 +170,36 @@ export const Quiz: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-32 px-6 bg-cyber-black">
+    <div className="min-h-screen pt-6 pb-32 px-4 bg-pop-bg">
       
+      {/* Progress Bar */}
+      <div className="max-w-md mx-auto mb-8 flex items-center gap-4">
+         <button onClick={prevStep} className="w-10 h-10 rounded-full bg-white border-2 border-pop-black flex items-center justify-center font-bold hover:shadow-hard-sm transition-all">
+            ←
+         </button>
+         <div className="flex-grow h-4 bg-white border-2 border-pop-black rounded-full overflow-hidden">
+            <div 
+                className="h-full bg-pop-yellow border-r-2 border-pop-black transition-all duration-300"
+                style={{ width: `${((step + 1) / 6) * 100}%` }}
+            ></div>
+         </div>
+         <div className="font-bold font-display">{step + 1}/6</div>
+      </div>
+
       <div className="max-w-md mx-auto relative z-10">
-        
-        {/* Terminal Header */}
-        <div className="flex items-center justify-between mb-8 border-b border-cyber-green/30 pb-2">
-           <button onClick={prevStep} className="text-cyber-green hover:text-white font-mono text-xs uppercase">
-             {'<< PREV'}
-           </button>
-           <div className="font-mono text-xs text-cyber-green bg-cyber-green/10 px-2 py-1 border border-cyber-green/30">
-              SEQ: {step + 1} / 6
-           </div>
-        </div>
+        {renderContent()}
 
-        {/* ASCII Progress Bar */}
-        <div className="mb-8 font-mono text-[10px] text-cyber-green tracking-widest text-center opacity-70">
-            LOADING_PARAMETERS: [{Array(6).fill(0).map((_, i) => i <= step ? '█' : '░').join('')}]
-        </div>
-
-        {/* Content Box */}
-        <div className="relative border-x border-cyber-green/20 bg-cyber-black min-h-[400px] px-4">
-            {renderContent()}
-        </div>
-
-        {/* Footer Actions */}
-        <div className="fixed bottom-28 left-0 right-0 px-6 z-40 pointer-events-none">
+        {/* Floating Action */}
+        <div className="fixed bottom-24 left-0 right-0 px-6 z-40 pointer-events-none">
              <div className="max-w-md mx-auto pointer-events-auto">
                 <Button 
                     onClick={nextStep} 
                     disabled={!isCurrentStepValid()} 
                     fullWidth
                     variant="primary"
-                    className={`${!isCurrentStepValid() ? 'opacity-50 grayscale border-cyber-gray text-cyber-gray' : ''}`}
+                    className="h-14 text-lg"
                 >
-                    {step === 5 ? 'EXECUTE_PROTOCOL()' : 'NEXT_SEQUENCE >>'}
+                    {step === 5 ? 'Подобрать подарок! 🎉' : 'Дальше 👉'}
                 </Button>
              </div>
         </div>

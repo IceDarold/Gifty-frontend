@@ -8,36 +8,22 @@ interface LayoutProps {
   showFooter?: boolean;
 }
 
-// Decorative HUD Corners
-const HudCorners = () => (
-  <div className="fixed inset-0 pointer-events-none z-[40] p-2 max-w-lg mx-auto">
-    {/* Top Left */}
-    <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-cyber-green/50"></div>
-    {/* Top Right */}
-    <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-cyber-green/50"></div>
-    {/* Bottom Left */}
-    <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-cyber-green/50"></div>
-    {/* Bottom Right */}
-    <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-cyber-green/50"></div>
-  </div>
-);
-
 export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFooter = true }) => {
   return (
-    <div className="min-h-screen flex flex-col max-w-lg mx-auto relative bg-cyber-black bg-[size:20px_20px] bg-grid-pattern border-x border-cyber-green/10 shadow-[0_0_50px_rgba(0,255,65,0.05)]">
+    <div className="min-h-screen flex flex-col max-w-lg mx-auto relative border-x-2 border-pop-black bg-pop-bg shadow-2xl">
       
-      <HudCorners />
-
-      {/* Top System Status Bar */}
-      <div className="fixed top-0 left-0 right-0 max-w-lg mx-auto z-50 bg-cyber-black/90 backdrop-blur-sm border-b border-cyber-green/20 px-4 py-2 flex justify-between items-center text-[9px] font-mono tracking-widest text-cyber-green/70 uppercase select-none">
+      {/* Fun Header */}
+      <header className="sticky top-0 z-40 bg-pop-bg/90 backdrop-blur-md border-b-2 border-pop-black px-4 py-3 flex justify-between items-center">
          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-cyber-green rounded-full animate-pulse shadow-neon"></span>
-            <span>NET: SECURE</span>
+            <div className="w-8 h-8 bg-pop-yellow border-2 border-pop-black rounded-full flex items-center justify-center font-black text-sm shadow-hard-sm transform -rotate-6">
+                G
+            </div>
+            <span className="font-display font-bold text-xl tracking-tight">Gifty<span className="text-pop-purple">.ai</span></span>
          </div>
-         <span>MEM: 64TB</span>
-      </div>
+         <div className="text-xs font-bold bg-pop-black text-white px-2 py-1 rounded-md">BETA</div>
+      </header>
 
-      <main className={`flex-grow flex flex-col pt-12 ${showNav ? 'pb-28' : 'pb-8'}`}>
+      <main className={`flex-grow flex flex-col ${showNav ? 'pb-28' : 'pb-8'}`}>
         <div className="flex-grow">
           {children}
         </div>
@@ -45,57 +31,33 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
       </main>
 
       {showNav && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center max-w-lg mx-auto">
-          {/* Main Control Deck */}
-          <nav className="w-full bg-cyber-black/95 backdrop-blur-md border-t border-cyber-green/30 px-2 pb-6 pt-2 flex justify-between items-end relative">
+        <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+          <nav className="pointer-events-auto bg-white border-2 border-pop-black rounded-full shadow-hard px-6 py-3 flex gap-8 items-center justify-between max-w-sm w-full">
              
-             {/* Decorative Top Line on Nav */}
-             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyber-green to-transparent opacity-50"></div>
-
-             <NavLink to="/" className={({ isActive }) => `flex-1 flex flex-col items-center gap-1 group p-2 transition-all ${isActive ? 'text-cyber-green opacity-100' : 'text-cyber-gray opacity-60 hover:text-cyber-green hover:opacity-80'}`}>
+             <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all hover:scale-110 active:scale-95 ${isActive ? 'text-pop-black' : 'text-gray-400'}`}>
                 {({ isActive }) => (
                     <>
-                        <div className={`border border-current p-1 transition-all ${isActive ? 'shadow-neon bg-cyber-green/10' : ''}`}>
-                            <span className="text-xl font-bold font-mono">I/O</span>
-                        </div>
-                        <span className="text-[8px] uppercase tracking-widest font-mono">[ROOT]</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isActive ? 'fill-pop-yellow stroke-pop-black stroke-2' : 'stroke-current'}`} viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     </>
                 )}
              </NavLink>
              
-             {/* Center Action - Floating Hexagon/Button */}
-             <NavLink to="/quiz" className="flex-1 flex flex-col items-center -mt-8 relative z-10 group">
-                {({ isActive }) => (
-                    <div className="flex flex-col items-center">
-                        <div className={`w-16 h-14 clip-path-polygon bg-cyber-black border border-cyber-green flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-cyber-green text-black shadow-neon' : 'text-cyber-green hover:bg-cyber-green/20 group-hover:scale-110'}`}>
-                            <span className="text-xs font-black font-mono animate-flicker">RUN</span>
-                        </div>
-                        <span className="text-[8px] uppercase tracking-widest text-cyber-green mt-1 bg-cyber-black px-2 border border-cyber-green/30">INIT</span>
-                    </div>
-                )}
+             {/* Center Action - Pop Button */}
+             <NavLink to="/quiz" className="flex flex-col items-center -mt-10 group">
+                <div className="w-14 h-14 bg-pop-purple border-2 border-pop-black rounded-full flex items-center justify-center shadow-hard group-hover:shadow-none group-hover:translate-x-[4px] group-hover:translate-y-[4px] transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
              </NavLink>
 
-             <NavLink to="/profile" className={({ isActive }) => `flex-1 flex flex-col items-center gap-1 group p-2 transition-all ${isActive ? 'text-cyber-green opacity-100' : 'text-cyber-gray opacity-60 hover:text-cyber-green hover:opacity-80'}`}>
-                {({ isActive }) => (
-                    <>
-                        <div className={`border border-current p-1 transition-all ${isActive ? 'shadow-neon bg-cyber-green/10' : ''}`}>
-                            <span className="text-xl font-bold font-mono">DB</span>
-                        </div>
-                        <span className="text-[8px] uppercase tracking-widest font-mono">[USER]</span>
-                    </>
-                )}
+             <NavLink to="/profile" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all hover:scale-110 active:scale-95 ${isActive ? 'text-pop-black' : 'text-gray-400'}`}>
+                 {({ isActive }) => (
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isActive ? 'fill-pop-blue stroke-pop-black stroke-2' : 'stroke-current'}`} viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                 )}
              </NavLink>
 
           </nav>
         </div>
       )}
-      
-      {/* CSS for clip-path polygon (Hexagon-ish) */}
-      <style>{`
-        .clip-path-polygon {
-            clip-path: polygon(10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%, 0 10%);
-        }
-      `}</style>
     </div>
   );
 };

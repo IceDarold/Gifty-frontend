@@ -12,39 +12,26 @@ export const Button: React.FC<ButtonProps> = ({
   className = '', 
   ...props 
 }) => {
-  const baseStyles = "relative py-4 px-6 font-mono font-bold text-xs uppercase tracking-widest transition-all duration-100 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed group overflow-hidden border";
+  
+  const baseStyles = "relative py-3 px-6 font-display font-bold text-sm tracking-wide transition-all duration-100 rounded-xl border-2 border-pop-black flex items-center justify-center gap-2 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    // Solid filled block
-    primary: "bg-cyber-green text-black border-cyber-green shadow-neon hover:bg-white hover:text-black",
-    
-    // Wireframe
-    secondary: "bg-transparent text-cyber-green border-cyber-green hover:bg-cyber-green/10 hover:shadow-[0_0_15px_rgba(0,255,65,0.2)]",
-    
-    // Minimal Text
-    ghost: "bg-transparent text-cyber-gray border-transparent hover:text-cyber-green hover:bg-cyber-green/5"
+    primary: "bg-pop-yellow text-pop-black shadow-hard hover:-translate-y-0.5 hover:shadow-hard-lg",
+    secondary: "bg-white text-pop-black shadow-hard hover:-translate-y-0.5 hover:shadow-hard-lg",
+    ghost: "bg-transparent border-transparent shadow-none hover:bg-gray-100 !border-0"
   };
+
+  // Override ghost border
+  const finalClass = variant === 'ghost' 
+    ? `${baseStyles.replace('border-2 border-pop-black', '')} ${variants.ghost}`
+    : `${baseStyles} ${variants[variant]}`;
 
   return (
     <button 
-      className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
+      className={`${finalClass} ${fullWidth ? 'w-full' : ''} ${className}`}
       {...props}
     >
-      {/* Tech Corners for primary/secondary */}
-      {variant !== 'ghost' && (
-        <>
-            <span className="absolute top-0 left-0 w-1 h-1 bg-current"></span>
-            <span className="absolute bottom-0 right-0 w-1 h-1 bg-current"></span>
-        </>
-      )}
-      
-      {/* Scan overlay on hover */}
-      <span className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-300 pointer-events-none"></span>
-
-      <span className="relative z-10 flex items-center justify-center gap-3">
-        {variant === 'primary' && <span className="animate-blink font-black">{'>_'}</span>}
-        {children}
-      </span>
+      {children}
     </button>
   );
 };

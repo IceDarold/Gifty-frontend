@@ -8,99 +8,85 @@ import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
 
-// --- Components ---
-
-const TerminalInput: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+const SearchBar: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <div 
     onClick={onClick}
-    className="group relative bg-cyber-dark border border-cyber-green/40 p-5 cursor-pointer hover:border-cyber-green transition-all mx-4 mb-8 overflow-hidden"
+    className="mx-4 mb-8 bg-white border-2 border-pop-black rounded-2xl p-2 shadow-hard flex items-center gap-3 cursor-pointer hover:-translate-y-1 hover:shadow-hard-lg transition-all"
   >
-    {/* Background Grid Animation */}
-    <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,65,0.03)_1px,transparent_1px)] bg-[size:10px_10px] opacity-50"></div>
-    
-    <div className="relative z-10 flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-[10px] text-cyber-dim font-mono uppercase tracking-wider">
-            <span>ROOT@GIFTY:~/PROTOCOLS#</span>
-        </div>
-        <div className="flex items-center gap-2 font-mono text-lg text-cyber-green text-shadow-sm">
-            <span>$</span>
-            <span className="group-hover:text-white transition-colors">START_SEARCH_SEQ</span>
-            <span className="w-2.5 h-5 bg-cyber-green animate-blink"></span>
-        </div>
+    <div className="bg-pop-yellow p-3 rounded-xl border-2 border-pop-black">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pop-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
     </div>
-    
-    <div className="absolute top-0 right-0 p-1">
-        <div className="w-1 h-1 bg-cyber-green"></div>
-    </div>
-    <div className="absolute bottom-0 right-0 p-1">
-        <div className="w-1 h-1 bg-cyber-green"></div>
+    <div className="flex-grow">
+        <div className="font-bold text-pop-black">Найти подарок...</div>
+        <div className="text-xs text-gray-500 font-medium">Маме, другу, коллеге</div>
     </div>
   </div>
 );
 
-const CategoryGlitch: React.FC<{ onSelect: (tag: string) => void }> = ({ onSelect }) => {
+const CategoryPills: React.FC<{ onSelect: (tag: string) => void }> = ({ onSelect }) => {
   const categories = [
-    'TRENDING', 'HARDWARE', 'BIO_HACK', 'HOME_BASE', 'ART_DATA', 'LEGACY_UNIT'
+    { name: '🔥 Тренды', color: 'bg-pop-pink' }, 
+    { name: '🎮 Техно', color: 'bg-pop-blue' }, 
+    { name: '🏡 Уют', color: 'bg-pop-yellow' }, 
+    { name: '🎨 Хобби', color: 'bg-purple-200' },
+    { name: '🧸 Детям', color: 'bg-green-200' }
   ];
 
   return (
-    <div className="flex overflow-x-auto gap-2 px-4 pb-2 no-scrollbar mb-6">
+    <div className="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar mb-4">
       {categories.map((cat, i) => (
         <button
-          key={cat}
-          onClick={() => onSelect(cat)}
-          className="relative bg-cyber-black text-cyber-gray border border-cyber-gray/50 px-3 py-1.5 font-mono text-[10px] hover:border-cyber-green hover:text-cyber-green hover:bg-cyber-green/10 transition-all uppercase tracking-widest whitespace-nowrap active:translate-y-0.5"
+          key={cat.name}
+          onClick={() => onSelect(cat.name)}
+          className={`${cat.color} border-2 border-pop-black px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap shadow-hard-sm hover:-translate-y-1 transition-transform`}
         >
-          {cat}
+          {cat.name}
         </button>
       ))}
     </div>
   );
 };
 
-const SectionHeader: React.FC<{ title: string; sub: string }> = ({ title, sub }) => (
-    <div className="px-4 mb-4 flex items-end justify-between border-b border-cyber-green/20 pb-1 mx-4">
-        <div>
-            <div className="text-[9px] text-cyber-dim uppercase font-mono tracking-widest mb-0.5">{sub}</div>
-            <h2 className="text-sm font-bold text-cyber-green font-mono uppercase tracking-wide">
-                {title}
-            </h2>
-        </div>
-        <div className="text-[9px] text-cyber-gray animate-pulse">Running...</div>
-    </div>
-);
-
 export const Home: React.FC = () => {
   const navigate = useNavigate();
-  
   const [feedGifts, setFeedGifts] = useState<Gift[]>([]);
   const [techGifts, setTechGifts] = useState<Gift[]>([]);
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Simple eye tracking for mascot
+  const [eyes, setEyes] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      setEyes({ 
+          x: (e.clientX - window.innerWidth / 2) / 100, 
+          y: (e.clientY - 200) / 100 
+      });
+    };
+    window.addEventListener('mousemove', handleMove);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [feed, tech] = await Promise.all([
-          api.gifts.list({ limit: 8 }),
-          api.gifts.list({ limit: 6, tag: 'технологии' }) 
+          api.gifts.list({ limit: 6 }),
+          api.gifts.list({ limit: 4, tag: 'технологии' }) 
         ]);
         setFeedGifts(feed);
         setTechGifts(tech);
       } catch (e) {
-        console.error("System Error: Data fetch failed", e);
+        console.error(e);
       }
     };
     fetchData();
   }, []);
 
   const startQuiz = () => {
-    track('start_quiz', { source: 'terminal' });
-    navigate('/quiz');
-  };
-
-  const handleCategory = (cat: string) => {
-    track('category_click', { cat });
+    track('start_quiz', { source: 'home' });
     navigate('/quiz');
   };
 
@@ -111,73 +97,61 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden pb-12">
+    <div className="min-h-screen pb-12 overflow-x-hidden">
       
-      {/* Boot Sequence Hero */}
-      <div className="relative z-10 mb-8 mt-2 px-4 text-center">
-        
-        <div className="flex justify-center mb-6">
-           {/* Holographic Container */}
-           <div className="relative p-6 border-x border-cyber-green/30 bg-cyber-green/5">
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-cyber-green/50"></div>
-              <div className="absolute bottom-0 left-0 w-full h-[1px] bg-cyber-green/50"></div>
-              
-              <Mascot className="w-28 h-28 opacity-90" emotion="happy" />
-              
-              {/* Decorative Scanning Lines */}
-              <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,65,0.1)_50%)] bg-[size:100%_4px] pointer-events-none"></div>
-           </div>
-        </div>
-        
-        <div className="mb-8">
-            <h1 className="text-4xl font-mono font-black text-white mb-1 uppercase tracking-tighter glitch-text" data-text="GIFTY_OS">
-            GIFTY_OS
-            </h1>
-            <div className="flex justify-center gap-4 text-[10px] font-mono text-cyber-dim uppercase tracking-widest">
-                <span>V.4.2.0</span>
-                <span>•</span>
-                <span>AI_CORE: ONLINE</span>
-            </div>
-        </div>
+      {/* Hero Section */}
+      <div className="pt-8 px-4 text-center mb-6 relative">
+        <div className="absolute top-4 right-8 text-4xl animate-bounce-slow opacity-20 rotate-12">🎁</div>
+        <div className="absolute top-20 left-4 text-3xl animate-bounce-slow opacity-20 -rotate-12" style={{ animationDelay: '0.5s' }}>✨</div>
 
-        <TerminalInput onClick={startQuiz} />
-        <CategoryGlitch onSelect={handleCategory} />
+        <div className="flex justify-center mb-6">
+           <Mascot className="w-32 h-32" eyesX={eyes.x} eyesY={eyes.y} />
+        </div>
+        
+        <h1 className="text-4xl font-display font-black text-pop-black mb-2 leading-tight">
+          Gifty <span className="bg-pop-yellow px-2 transform -rotate-2 inline-block border-2 border-pop-black shadow-sm">AI</span>
+        </h1>
+        <p className="text-gray-600 font-medium mb-6 max-w-xs mx-auto">
+          Подберем идеальный подарок за пару кликов. Без стресса!
+        </p>
+
+        <SearchBar onClick={startQuiz} />
+        <CategoryPills onSelect={() => navigate('/quiz')} />
       </div>
 
-      {/* Tech Section */}
-      <div className="mb-12">
-          <SectionHeader title="Augmentations" sub=">> MODULE_CATEGORY: TECH" />
-          <div className="flex overflow-x-auto gap-4 px-4 pb-4 no-scrollbar">
+      {/* Featured Section */}
+      <div className="mb-10">
+          <div className="flex items-center justify-between px-4 mb-4">
+              <h2 className="text-xl font-display font-bold border-b-4 border-pop-yellow inline-block">
+                  Популярное
+              </h2>
+          </div>
+          <div className="flex overflow-x-auto gap-4 px-4 pb-8 no-scrollbar">
             {techGifts.map((gift) => (
-                <div key={gift.id} className="min-w-[170px] w-[170px] shrink-0">
+                <div key={gift.id} className="min-w-[160px] w-[160px] shrink-0">
                     <GiftCard gift={gift} onClick={openGift} />
                 </div>
             ))}
           </div>
       </div>
 
-      {/* Feed Section as Data Stream */}
+      {/* Feed Grid */}
       <div className="px-4">
-        <div className="flex items-center gap-2 mb-4 border-b border-cyber-gray/30 pb-2">
-           <div className="w-2 h-2 bg-cyber-alert animate-pulse"></div>
-           <h3 className="font-mono font-bold text-white text-sm uppercase tracking-wide">Inbound_Data_Stream</h3>
-        </div>
+        <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+            <span className="text-2xl">👀</span> Лента идей
+        </h2>
 
-        <div className="grid grid-cols-2 gap-3">
-           {/* Promo Block */}
+        <div className="grid grid-cols-2 gap-4">
+           {/* CTA Block */}
            <div 
              onClick={startQuiz}
-             className="col-span-2 border border-dashed border-cyber-green/50 bg-cyber-green/5 p-5 flex items-center justify-between cursor-pointer hover:bg-cyber-green/10 transition-colors group"
+             className="col-span-2 bg-pop-purple border-2 border-pop-black rounded-2xl p-6 shadow-hard cursor-pointer hover:-translate-y-1 transition-transform relative overflow-hidden"
            >
-              <div>
-                  <div className="text-[10px] text-cyber-green font-mono mb-1">SYS_MSG:</div>
-                  <div className="text-white font-mono font-bold text-lg leading-tight uppercase">
-                      Unsure_Protocol? <br/> Initiate_Scan
-                  </div>
+              <div className="relative z-10 flex flex-col items-start text-white">
+                  <h3 className="font-display font-black text-2xl mb-2">Не знаешь что выбрать?</h3>
+                  <Button variant="secondary" className="text-xs">Пройти квиз</Button>
               </div>
-              <div className="w-10 h-10 border border-cyber-green flex items-center justify-center text-cyber-green group-hover:bg-cyber-green group-hover:text-black transition-colors">
-                  Go
-              </div>
+              <div className="absolute -right-4 -bottom-4 text-8xl opacity-20 rotate-12">🤔</div>
            </div>
 
            {feedGifts.map((gift) => (
@@ -187,9 +161,9 @@ export const Home: React.FC = () => {
            ))}
         </div>
         
-        <div className="mt-10 text-center">
-            <Button variant="secondary" onClick={startQuiz} fullWidth className="text-xs">
-               [ LOAD_EXTENDED_MEMORY ]
+        <div className="mt-8 text-center">
+            <Button variant="ghost" onClick={startQuiz}>
+               Загрузить еще...
             </Button>
         </div>
       </div>

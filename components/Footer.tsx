@@ -2,15 +2,10 @@ import React from 'react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full py-6 text-center border-t border-cyber-gray/20 bg-cyber-black mt-auto">
-       <div className="flex items-center justify-center gap-6 mb-2 font-mono text-[10px] uppercase">
-          <a href="#" className="text-cyber-gray hover:text-cyber-green">[ABOUT]</a>
-          <a href="#" className="text-cyber-gray hover:text-cyber-green">[LOGS]</a>
-          <a href="#" className="text-cyber-gray hover:text-cyber-green">[PRIVACY]</a>
-       </div>
-       
-       <div className="text-cyber-dim text-[9px] font-mono">
-          <p>SYSTEM_STATUS: STABLE | GIFTY_PROTOCOL_2077</p>
+    <footer className="w-full py-8 text-center border-t-2 border-pop-black bg-white mt-auto">
+       <div className="font-display font-bold text-lg mb-2">Gifty.ai</div>
+       <div className="text-sm font-medium text-gray-500">
+          Сделано с ❤️ и 🤖
        </div>
     </footer>
   );
