@@ -3,8 +3,8 @@ import React from 'react';
 interface MascotProps {
   className?: string;
   emotion?: 'happy' | 'thinking' | 'surprised' | 'excited' | 'cool';
-  eyesX?: number; // -1 to 1 (left to right)
-  eyesY?: number; // -1 to 1 (up to down)
+  eyesX?: number;
+  eyesY?: number;
   accessory?: 'none' | 'glasses' | 'scarf';
 }
 
@@ -15,96 +15,97 @@ export const Mascot: React.FC<MascotProps> = ({
   eyesY = 0,
   accessory = 'none'
 }) => {
-  // Clamp values to stay within eye boundaries
-  const pupilX = Math.max(-1, Math.min(1, eyesX)) * 2.5;
-  const pupilY = Math.max(-1, Math.min(1, eyesY)) * 2.5;
+  const pupilX = Math.max(-1, Math.min(1, eyesX)) * 4;
+  const pupilY = Math.max(-1, Math.min(1, eyesY)) * 4;
+
+  // Common stroke style for the "Sticker" look
+  const strokeStyle = { stroke: "black", strokeWidth: "3", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 
   return (
-    <div className={`${className} relative`}>
+    <div className={`${className} relative drop-shadow-md`}>
       <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible">
-        {/* Ears */}
-        <g className="origin-bottom animate-[pulse_3s_ease-in-out_infinite]">
-            <path d="M20 30L10 50C10 50 5 45 15 25Z" fill="#D97706" />
-            <path d="M80 30L90 50C90 50 95 45 85 25Z" fill="#D97706" />
+        
+        {/* Ears (Behind Head) */}
+        <g className="origin-center animate-[pulse_5s_ease-in-out_infinite]">
+            <path d="M22 28 C 5 20, -2 48, 18 55 C 18 55, 14 40, 22 28" fill="#A388EE" {...strokeStyle} />
+            <path d="M78 28 C 95 20, 102 48, 82 55 C 82 55, 86 40, 78 28" fill="#A388EE" {...strokeStyle} />
         </g>
         
         {/* Head */}
-        <circle cx="50" cy="50" r="35" fill="#FCD34D" />
-        <ellipse cx="50" cy="65" rx="15" ry="12" fill="#FEF3C7" />
+        <circle cx="50" cy="55" r="38" fill="#3B82F6" {...strokeStyle} />
         
-        {/* Scarf Accessory (Behind Face) */}
+        {/* Snout Patch */}
+        <ellipse cx="50" cy="72" rx="22" ry="16" fill="#93C5FD" {...strokeStyle} />
+        
+        {/* Scarf Accessory */}
         {accessory === 'scarf' && (
            <g>
-             <path d="M25 75 Q 50 90 75 75" stroke="#EC4899" strokeWidth="8" strokeLinecap="round" fill="none" />
-             <path d="M25 75 L 15 90" stroke="#EC4899" strokeWidth="6" strokeLinecap="round" />
+             <path d="M25 88 Q 50 100 75 88" stroke="#FF90E8" strokeWidth="10" strokeLinecap="round" />
+             <path d="M25 88 Q 50 100 75 88" fill="none" stroke="black" strokeWidth="3" /> {/* Border for scarf */}
+             <path d="M30 88 L 20 105" stroke="#FF90E8" strokeWidth="8" strokeLinecap="round" />
+             <path d="M30 88 L 20 105" fill="none" stroke="black" strokeWidth="3" />
            </g>
         )}
 
         {/* Eyes Container */}
         <g>
-            {/* Left Eye Background */}
-            <circle cx="38" cy="45" r="5" fill="white" opacity="0.4" />
-            {/* Right Eye Background */}
-            <circle cx="62" cy="45" r="5" fill="white" opacity="0.4" />
+            <ellipse cx="32" cy="52" rx="11" ry="13" fill="white" {...strokeStyle} />
+            <ellipse cx="68" cy="52" rx="11" ry="13" fill="white" {...strokeStyle} />
 
-            {/* Left Pupil (Tracking) */}
-            <circle 
-                cx={38 + pupilX} 
-                cy={45 + pupilY} 
-                r="4" 
-                fill="#1F2937" 
-                className="transition-all duration-100 ease-out"
-            />
-            {/* Right Pupil (Tracking) */}
-            <circle 
-                cx={62 + pupilX} 
-                cy={45 + pupilY} 
-                r="4" 
-                fill="#1F2937" 
-                className="transition-all duration-100 ease-out"
-            />
+            <circle cx={32 + pupilX} cy={52 + pupilY} r="5.5" fill="black" />
+            <circle cx={68 + pupilX} cy={52 + pupilY} r="5.5" fill="black" />
             
-            {/* Shine in eyes */}
-            <circle cx={39} cy={43} r="1.5" fill="white" />
-            <circle cx={63} cy={43} r="1.5" fill="white" />
+            <circle cx={35} cy={48} r="2.5" fill="white" />
+            <circle cx={71} cy={48} r="2.5" fill="white" />
         </g>
         
-        {/* Glasses Accessory */}
+        {/* Glasses */}
         {accessory === 'glasses' && (
-           <g>
-              <circle cx="38" cy="45" r="10" stroke="#1F2937" strokeWidth="2" fill="black" fillOpacity="0.2" />
-              <circle cx="62" cy="45" r="10" stroke="#1F2937" strokeWidth="2" fill="black" fillOpacity="0.2" />
-              <line x1="48" y1="45" x2="52" y2="45" stroke="#1F2937" strokeWidth="2" />
-              <line x1="28" y1="45" x2="15" y2="40" stroke="#1F2937" strokeWidth="2" />
-              <line x1="72" y1="45" x2="85" y2="40" stroke="#1F2937" strokeWidth="2" />
-              {/* Reflection on glasses */}
-              <line x1="34" y1="40" x2="40" y2="48" stroke="white" strokeWidth="1" opacity="0.5" />
+           <g transform="translate(0, 5)">
+              <circle cx="32" cy="52" r="14" stroke="black" strokeWidth="4" fill="black" fillOpacity="0.2" />
+              <circle cx="68" cy="52" r="14" stroke="black" strokeWidth="4" fill="black" fillOpacity="0.2" />
+              <line x1="46" y1="52" x2="54" y2="52" stroke="black" strokeWidth="4" />
            </g>
         )}
 
         {/* Nose */}
-        <path d="M46 58H54L50 63L46 58Z" fill="#4B5563" />
+        <path d="M44 68 Q 50 63 56 68 Q 50 78 44 68 Z" fill="black" />
+        <ellipse cx="50" cy="66" rx="3" ry="1.5" fill="white" opacity="0.3" />
 
-        {/* Mouth Expressions */}
+        {/* Mouth */}
         {emotion === 'happy' && (
-           <path d="M45 65Q50 72 55 65" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" />
+           <>
+             <path d="M45 76 Q 50 82 55 76" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none" />
+             <path d="M48 78 Q 50 82 52 78" fill="#FF90E8" stroke="black" strokeWidth="2" />
+           </>
         )}
         {emotion === 'cool' && (
-           <path d="M48 68Q50 70 52 68" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" />
+           <path d="M46 78 Q 50 80 54 78" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none" />
         )}
         {emotion === 'thinking' && (
-           <circle cx="58" cy="65" r="2" fill="#4B5563" />
+           <circle cx="58" cy="78" r="3" fill="black" />
         )}
         {emotion === 'surprised' && (
-           <circle cx="50" cy="66" r="3" stroke="#4B5563" strokeWidth="2" fill="none" />
+           <ellipse cx="50" cy="80" rx="4" ry="6" stroke="black" strokeWidth="3" fill="black" />
         )}
         {emotion === 'excited' && (
-            <path d="M45 65Q50 75 55 65Z" fill="#4B5563" />
+            <path d="M42 76 Q 50 88 58 76Z" fill="black" />
         )}
 
         {/* Cheeks */}
-        <circle cx="30" cy="55" r="3" fill="#FCA5A5" opacity="0.6" />
-        <circle cx="70" cy="55" r="3" fill="#FCA5A5" opacity="0.6" />
+        <circle cx="24" cy="62" r="4" fill="#FF90E8" opacity="0.6" />
+        <circle cx="76" cy="62" r="4" fill="#FF90E8" opacity="0.6" />
+        
+        {/* Eyebrows */}
+        {emotion === 'thinking' && (
+           <path d="M25 38 Q 32 35 39 38" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none"/>
+        )}
+        {emotion === 'surprised' && (
+           <>
+            <path d="M25 35 Q 32 30 39 35" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none"/>
+            <path d="M61 35 Q 68 30 75 35" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none"/>
+           </>
+        )}
       </svg>
     </div>
   );

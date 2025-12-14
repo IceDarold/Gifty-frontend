@@ -10,9 +10,10 @@ import { Profile } from './pages/Profile';
 const AppRoutes = () => {
     const location = useLocation();
     
-    // Logic for UI elements visibility
-    const showNav = location.pathname !== '/' && location.pathname !== '/quiz';
-    // Show footer everywhere except the Quiz flow to avoid distraction
+    // User requested persistent navigation (always visible)
+    const showNav = true;
+    
+    // Hide footer (copyrights etc) on Quiz to keep focus, but Nav remains
     const showFooter = location.pathname !== '/quiz';
 
     return (

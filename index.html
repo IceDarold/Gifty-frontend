@@ -8,41 +8,45 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Nunito', 'sans-serif'],
+              sans: ['Inter', 'sans-serif'],
+              display: ['Space Grotesk', 'sans-serif'],
             },
             colors: {
-              primary: '#4F46E5', // Indigo 600
-              secondary: '#FCD34D', // Yellow 300
-              accent: '#EC4899', // Pink 500
-              surface: '#FFFFFF',
-              background: '#E0E7FF',
+              paper: '#FFFDF5', // Creamy white
+              ink: '#18181b',   // Near black
+              pop: {
+                pink: '#FF90E8',
+                yellow: '#FFC700',
+                cyan: '#23F0C7',
+                purple: '#A388EE'
+              }
+            },
+            boxShadow: {
+              'hard': '4px 4px 0px 0px #18181b',
+              'hard-sm': '2px 2px 0px 0px #18181b',
+              'hard-lg': '8px 8px 0px 0px #18181b',
+              'hard-reverse': '-4px 4px 0px 0px #18181b',
             },
             animation: {
               'float': 'float 3s ease-in-out infinite',
-              'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-              'blob': 'blob 7s infinite',
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
             },
             keyframes: {
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-10px)' },
+                '50%': { transform: 'translateY(-5px)' },
               },
-              pop: {
-                '0%': { transform: 'scale(0.9)', opacity: 0 },
-                '100%': { transform: 'scale(1)', opacity: 1 },
-              },
-              blob: {
-                '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              shake: {
+                '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
               }
             }
           }
@@ -53,6 +57,10 @@
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
+        background-color: #FFFDF5;
+        background-image: radial-gradient(#18181b 1px, transparent 1px);
+        background-size: 20px 20px;
+        opacity: 1;
       }
       /* Hide scrollbar for clean UI */
       .no-scrollbar::-webkit-scrollbar {
@@ -62,9 +70,8 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-      /* Typewriter cursor effect */
       .animate-cursor::after {
-        content: '|';
+        content: '_';
         animation: cursor .75s step-end infinite;
       }
       @keyframes cursor {
@@ -83,7 +90,7 @@
 }
 </script>
 </head>
-  <body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 min-h-screen text-slate-800 antialiased selection:bg-yellow-300 selection:text-indigo-900">
+  <body class="min-h-screen text-ink antialiased selection:bg-pop-yellow selection:text-black">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

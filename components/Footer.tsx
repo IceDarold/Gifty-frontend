@@ -2,18 +2,16 @@ import React from 'react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full py-8 text-center relative z-0 mt-auto">
-       <div className="w-full h-px bg-gradient-to-r from-transparent via-indigo-200/20 to-transparent mb-6"></div>
-       
+    <footer className="w-full py-8 text-center relative z-0 mt-auto border-t-2 border-black bg-white">
        <div className="flex items-center justify-center gap-6 mb-4">
-          <a href="#" className="text-indigo-200/60 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">О сервисе</a>
-          <a href="#" className="text-indigo-200/60 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Блог</a>
-          <a href="#" className="text-indigo-200/60 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Политика</a>
+          <a href="#" className="text-black hover:bg-pop-yellow hover:border-black border border-transparent px-1 text-[12px] font-black uppercase tracking-widest transition-all">О сервисе</a>
+          <a href="#" className="text-black hover:bg-pop-pink hover:border-black border border-transparent px-1 text-[12px] font-black uppercase tracking-widest transition-all">Блог</a>
+          <a href="#" className="text-black hover:bg-pop-cyan hover:border-black border border-transparent px-1 text-[12px] font-black uppercase tracking-widest transition-all">Политика</a>
        </div>
        
-       <div className="text-indigo-200/40 text-[10px] px-8 leading-relaxed font-medium">
-          <p className="mb-2">© 2024 Gifty AI</p>
-          <p>Мы используем магию и алгоритмы,<br/>чтобы вы дарили лучшие подарки.</p>
+       <div className="text-gray-500 text-[10px] px-8 leading-relaxed font-bold font-mono">
+          <p className="mb-2">© 2024 GIFTY POP!</p>
+          <p>MADE WITH 🖤 AND CODE.</p>
        </div>
     </footer>
   );

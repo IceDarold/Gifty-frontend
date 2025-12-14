@@ -12,12 +12,17 @@ export const Button: React.FC<ButtonProps> = ({
   className = '', 
   ...props 
 }) => {
-  const baseStyles = "py-3 px-6 rounded-2xl font-bold transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "py-3.5 px-6 rounded-xl font-display font-bold text-lg transition-all border-2 border-black active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-secondary text-indigo-900 shadow-lg hover:shadow-xl hover:bg-yellow-300 border-b-4 border-yellow-500 active:border-b-0 active:translate-y-1",
-    secondary: "bg-white text-indigo-600 shadow-md hover:bg-indigo-50",
-    ghost: "bg-transparent text-white/80 hover:text-white"
+    // Pop Yellow with Hard Shadow
+    primary: "bg-pop-yellow text-black shadow-hard hover:bg-yellow-300",
+    
+    // White with Hard Shadow
+    secondary: "bg-white text-black shadow-hard hover:bg-gray-50",
+    
+    // Transparent but with border (Outline)
+    ghost: "bg-transparent border-dashed text-black hover:bg-black/5 shadow-none"
   };
 
   return (
