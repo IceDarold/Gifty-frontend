@@ -57,7 +57,7 @@ export const Wishlist: React.FC = () => {
   }
 
   return (
-    <div className="pt-6 px-4 pb-12">
+    <div className="pt-6 px-4 pb-12 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-white">Избранное ({items.length})</h1>
         <button onClick={handleShare} className="text-white bg-white/20 p-2 rounded-lg hover:bg-white/30">
@@ -67,7 +67,7 @@ export const Wishlist: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {items.map((gift) => (
             <GiftCard key={gift.id} gift={gift} onToggleWishlist={loadItems} />
         ))}

@@ -101,7 +101,7 @@ export const Profile: React.FC = () => {
   }
 
   return (
-    <div className="pt-24 px-4 pb-20">
+    <div className="pt-24 px-4 pb-20 max-w-3xl mx-auto">
       
       {/* Header Card */}
       <div className="bg-white/90 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl mb-6 border border-white/50 relative overflow-hidden animate-slide-up-mobile">

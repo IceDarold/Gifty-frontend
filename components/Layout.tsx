@@ -16,18 +16,22 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
     `h-6 w-6 mb-0.5 transition-transform duration-300 group-active:scale-90 ${isActive ? 'scale-110' : ''}`;
 
   return (
-    <div className="min-h-screen flex flex-col max-w-lg mx-auto relative shadow-2xl overflow-hidden bg-transparent">
+    <div className="min-h-screen flex flex-col w-full relative bg-transparent overflow-x-hidden">
       
       <main className={`flex-grow relative z-10 flex flex-col ${showNav ? 'pb-28' : 'pb-8'}`}>
-        <div className="flex-grow">
+        <div className="flex-grow w-full">
           {children}
         </div>
-        {showFooter && <Footer />}
+        {showFooter && (
+            <div className="w-full max-w-5xl mx-auto">
+                <Footer />
+            </div>
+        )}
       </main>
 
       {showNav && (
         <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
-          {/* Stable Bottom Panel */}
+          {/* Stable Bottom Panel - Acts as a Floating Dock on Desktop */}
           <nav className="w-full max-w-lg bg-white/95 backdrop-blur-2xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] border-t border-white/50 pointer-events-auto rounded-t-[2.5rem] relative pb-safe">
              
              {/* 5-Column Grid Layout for Perfect Symmetry */}

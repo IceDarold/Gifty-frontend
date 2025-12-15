@@ -169,12 +169,10 @@ const HorizontalSection: React.FC<{
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Initialize scroll position to the start of the second set
-  // This allows the user to immediately scroll left without hitting a wall
   useEffect(() => {
     if (gifts.length === 0 || !scrollRef.current) return;
 
     const el = scrollRef.current;
-    // Small timeout to ensure layout is calculated
     setTimeout(() => {
         const singleSetWidth = el.scrollWidth / 4;
         el.scrollLeft = singleSetWidth;
@@ -183,7 +181,6 @@ const HorizontalSection: React.FC<{
 
   if (gifts.length === 0) return null;
 
-  // Duplicate items 4 times to ensure we have enough buffer for infinite looping
   const loopedGifts = [...gifts, ...gifts, ...gifts, ...gifts];
 
   const handleScroll = () => {
@@ -191,13 +188,10 @@ const HorizontalSection: React.FC<{
     const el = scrollRef.current;
     const singleSetWidth = el.scrollWidth / 4;
 
-    // Logic: Keep the user in the middle sets (Set 2 and 3)
-    // If we scroll past the 3rd set (into 4th), jump back to 2nd set
     if (el.scrollLeft >= singleSetWidth * 3) {
         el.scrollLeft = el.scrollLeft - singleSetWidth;
     }
-    // If we scroll back to the start of the 1st set, jump forward to 2nd set
-    else if (el.scrollLeft <= 50) { // Small buffer
+    else if (el.scrollLeft <= 50) {
         el.scrollLeft = el.scrollLeft + singleSetWidth;
     }
   };
@@ -217,7 +211,7 @@ const HorizontalSection: React.FC<{
             ref={scrollRef}
             onScroll={handleScroll}
             className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-6 cursor-grab active:cursor-grabbing"
-            style={{ scrollBehavior: 'auto' }} // Ensure jumps are instant
+            style={{ scrollBehavior: 'auto' }}
          >
             {loopedGifts.map((gift, index) => (
               <div 
@@ -240,17 +234,13 @@ const useMascotBehavior = () => {
   const [docked, setDocked] = useState(false);
   const [accessory, setAccessory] = useState<'none' | 'glasses' | 'scarf' | 'santa-hat'>('santa-hat');
   const [emotion, setEmotion] = useState<'happy' | 'cool' | 'excited' | 'thinking'>('happy');
-  const scrollRef = useRef(0);
   
-  // Performance: Use requestAnimationFrame for eye tracking
   const requestRef = useRef<number>(0);
   
   useEffect(() => {
     const handleMove = (e: MouseEvent) => {
-      // Only track if mostly in hero mode
       if (docked) return;
-
-      if (requestRef.current) return; // Drop frame if busy
+      if (requestRef.current) return;
 
       requestRef.current = requestAnimationFrame(() => {
           const clientX = e.clientX;
@@ -274,19 +264,15 @@ const useMascotBehavior = () => {
     };
   }, [docked]);
 
-  // Scroll & Intersection Logic
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
-      
-      const isDocked = y > 220; // Threshold to switch mascots
+      const isDocked = y > 220;
       setDocked(isDocked);
-
-      setAccessory('santa-hat'); // Keep festive hat always
+      setAccessory('santa-hat');
       setEmotion(docked ? 'happy' : 'happy');
     };
 
-    // Simple throttle for scroll
     let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
     const throttledScroll = () => {
         if (!scrollTimeout) {
@@ -311,12 +297,10 @@ export const Home: React.FC = () => {
   const navigate = useNavigate();
   const { eyes, docked, accessory, emotion } = useMascotBehavior();
   
-  // Data States
   const [feedGifts, setFeedGifts] = useState<Gift[]>([]);
   const [cozyGifts, setCozyGifts] = useState<Gift[]>([]);
   const [techGifts, setTechGifts] = useState<Gift[]>([]);
   
-  // Modal States
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -361,7 +345,7 @@ export const Home: React.FC = () => {
       <Snowfall />
       <ChristmasGarland />
 
-      {/* Dynamic Background Elements - Bubbles (Updated to cool tones) */}
+      {/* Dynamic Background Elements */}
       <div className="fixed inset-0 bg-transparent -z-20"></div>
       
       <div className="fixed -top-10 -right-10 w-96 h-96 bg-blue-500/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob -z-10" />
@@ -375,7 +359,7 @@ export const Home: React.FC = () => {
          />
       </div>
 
-      {/* --- MASCOT HUB (Top Right - Simplified) --- */}
+      {/* --- MASCOT HUB (Top Right) --- */}
       <div className="fixed top-6 right-4 z-50">
         <div className={`relative flex items-center gap-3 transition-all duration-500 ${docked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-20px] pointer-events-none'}`}>
             <div 
@@ -390,110 +374,120 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Section */}
-      <div className="relative z-10 mb-6 mt-32 min-h-[16rem]">
-        <div className="px-6 pb-4 flex flex-col items-center text-center">
-            
-            {/* HERO MASCOT (Disappears on scroll) */}
+      {/* --- CONTENT WRAPPER --- */}
+      <div className="max-w-7xl mx-auto relative">
+
+        {/* Hero Section */}
+        <div className="relative z-10 mb-6 mt-32 min-h-[16rem]">
+            <div className="px-6 pb-4 flex flex-col items-center text-center">
+                
+                {/* HERO MASCOT */}
+                <div 
+                    className={`relative transition-all duration-500 ease-out origin-bottom ${docked ? 'opacity-0 scale-75 translate-y-[-20px] pointer-events-none' : 'opacity-100 scale-100'}`}
+                >
+                <div className="absolute inset-0 bg-white blur-[50px] opacity-20 rounded-full animate-pulse-slow"></div>
+                <Mascot 
+                        className="w-32 h-32 mb-5 drop-shadow-2xl hover:scale-105 transition-transform cursor-pointer animate-float" 
+                        emotion="happy"
+                        accessory="santa-hat"
+                        eyesX={eyes.x}
+                        eyesY={eyes.y}
+                />
+                </div>
+                
+                <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-[1.1] drop-shadow-lg tracking-tighter">
+                Дарите <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">
+                    волшебство
+                </span>
+                </h1>
+                
+                <p className="text-white/80 text-sm max-w-xs mx-auto mb-8 font-medium leading-relaxed tracking-tight">
+                Твой персональный AI-Санта.<br/> Подберет подарок за 30 секунд.
+                </p>
+            </div>
+
+            {/* Search */}
+            <div className="max-w-2xl mx-auto">
+                <SearchTrigger onClick={startQuiz} />
+            </div>
+
+            {/* Categories */}
+            <div className="flex justify-center">
+                <div className="w-full max-w-4xl">
+                    <CategoryPills onSelect={handleCategory} />
+                </div>
+            </div>
+        </div>
+
+        {/* Horizontal Sections */}
+        <HorizontalSection 
+            id="section-cozy"
+            title="Зимний уют ❄️" 
+            subtitle="Согревающие подарки для души и тела"
+            gifts={cozyGifts} 
+            onGiftClick={openGift} 
+        />
+
+        <HorizontalSection 
+            id="section-tech"
+            title="Магия технологий ⚡️" 
+            subtitle="Гаджеты, о которых все мечтают"
+            gifts={techGifts} 
+            onGiftClick={openGift} 
+        />
+
+        {/* Feed Section */}
+        <div className="relative z-10 px-4 mt-6">
+            <div className="flex items-center gap-2 mb-6 px-2">
+            <span className="text-2xl animate-pulse">🎁</span>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Вдохновение дня</h2>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {/* CTA Card */}
             <div 
-                className={`relative transition-all duration-500 ease-out origin-bottom ${docked ? 'opacity-0 scale-75 translate-y-[-20px] pointer-events-none' : 'opacity-100 scale-100'}`}
+                onClick={startQuiz}
+                className="col-span-2 relative overflow-hidden rounded-[2rem] p-6 flex flex-col justify-between min-h-[180px] cursor-pointer group shadow-2xl transition-transform hover:scale-[1.02] bg-white"
             >
-               <div className="absolute inset-0 bg-white blur-[50px] opacity-20 rounded-full animate-pulse-slow"></div>
-               <Mascot 
-                    className="w-32 h-32 mb-5 drop-shadow-2xl hover:scale-105 transition-transform cursor-pointer animate-float" 
-                    emotion="happy"
-                    accessory="santa-hat"
-                    eyesX={eyes.x}
-                    eyesY={eyes.y}
-               />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+                
+                <div className="relative z-10">
+                    <span className="inline-block bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider mb-3 shadow-md">
+                    🎄 Праздник к нам приходит
+                    </span>
+                    <h3 className="text-brand-dark font-black text-2xl leading-tight tracking-tight">
+                    Не знаешь что дарить?
+                    </h3>
+                    <p className="text-gray-500 text-sm mt-1 font-medium">
+                    Спроси у AI-Санты
+                    </p>
+                </div>
+                <div className="relative z-10 flex items-center gap-2 text-red-500 font-bold text-sm mt-4 group-hover:gap-3 transition-all">
+                    <div className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </div>
+                    <span>Начать подбор</span>
+                </div>
+            </div>
+
+            {/* Gifts Feed */}
+            {feedGifts.map((gift) => (
+                <div key={gift.id} className="h-auto">
+                    <GiftCard gift={gift} onClick={openGift} />
+                </div>
+            ))}
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-[1.1] drop-shadow-lg tracking-tighter">
-              Дарите <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">
-                волшебство
-              </span>
-            </h1>
-            
-            <p className="text-white/80 text-sm max-w-xs mx-auto mb-8 font-medium leading-relaxed tracking-tight">
-               Твой персональный AI-Санта.<br/> Подберет подарок за 30 секунд.
-            </p>
+            <div className="mt-12 text-center pb-8">
+                <Button variant="secondary" onClick={startQuiz}>
+                Загрузить больше через квиз
+                </Button>
+            </div>
         </div>
 
-        {/* Search */}
-        <SearchTrigger onClick={startQuiz} />
-
-        {/* Categories */}
-        <CategoryPills onSelect={handleCategory} />
-      </div>
-
-      {/* Horizontal Sections with Cyclic Animation */}
-      <HorizontalSection 
-        id="section-cozy"
-        title="Зимний уют ❄️" 
-        subtitle="Согревающие подарки для души и тела"
-        gifts={cozyGifts} 
-        onGiftClick={openGift} 
-      />
-
-      <HorizontalSection 
-        id="section-tech"
-        title="Магия технологий ⚡️" 
-        subtitle="Гаджеты, о которых все мечтают"
-        gifts={techGifts} 
-        onGiftClick={openGift} 
-        // Removed reverse prop as it works best left-to-right for manual scroll
-      />
-
-      {/* Feed Section */}
-      <div className="relative z-10 px-4 mt-6">
-        <div className="flex items-center gap-2 mb-6 px-2">
-           <span className="text-2xl animate-pulse">🎁</span>
-           <h2 className="text-2xl font-bold text-white tracking-tight">Вдохновение дня</h2>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-           {/* CTA Card */}
-           <div 
-             onClick={startQuiz}
-             className="col-span-2 relative overflow-hidden rounded-[2rem] p-6 flex flex-col justify-between min-h-[180px] cursor-pointer group shadow-2xl transition-transform hover:scale-[1.02] bg-white"
-           >
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
-              
-              <div className="relative z-10">
-                <span className="inline-block bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider mb-3 shadow-md">
-                   🎄 Праздник к нам приходит
-                </span>
-                <h3 className="text-brand-dark font-black text-2xl leading-tight tracking-tight">
-                   Не знаешь что дарить?
-                </h3>
-                <p className="text-gray-500 text-sm mt-1 font-medium">
-                   Спроси у AI-Санты
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 text-red-500 font-bold text-sm mt-4 group-hover:gap-3 transition-all">
-                 <div className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                 </div>
-                 <span>Начать подбор</span>
-              </div>
-           </div>
-
-           {/* Gifts Feed */}
-           {feedGifts.map((gift) => (
-             <div key={gift.id} className="h-auto">
-                <GiftCard gift={gift} onClick={openGift} />
-             </div>
-           ))}
-        </div>
-        
-        <div className="mt-12 text-center pb-8">
-            <Button variant="secondary" onClick={startQuiz}>
-               Загрузить больше через квиз
-            </Button>
-        </div>
       </div>
 
       {/* Modal */}

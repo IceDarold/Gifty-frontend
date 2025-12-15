@@ -89,7 +89,7 @@ export const Results: React.FC = () => {
   const others = results.slice(1);
 
   return (
-    <div className="pt-6 px-4 pb-12">
+    <div className="pt-6 px-4 pb-12 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-white">Лучшие варианты</h1>
         <button className="bg-white/20 p-2 rounded-lg text-white">
@@ -113,7 +113,7 @@ export const Results: React.FC = () => {
         )}
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {others.map((gift) => (
                 <GiftCard 
                   key={gift.id} 
