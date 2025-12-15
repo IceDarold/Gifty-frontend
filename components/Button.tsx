@@ -12,33 +12,22 @@ export const Button: React.FC<ButtonProps> = ({
   className = '', 
   ...props 
 }) => {
-  
-  const baseStyles = "relative font-typewriter font-bold text-sm uppercase transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "py-3.5 px-6 rounded-2xl font-bold transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed tracking-wide";
   
   const variants = {
-    // Primary: A Red Ink Stamp or Tag
-    primary: `
-        bg-stamp-red text-white border-2 border-transparent
-        shadow-md hover:shadow-lg
-        px-6 py-3 rounded-sm rotate-[-1deg] hover:rotate-0
-        tracking-widest
-    `,
-    // Secondary: A pencil sketch box
-    secondary: `
-        bg-white text-pencil border-2 border-pencil
-        shadow-sm hover:shadow-md
-        px-5 py-3 rounded-sm rotate-[1deg] hover:rotate-0
-    `,
-    // Ghost: Just text with underline
-    ghost: `
-        bg-transparent text-ink underline decoration-2 underline-offset-4 decoration-stamp-red
-        hover:decoration-wavy px-2 font-handwritten text-lg
-    `
+    // Primary: Blue to Purple Gradient with White text
+    primary: "bg-gradient-to-r from-brand-blue to-brand-purple text-white shadow-[0_4px_14px_0_rgba(0,111,255,0.39)] hover:shadow-[0_6px_20px_rgba(174,0,255,0.23)] hover:brightness-110 border-none",
+    
+    // Secondary: White surface, Blue text
+    secondary: "bg-white text-brand-blue shadow-lg hover:bg-blue-50",
+    
+    // Ghost: Transparent with white text
+    ghost: "bg-transparent text-white/80 hover:text-white border border-transparent hover:bg-white/10"
   };
 
   return (
     <button 
-      className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full block' : 'inline-block'} ${className}`}
+      className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
       {...props}
     >
       {children}

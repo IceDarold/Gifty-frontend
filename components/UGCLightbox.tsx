@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 interface Props {
   images: string[];
@@ -8,6 +8,11 @@ interface Props {
 
 export const UGCLightbox: React.FC<Props> = ({ images, initialIndex, onClose }) => {
   const [index, setIndex] = useState(initialIndex);
+  
+  // Swipe State
+  const touchStart = useRef<number | null>(null);
+  const touchEnd = useRef<number | null>(null);
+  const minSwipeDistance = 50;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -18,6 +23,25 @@ export const UGCLightbox: React.FC<Props> = ({ images, initialIndex, onClose }) 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [index, onClose]);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchEnd.current = null; 
+    touchStart.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    touchEnd.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart.current || !touchEnd.current) return;
+    const distance = touchStart.current - touchEnd.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) next();
+    if (isRightSwipe) prev();
+  };
 
   const next = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -30,31 +54,49 @@ export const UGCLightbox: React.FC<Props> = ({ images, initialIndex, onClose }) 
   };
 
   return (
-    <div className="fixed inset-0 z-[110] bg-black flex items-center justify-center" onClick={onClose}>
-      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-      
+    <div 
+        className="fixed inset-0 z-[110] bg-black/95 flex items-center justify-center animate-pop touch-none" 
+        onClick={onClose}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+    >
       <button 
         onClick={onClose} 
-        className="absolute top-8 right-8 text-white font-mono text-xl border-2 border-white px-4 py-2 hover:bg-white hover:text-black transition-colors z-50 uppercase font-bold"
+        className="absolute top-4 right-4 text-white/70 hover:text-white p-2 z-20 bg-black/20 rounded-full"
       >
-        [ Close ]
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
 
-      <div className="absolute top-8 left-8 text-white font-mono bg-acid-green text-black px-2 py-1 font-bold z-50">
-         IMG_SEQ: {index + 1} / {images.length}
+      <div className="absolute top-4 left-4 text-white font-bold bg-black/30 px-3 py-1 rounded-full text-sm">
+         {index + 1} / {images.length}
       </div>
 
-      <div className="relative max-w-full max-h-full p-8" onClick={(e) => e.stopPropagation()}>
+      <button onClick={prev} className="absolute left-2 md:left-8 p-3 text-white/50 hover:text-white transition-colors z-20 hidden md:block">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <div className="relative max-w-full max-h-full p-2" onClick={(e) => e.stopPropagation()}>
         <img 
             src={images[index]} 
-            alt={`Evidence ${index + 1}`} 
-            className="max-h-[80vh] max-w-[90vw] object-contain border-4 border-white grayscale contrast-125"
+            alt={`Review photo ${index + 1}`} 
+            className="max-h-[85vh] max-w-[95vw] object-contain rounded-md shadow-2xl pointer-events-none select-none"
         />
       </div>
 
-      <div className="absolute bottom-8 left-0 w-full flex justify-center gap-8 z-50">
-          <button onClick={prev} className="text-white font-mono text-xl hover:text-acid-green font-bold">&lt; PREV</button>
-          <button onClick={next} className="text-white font-mono text-xl hover:text-acid-green font-bold">NEXT &gt;</button>
+      <button onClick={next} className="absolute right-2 md:right-8 p-3 text-white/50 hover:text-white transition-colors z-20 hidden md:block">
+         <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      
+      {/* Mobile Swipe Hint */}
+      <div className="absolute bottom-10 left-0 right-0 text-center text-white/30 text-xs md:hidden pointer-events-none">
+          Свайп для переключения
       </div>
     </div>
   );

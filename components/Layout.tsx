@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { Footer } from './Footer';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,75 +8,40 @@ interface LayoutProps {
   showFooter?: boolean;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, showNav = true }) => {
-  const location = useLocation();
-
+export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFooter = true }) => {
   return (
-    <div className="min-h-screen w-full relative overflow-hidden flex flex-col">
-      {/* 1. DESK SURFACE */}
-      <div className="flex-grow w-full max-w-6xl mx-auto p-4 sm:p-8 relative z-10 pb-32">
-        {/* Subtle Lighting Gradient */}
-        <div className="fixed inset-0 bg-gradient-to-br from-white/20 to-black/10 pointer-events-none z-0"></div>
-        
-        {children}
-      </div>
+    <div className="min-h-screen flex flex-col max-w-lg mx-auto relative shadow-2xl overflow-hidden bg-transparent">
+      
+      <main className={`flex-grow relative z-10 flex flex-col ${showNav ? 'pb-24' : 'pb-8'}`}>
+        <div className="flex-grow">
+          {children}
+        </div>
+        {showFooter && <Footer />}
+      </main>
 
-      {/* 2. PHYSICAL NAVIGATION (Dock of items) */}
       {showNav && (
-          <nav className="fixed bottom-0 left-0 w-full z-50 pointer-events-none flex justify-center items-end pb-4 gap-6 sm:gap-12">
+        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+          <nav className="bg-white/90 backdrop-blur-xl rounded-full shadow-2xl border border-white/40 px-6 py-3 mb-6 mx-4 w-full max-w-[300px] flex justify-between items-center pointer-events-auto">
+             <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 transition-colors ${isActive ? 'text-brand-blue' : 'text-slate-400'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+             </NavLink>
              
-             {/* Item 1: Home (Notepad) */}
-             <NavLink to="/" className={({isActive}) => 
-                `pointer-events-auto transition-transform duration-300 hover:-translate-y-4 ${isActive ? '-translate-y-2' : 'translate-y-4 opacity-90'}`
-             }>
-                <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-md shadow-deep flex items-center justify-center rotate-[-3deg] texture-paper border-t-8 border-red-900">
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-4 h-16 bg-gray-400/20 rounded-full blur-sm"></div> {/* Shadow for depth */}
-                    <div className="text-center">
-                        <span className="block font-handwritten text-3xl font-bold text-ink">Главная</span>
-                        <span className="block font-typewriter text-[10px] text-pencil">Стол</span>
-                    </div>
-                </div>
+             {/* Center Button: Gradient Blue/Purple */}
+             <NavLink to="/quiz" className={({ isActive }) => `flex flex-col items-center gap-1 -mt-8 bg-gradient-to-br from-brand-blue to-brand-purple p-4 rounded-full shadow-[0_8px_20px_-6px_rgba(0,111,255,0.6)] border-4 border-white/90 text-white transition-transform ${isActive ? 'scale-110' : 'scale-100 hover:scale-105'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
              </NavLink>
 
-             {/* Item 2: Quiz (The Box) */}
-             <NavLink to="/quiz" className={({isActive}) => 
-                `pointer-events-auto transition-transform duration-300 hover:-translate-y-4 ${isActive ? '-translate-y-2 scale-105' : 'translate-y-4 opacity-90'}`
-             }>
-                <div className="relative w-28 h-28 sm:w-36 sm:h-36 bg-cardboard shadow-floating flex items-center justify-center rotate-[2deg] rounded-sm border-t border-white/20">
-                     {/* Box Lid Effect */}
-                     <div className="absolute inset-x-0 top-0 h-1/2 bg-black/5"></div>
-                     <div className="z-10 bg-white/90 px-3 py-1 rotate-[-1deg] shadow-sm transform skew-x-2">
-                         <span className="font-typewriter font-bold tracking-widest text-sm">ПОДБОР</span>
-                     </div>
-                </div>
-             </NavLink>
-
-             {/* Item 3: Wishlist (Corkboard Note) */}
-             <NavLink to="/wishlist" className={({isActive}) => 
-                `pointer-events-auto transition-transform duration-300 hover:-translate-y-4 ${isActive ? '-translate-y-2' : 'translate-y-4 opacity-90'}`
-             }>
-                 <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-yellow-100 shadow-deep flex items-center justify-center rotate-[4deg]">
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-red-600 shadow-sm z-20"></div> {/* Pin */}
-                    <div className="text-center rotate-[-4deg]">
-                        <span className="block font-handwritten text-3xl font-bold text-ink">Идеи</span>
-                        <span className="block font-typewriter text-[10px] text-pencil">Сохранено</span>
-                    </div>
-                </div>
-             </NavLink>
-
-             {/* Item 4: Profile (ID Card) */}
-             <NavLink to="/profile" className={({isActive}) => 
-                `pointer-events-auto transition-transform duration-300 hover:-translate-y-4 ${isActive ? '-translate-y-2' : 'translate-y-4 opacity-90'}`
-             }>
-                 <div className="relative w-20 h-28 sm:w-24 sm:h-36 bg-white rounded-lg shadow-deep flex flex-col items-center p-2 rotate-[-1deg] border border-gray-200">
-                    <div className="w-12 h-12 bg-gray-200 rounded-full mb-2 grayscale opacity-50"></div>
-                    <div className="w-full h-1 bg-black/10 mb-1"></div>
-                    <div className="w-2/3 h-1 bg-black/10 mb-2"></div>
-                    <span className="font-typewriter text-[10px] text-center mt-auto">ID CARD</span>
-                    <div className="absolute -top-2 w-full flex justify-center"><div className="w-2 h-8 bg-transparent border-2 border-gray-300 rounded-full"></div></div>
-                </div>
+             <NavLink to="/profile" className={({ isActive }) => `flex flex-col items-center gap-1 transition-colors ${isActive ? 'text-brand-purple' : 'text-slate-400'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
              </NavLink>
           </nav>
+        </div>
       )}
     </div>
   );

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Mascot } from '../components/Mascot';
 import { Button } from '../components/Button';
 import { api } from '../api';
-import { UserProfile } from '../domain/types';
+import { UserProfile, CalendarEvent } from '../domain/types';
+import { track } from '../utils/analytics';
 import { RELATIONSHIPS } from '../constants';
 
 export const Profile: React.FC = () => {
@@ -11,160 +13,237 @@ export const Profile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [wishlistCount, setWishlistCount] = useState(0);
 
-  // Event Form
+  // Editing States
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
+  
+  // Event Form State
   const [showEventForm, setShowEventForm] = useState(false);
-  const [newEvent, setNewEvent] = useState({ title: '', date: '', personName: '', relationship: RELATIONSHIPS[0] });
+  const [newEvent, setNewEvent] = useState<{ title: string; date: string; personName: string; relationship: string }>({
+    title: '', date: '', personName: '', relationship: RELATIONSHIPS[0]
+  });
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [user, wishlistIds] = await Promise.all([api.user.get(), api.wishlist.getAll()]);
+      const [user, wishlistIds] = await Promise.all([
+        api.user.get(),
+        api.wishlist.getAll()
+      ]);
       setProfile(user);
+      setNewName(user.name);
       setWishlistCount(wishlistIds.length);
-    } catch (e) { console.error(e); } 
-    finally { setLoading(false); }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateName = async () => {
+    if (!newName.trim()) return;
+    const updated = await api.user.update({ name: newName });
+    setProfile(updated);
+    setIsEditingName(false);
   };
 
   const handleAddEvent = async () => {
     if (!newEvent.title || !newEvent.date) return;
     await api.user.addEvent(newEvent);
     setShowEventForm(false);
+    // Reset form
     setNewEvent({ title: '', date: '', personName: '', relationship: RELATIONSHIPS[0] });
-    loadData();
+    loadData(); // Refresh list
+    track('add_calendar_event');
   };
 
   const handleRemoveEvent = async (id: string) => {
-    if (confirm('Вычеркнуть из планера?')) {
+    if (confirm('Удалить событие?')) {
         await api.user.removeEvent(id);
         loadData();
     }
   };
 
-  if (loading || !profile) return <div className="p-12 font-typewriter text-center text-xl text-pencil">Листаем страницы...</div>;
+  const handleQuickSearch = (event: CalendarEvent) => {
+    track('quick_search_from_profile', { event: event.title });
+    // Navigate to Quiz with pre-filled state
+    navigate('/quiz', { 
+        state: { 
+            name: event.personName || event.title,
+            relationship: event.relationship 
+        } 
+    });
+  };
+
+  const getDaysUntil = (dateStr: string) => {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const target = new Date(dateStr);
+    const diffTime = target.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'Прошло';
+    if (diffDays === 0) return 'Сегодня!';
+    if (diffDays === 1) return 'Завтра';
+    return `Через ${diffDays} дн.`;
+  };
+
+  if (loading || !profile) {
+    return (
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
+  }
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto perspective-1000">
-      {/* LEATHER NOTEBOOK BINDING */}
-      <div className="absolute top-0 bottom-0 left-0 w-8 md:w-12 bg-[#3e2723] rounded-l-lg shadow-2xl z-20 flex flex-col items-center py-8 gap-4">
-          {[...Array(6)].map((_, i) => (
-              <div key={i} className="w-full h-2 bg-[#1b100e] opacity-50 border-b border-white/10"></div>
-          ))}
+    <div className="pt-24 px-4 pb-20">
+      
+      {/* Header Card */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl mb-6 border border-white/50 relative overflow-hidden animate-slide-up-mobile">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+            <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+        </div>
+        
+        <div className="flex items-center gap-4 relative z-10">
+            <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center text-4xl shadow-inner border-4 border-white">
+                {profile.avatarEmoji}
+            </div>
+            <div className="flex-1">
+                {isEditingName ? (
+                    <div className="flex gap-2">
+                        <input 
+                            type="text" 
+                            value={newName} 
+                            onChange={(e) => setNewName(e.target.value)}
+                            className="w-full bg-indigo-50 rounded-lg px-2 py-1 font-bold text-lg text-indigo-900 outline-none border border-indigo-200"
+                            autoFocus
+                        />
+                        <button onClick={handleUpdateName} className="bg-green-500 text-white p-2 rounded-lg">✓</button>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2" onClick={() => setIsEditingName(true)}>
+                        <h1 className="text-2xl font-black text-gray-900">{profile.name}</h1>
+                        <svg className="w-4 h-4 text-gray-400 cursor-pointer hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    </div>
+                )}
+                <div className="text-sm font-bold text-indigo-500 bg-indigo-50 inline-block px-2 py-0.5 rounded-md mt-1">
+                    {profile.level}
+                </div>
+            </div>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-2 gap-4 mt-6">
+            <div className="bg-indigo-50/50 rounded-xl p-3 text-center border border-indigo-100">
+                <div className="text-2xl font-black text-indigo-600">{wishlistCount}</div>
+                <div className="text-[10px] text-gray-500 font-bold uppercase">В вишлисте</div>
+            </div>
+            <div className="bg-yellow-50/50 rounded-xl p-3 text-center border border-yellow-100">
+                <div className="text-2xl font-black text-yellow-600">{profile.events.length}</div>
+                <div className="text-[10px] text-gray-500 font-bold uppercase">Событий</div>
+            </div>
+        </div>
       </div>
 
-      {/* OPEN NOTEBOOK PAGE */}
-      <div className="bg-[#fdfbf7] min-h-[80vh] ml-4 md:ml-6 pl-8 md:pl-12 pr-8 py-12 shadow-paper rounded-r-lg relative texture-paper">
-          
-          {/* RINGS */}
-          <div className="absolute top-0 bottom-0 left-2 w-4 flex flex-col justify-evenly py-8 z-30">
-              {[...Array(5)].map((_, i) => (
-                  <div key={i} className="w-8 h-8 rounded-full border-4 border-gray-400 bg-transparent -ml-6 shadow-sm"></div>
-              ))}
-          </div>
+      {/* Calendar Section */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4 px-2">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                🗓 Календарь
+            </h2>
+            <button 
+                onClick={() => setShowEventForm(!showEventForm)}
+                className="bg-white/20 hover:bg-white/30 text-white text-sm font-bold px-3 py-1.5 rounded-lg transition-colors"
+            >
+                {showEventForm ? 'Отмена' : '+ Событие'}
+            </button>
+        </div>
 
-          {/* BOOKMARK */}
-          <div className="absolute -top-4 right-16 w-8 h-32 bg-red-800 shadow-md z-30 rounded-b-sm"></div>
+        {/* Add Event Form */}
+        {showEventForm && (
+            <div className="bg-white p-4 rounded-2xl shadow-lg mb-4 animate-pop">
+                <h3 className="font-bold text-gray-800 mb-3">Добавить важное событие</h3>
+                <div className="space-y-3">
+                    <input 
+                        type="text" 
+                        placeholder="Название (например, ДР Папы)" 
+                        className="w-full bg-gray-50 p-3 rounded-xl border border-gray-200 outline-none focus:border-indigo-400"
+                        value={newEvent.title}
+                        onChange={e => setNewEvent({...newEvent, title: e.target.value})}
+                    />
+                     <div className="grid grid-cols-2 gap-3">
+                        <input 
+                            type="date" 
+                            className="w-full bg-gray-50 p-3 rounded-xl border border-gray-200 outline-none focus:border-indigo-400 text-gray-600"
+                            value={newEvent.date}
+                            onChange={e => setNewEvent({...newEvent, date: e.target.value})}
+                        />
+                         <select 
+                            className="w-full bg-gray-50 p-3 rounded-xl border border-gray-200 outline-none focus:border-indigo-400 text-gray-600"
+                            value={newEvent.relationship}
+                            onChange={e => setNewEvent({...newEvent, relationship: e.target.value})}
+                         >
+                             {RELATIONSHIPS.map(r => <option key={r} value={r}>{r}</option>)}
+                         </select>
+                     </div>
+                     <input 
+                        type="text" 
+                        placeholder="Имя получателя (для поиска)" 
+                        className="w-full bg-gray-50 p-3 rounded-xl border border-gray-200 outline-none focus:border-indigo-400"
+                        value={newEvent.personName}
+                        onChange={e => setNewEvent({...newEvent, personName: e.target.value})}
+                    />
+                    <Button fullWidth onClick={handleAddEvent}>Сохранить</Button>
+                </div>
+            </div>
+        )}
 
-          {/* 1. IDENTITY CARD (Paperclipped) */}
-          <div className="relative mb-16 rotate-1">
-              {/* Paperclip */}
-              <div className="absolute -top-4 right-1/2 w-8 h-20 border-4 border-gray-400 rounded-full z-20 -translate-x-1/2"></div>
-              
-              <div className="bg-white p-6 shadow-floating max-w-lg mx-auto border border-gray-200 transform rotate-[-1deg]">
-                  <div className="flex items-center gap-6">
-                      <div className="w-24 h-24 bg-gray-100 border-2 border-gray-300 p-1 rotate-[-2deg]">
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-4xl grayscale">
-                              {profile.avatarEmoji}
-                          </div>
-                      </div>
-                      <div>
-                          <h1 className="font-handwritten text-4xl text-ink underline decoration-dashed decoration-gray-300 mb-2">{profile.name}</h1>
-                          <div className="font-typewriter text-xs text-pencil space-y-1">
-                              <p>СТАТУС: {profile.level}</p>
-                              <p>СОХРАНЕНО: {wishlistCount} идей</p>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-          {/* 2. CALENDAR / PLANNER SECTION */}
-          <div className="relative">
-              <div className="flex justify-between items-end mb-6 border-b-2 border-pencil/20 pb-2">
-                  <h2 className="font-handwritten text-3xl text-ink">Важные Даты</h2>
-                  <button 
-                    onClick={() => setShowEventForm(!showEventForm)}
-                    className="font-typewriter text-xs text-pencil hover:text-stamp-red border border-pencil/30 px-2 py-1 rounded-sm bg-white shadow-sm"
-                  >
-                      {showEventForm ? '- ОТМЕНА' : '+ ЗАПИСАТЬ'}
-                  </button>
-              </div>
-
-              {/* HANDWRITTEN EVENTS */}
-              <div className="space-y-6 relative min-h-[200px]">
-                  {/* Notebook lines background */}
-                  <div className="absolute inset-0 z-0 pointer-events-none" style={{background: 'repeating-linear-gradient(transparent, transparent 31px, #a3d4f7 32px)'}}></div>
-
-                  {showEventForm && (
-                      <div className="relative z-10 bg-yellow-100 p-4 shadow-floating rotate-1 w-full max-w-sm ml-auto mb-8 transform transition-all">
-                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-tape/50 rotate-1"></div>
-                          <h3 className="font-handwritten text-xl mb-2 text-ink">Новое событие:</h3>
-                          <div className="space-y-2">
-                              <input 
-                                type="text" 
-                                className="w-full bg-transparent border-b border-pencil/50 font-handwritten text-lg focus:outline-none placeholder:text-gray-400"
-                                value={newEvent.title}
-                                onChange={e => setNewEvent({...newEvent, title: e.target.value})}
-                                placeholder="Название (ДР мамы)..."
-                              />
-                              <input 
-                                type="date" 
-                                className="w-full bg-transparent font-typewriter text-sm focus:outline-none text-pencil"
-                                value={newEvent.date}
-                                onChange={e => setNewEvent({...newEvent, date: e.target.value})}
-                              />
-                              <Button variant="secondary" onClick={handleAddEvent} className="mt-2 w-full text-xs">Вписать</Button>
-                          </div>
-                      </div>
-                  )}
-
-                  {profile.events.length === 0 ? (
-                      <div className="relative z-10 text-center py-12 opacity-50 font-handwritten text-2xl rotate-[-2deg]">
-                          Пока ничего не запланировано...
-                      </div>
-                  ) : (
-                      profile.events.map(event => (
-                          <div key={event.id} className="relative z-10 group flex items-baseline gap-4 py-1 px-2 hover:bg-yellow-50/50 transition-colors">
-                              <span className="font-typewriter text-xs text-red-700 w-24">{event.date}</span>
-                              <span className="font-handwritten text-2xl text-ink flex-grow">{event.title}</span>
-                              <span className="font-typewriter text-[10px] text-gray-400 uppercase tracking-widest">{event.relationship}</span>
-                              
-                              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                                  <button 
-                                    onClick={() => navigate('/quiz', { state: { name: event.personName || event.title, relationship: event.relationship } })}
-                                    title="Подобрать подарок"
-                                    className="text-lg hover:scale-110 transition-transform"
-                                  >
-                                      🎁
-                                  </button>
-                                  <button 
-                                    onClick={() => handleRemoveEvent(event.id)}
-                                    title="Удалить"
-                                    className="text-lg hover:scale-110 transition-transform text-red-500"
-                                  >
-                                      ✕
-                                  </button>
-                              </div>
-                              
-                              {/* Strike-through effect on hover (optional) */}
-                              {/* <div className="absolute bottom-2 left-0 w-full h-px bg-blue-300 opacity-20"></div> */}
-                          </div>
-                      ))
-                  )}
-              </div>
-          </div>
+        {/* Events List */}
+        <div className="space-y-3">
+            {profile.events.length === 0 && !showEventForm ? (
+                <div className="text-center py-8 bg-white/10 rounded-2xl border border-white/10">
+                    <Mascot emotion="thinking" className="w-16 h-16 mx-auto mb-2 opacity-80" />
+                    <p className="text-indigo-100 text-sm">Пока нет событий.<br/>Добавьте дни рождения, чтобы не забыть!</p>
+                </div>
+            ) : (
+                profile.events.map(event => (
+                    <div key={event.id} className="bg-white rounded-2xl p-4 shadow-md flex items-center justify-between group">
+                        <div className="flex items-center gap-4">
+                            <div className="bg-indigo-50 w-14 h-14 rounded-xl flex flex-col items-center justify-center text-indigo-900 border border-indigo-100">
+                                <span className="text-xs font-bold uppercase">{new Date(event.date).toLocaleDateString('ru-RU', { month: 'short' })}</span>
+                                <span className="text-xl font-black">{new Date(event.date).getDate()}</span>
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-gray-800 leading-tight">{event.title}</h3>
+                                <p className="text-xs font-bold text-indigo-500 mt-0.5">{getDaysUntil(event.date)}</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                             <button 
+                                onClick={() => handleQuickSearch(event)}
+                                className="bg-yellow-400 hover:bg-yellow-300 text-indigo-900 text-xs font-bold px-3 py-2 rounded-lg shadow-sm active:scale-95 transition-all flex items-center gap-1"
+                             >
+                                <span>🎁</span> Найти
+                             </button>
+                             <button 
+                                onClick={() => handleRemoveEvent(event.id)}
+                                className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400"
+                             >
+                                ×
+                             </button>
+                        </div>
+                    </div>
+                ))
+            )}
+        </div>
       </div>
+
     </div>
   );
 };

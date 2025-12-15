@@ -5,6 +5,7 @@ import { api } from '../api';
 import { Gift, QuizAnswers } from '../domain/types';
 import { Button } from '../components/Button';
 import { useNavigate } from 'react-router-dom';
+import { track } from '../utils/analytics';
 import { Mascot } from '../components/Mascot';
 
 export const Results: React.FC = () => {
@@ -13,8 +14,13 @@ export const Results: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   
+  // Modal State
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Trigger re-render of wishlists buttons when changed inside modal
+  const [wishlistVersion, setWishlistVersion] = useState(0);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,87 +32,111 @@ export const Results: React.FC = () => {
           navigate('/quiz');
           return;
         }
-        setAnswers(JSON.parse(stored));
-        const recommendation = await api.recommendations.create(JSON.parse(stored));
+        
+        const parsedAnswers: QuizAnswers = JSON.parse(stored);
+        setAnswers(parsedAnswers);
+        
+        // 1. Get Recommendations (IDs)
+        const recommendation = await api.recommendations.create(parsedAnswers);
+        
+        // 2. Hydrate Gifts
         const gifts = await api.gifts.getMany(recommendation.gift_ids);
+        
         setResults(gifts);
       } catch (err) {
         console.error(err);
-        setError("ОШИБКА ПРОЯВКИ. ПОПРОБУЙТЕ ЕЩЕ РАЗ.");
+        setError("Не удалось подобрать подарки. Попробуйте обновить страницу.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchResults();
   }, [navigate]);
 
+  const handleGiftClick = (gift: Gift) => {
+    track('view_gift_details', { id: gift.id });
+    setSelectedGift(gift);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedGift(null), 300); // clear after animation
+  };
+
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
-        <Mascot className="mb-8 animate-spin-slow" emotion="thinking" />
-        <h2 className="font-handwritten font-bold text-4xl animate-pulse text-ink">Проявляем идеи...</h2>
-        <div className="font-typewriter text-xs mt-4 text-pencil">
-            Ищем совпадения в архивах...<br/>
-            Калибруем креативность...
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center text-white">
+        <Mascot className="w-24 h-24 mb-6" emotion="thinking" />
+        <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-xl font-bold animate-pulse">Анализирую интересы...</p>
+        <p className="text-sm text-indigo-200 mt-2">Ищу лучшее среди тысяч товаров</p>
       </div>
     );
   }
 
-  if (error) return <div className="p-12 text-center font-typewriter text-stamp-red font-bold text-xl">{error}</div>;
+  if (error) {
+    return (
+       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+          <p className="text-white text-xl font-bold mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Попробовать снова</Button>
+       </div>
+    );
+  }
+
+  const featured = results[0];
+  const others = results.slice(1);
 
   return (
-    <div className="w-full">
-      {/* HEADER: A Label maker sticker */}
-      <div className="mb-12 text-center relative">
-          <div className="inline-block bg-black text-white px-6 py-2 font-typewriter font-bold tracking-[0.2em] text-lg uppercase shadow-lg transform -rotate-1">
-              РЕЗУЛЬТАТЫ ПОИСКА: {answers?.name}
-          </div>
-          <div className="mt-2 font-handwritten text-gray-500 rotate-1">
-              Найдено {results.length} вариантов
-          </div>
+    <div className="pt-6 px-4 pb-12">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-white">Лучшие варианты</h1>
+        <button className="bg-white/20 p-2 rounded-lg text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+        </button>
       </div>
 
-      {/* GRID: Contact Sheet layout */}
-      <div className="bg-white p-4 sm:p-8 shadow-paper relative">
-          {/* Film sprocket holes decorative (CSS gradient) */}
-          <div className="absolute top-0 left-0 w-full h-4 bg-black" style={{backgroundImage: 'radial-gradient(circle, transparent 20%, black 21%)', backgroundSize: '20px 20px', backgroundPosition: 'center'}}></div>
-          <div className="absolute bottom-0 left-0 w-full h-4 bg-black" style={{backgroundImage: 'radial-gradient(circle, transparent 20%, black 21%)', backgroundSize: '20px 20px', backgroundPosition: 'center'}}></div>
+      <div className="space-y-6">
+        {/* Featured Item */}
+        {featured && (
+            <div className="animate-pop">
+                <GiftCard 
+                  gift={featured} 
+                  featured 
+                  onClick={handleGiftClick} 
+                  onToggleWishlist={() => setWishlistVersion(v => v + 1)}
+                />
+            </div>
+        )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 py-6">
-              {results.map((gift, i) => (
-                 <div key={gift.id} className="transform transition-transform hover:scale-[1.02] hover:z-10 relative">
-                    {/* Index Number */}
-                    <div className="absolute -top-2 -left-2 bg-yellow-300 w-6 h-6 rounded-full flex items-center justify-center font-typewriter text-xs font-bold shadow-sm z-20 border border-white">
-                        {i + 1}
-                    </div>
-                    
-                    <GiftCard 
-                        gift={gift} 
-                        variant="polaroid"
-                        onClick={(g) => { setSelectedGift(g); setIsModalOpen(true); }}
-                    />
-                 </div>
-              ))}
-          </div>
+        {/* Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {others.map((gift) => (
+                <GiftCard 
+                  key={gift.id} 
+                  gift={gift} 
+                  onClick={handleGiftClick}
+                  onToggleWishlist={() => setWishlistVersion(v => v + 1)}
+                />
+            ))}
+        </div>
       </div>
       
-      <div className="mt-16 text-center">
-          <Button variant="secondary" onClick={() => navigate('/quiz')}>
-              ↻ ПОПРОБОВАТЬ СНОВА
-          </Button>
-          <div className="mt-4">
-               <span className="font-handwritten text-gray-400 text-xl">Не то? Давайте перепишем анкету.</span>
-          </div>
+      <div className="mt-8 text-center pb-8">
+          <Button variant="ghost" onClick={() => navigate('/quiz')}>Начать заново</Button>
       </div>
 
+      {/* Details Modal */}
       {selectedGift && (
         <GiftDetailsModal 
           gift={selectedGift} 
           isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleCloseModal}
           answers={answers}
-          onWishlistChange={() => {}}
+          onWishlistChange={() => setWishlistVersion(v => v + 1)}
         />
       )}
     </div>
