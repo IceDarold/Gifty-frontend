@@ -51,50 +51,6 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
       return count;
   }
 
-  const getMarketplaceBadge = (mp: string) => {
-    switch (mp) {
-        case 'Ozon':
-            return (
-               <div className="h-5 px-2 bg-[#005bff] rounded-[6px] flex items-center justify-center shadow-sm">
-                 <img 
-                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ozon.ru_Logo_2019.svg/320px-Ozon.ru_Logo_2019.svg.png" 
-                   alt="Ozon" 
-                   className="h-2.5 w-auto brightness-0 invert" 
-                   loading="lazy"
-                 />
-               </div>
-            );
-        case 'WB':
-             return (
-                <div className="h-5 px-2 bg-gradient-to-r from-[#cb11ab] to-[#e617ca] rounded-[6px] flex items-center justify-center shadow-sm">
-                     <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Wildberries_logo.svg/320px-Wildberries_logo.svg.png" 
-                        alt="WB" 
-                        className="h-2.5 w-auto brightness-0 invert"
-                        loading="lazy" 
-                     />
-                </div>
-             );
-        case 'Amazon':
-             return (
-                <div className="h-5 px-2 bg-[#232f3e] rounded-[6px] flex items-center justify-center shadow-sm">
-                     <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png" 
-                        alt="Amazon" 
-                        className="h-3 w-auto brightness-0 invert" 
-                        loading="lazy"
-                     />
-                </div>
-             );
-        default:
-             return (
-                <div className="h-5 px-2 bg-gray-800 rounded-[6px] flex items-center justify-center shadow-sm">
-                    <span className="text-white text-[9px] font-bold">{mp}</span>
-                </div>
-             );
-    }
-  };
-
   return (
     <div 
       onClick={handleCardClick}
@@ -120,8 +76,7 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
           loading="lazy"
         />
         
-        {/* Wishlist Button - Marketplace Style (Top Right) */}
-        {/* Enlarged hit area for mobile usability */}
+        {/* Wishlist Button */}
         <button 
           onClick={handleWishlist}
           aria-label={saved ? "Удалить из избранного" : "Добавить в избранное"}
@@ -133,12 +88,7 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
         </button>
 
         {/* AI Match Badge (Subtle overlay at bottom) */}
-        <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end">
-             {/* Marketplace Badge (Logo) */}
-             <div>
-                {getMarketplaceBadge(gift.marketplace)}
-             </div>
-             
+        <div className="absolute bottom-2 left-2 right-2 flex justify-end items-end">
              {/* AI Confidence (Optional visual cue) */}
              {gift.tags && (
                 <div className="bg-brand-blue/90 backdrop-blur-md text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[6px] shadow-sm flex items-center gap-1">
@@ -154,17 +104,17 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
         
         {/* Price Row */}
         <div className="flex items-baseline gap-2 mb-1">
-           <span className="text-lg font-bold text-gray-900 leading-none">
+           <span className="text-lg font-extrabold text-gray-900 leading-none tracking-tight">
               {formatPrice(gift.price)}
            </span>
            {/* Mock Discount Price for visual complexity */}
-           <span className="text-xs text-gray-400 line-through decoration-gray-300">
+           <span className="text-xs text-gray-400 line-through decoration-gray-300 font-medium">
               {formatPrice(Math.round(gift.price * 1.2))}
            </span>
         </div>
 
         {/* Title */}
-        <h3 className="text-[13px] font-normal text-gray-700 leading-snug line-clamp-2 mb-2 h-[2.5em]">
+        <h3 className="text-[13px] font-medium text-gray-700 leading-snug line-clamp-2 mb-2 h-[2.5em] tracking-tight">
             {gift.title}
         </h3>
 
@@ -178,7 +128,7 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
                     {gift.reviews ? gift.reviews.rating.toFixed(1) : '5.0'}
                 </span>
             </div>
-            <span className="text-[10px] text-gray-400 pt-0.5">
+            <span className="text-[10px] text-gray-400 pt-0.5 font-medium">
                 • {gift.reviews ? formatCompactReview(gift.reviews.count) : 'New'}
             </span>
         </div>

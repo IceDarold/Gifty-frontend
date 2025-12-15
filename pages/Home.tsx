@@ -170,10 +170,10 @@ const HorizontalSection: React.FC<{
   return (
     <div id={id} className="mb-10 relative z-10 scroll-mt-32">
       <div className="px-6 mb-4">
-         <h2 className="text-xl font-bold text-white leading-tight flex items-center gap-2">
+         <h2 className="text-xl font-bold text-white leading-tight flex items-center gap-2 tracking-tight">
             {title}
          </h2>
-         {subtitle && <p className="text-white/70 text-sm font-medium mt-1">{subtitle}</p>}
+         {subtitle && <p className="text-white/70 text-sm font-medium mt-1 tracking-tight">{subtitle}</p>}
       </div>
       <div className="flex overflow-x-auto gap-4 px-6 pb-8 no-scrollbar snap-x -mx-2 md:mx-0">
          {gifts.map((gift) => (
@@ -390,14 +390,14 @@ export const Home: React.FC = () => {
                />
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-[1.1] drop-shadow-lg tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-[1.1] drop-shadow-lg tracking-tighter">
               Дарите <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">
                 волшебство
               </span>
             </h1>
             
-            <p className="text-white/80 text-sm max-w-xs mx-auto mb-8 font-medium leading-relaxed">
+            <p className="text-white/80 text-sm max-w-xs mx-auto mb-8 font-medium leading-relaxed tracking-tight">
                Твой персональный AI-Санта.<br/> Подберет подарок за 30 секунд.
             </p>
         </div>
@@ -412,15 +412,15 @@ export const Home: React.FC = () => {
       {/* Horizontal Sections with IDs for Scroll Detection */}
       <HorizontalSection 
         id="section-cozy"
-        title="Милые идеи для неё 💖" 
-        subtitle="Уютные подарки, чтобы согреть душу"
+        title="Зимний уют ❄️" 
+        subtitle="Согревающие подарки для души и тела"
         gifts={cozyGifts} 
         onGiftClick={openGift} 
       />
 
       <HorizontalSection 
         id="section-tech"
-        title="Техно-тренды ⚡️" 
+        title="Магия технологий ⚡️" 
         subtitle="Гаджеты, о которых все мечтают"
         gifts={techGifts} 
         onGiftClick={openGift} 
@@ -430,7 +430,7 @@ export const Home: React.FC = () => {
       <div className="relative z-10 px-4 mt-6">
         <div className="flex items-center gap-2 mb-6 px-2">
            <span className="text-2xl animate-pulse">🎁</span>
-           <h2 className="text-2xl font-bold text-white">Вдохновение дня</h2>
+           <h2 className="text-2xl font-bold text-white tracking-tight">Вдохновение дня</h2>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -445,7 +445,7 @@ export const Home: React.FC = () => {
                 <span className="inline-block bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider mb-3 shadow-md">
                    🎄 Праздник к нам приходит
                 </span>
-                <h3 className="text-brand-dark font-black text-2xl leading-tight">
+                <h3 className="text-brand-dark font-black text-2xl leading-tight tracking-tight">
                    Не знаешь что дарить?
                 </h3>
                 <p className="text-gray-500 text-sm mt-1 font-medium">

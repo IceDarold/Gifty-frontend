@@ -74,47 +74,6 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
 
   const formatPrice = (price: number) => new Intl.NumberFormat('ru-RU').format(price) + ' ₽';
 
-  const getMarketplaceLogo = (mp: string) => {
-    switch (mp) {
-        case 'Ozon':
-            return (
-               <div className="h-6 px-3 bg-[#005bff] rounded-md flex items-center justify-center">
-                 <img 
-                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ozon.ru_Logo_2019.svg/320px-Ozon.ru_Logo_2019.svg.png" 
-                   alt="Ozon" 
-                   className="h-3.5 w-auto brightness-0 invert" 
-                 />
-               </div>
-            );
-        case 'WB':
-             return (
-                <div className="h-6 px-3 bg-gradient-to-r from-[#cb11ab] to-[#e617ca] rounded-md flex items-center justify-center">
-                     <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Wildberries_logo.svg/320px-Wildberries_logo.svg.png" 
-                        alt="WB" 
-                        className="h-3.5 w-auto brightness-0 invert" 
-                     />
-                </div>
-             );
-        case 'Amazon':
-             return (
-                <div className="h-6 px-3 bg-[#232f3e] rounded-md flex items-center justify-center">
-                     <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png" 
-                        alt="Amazon" 
-                        className="h-4 w-auto brightness-0 invert" 
-                     />
-                </div>
-             );
-        default:
-             return (
-                <div className="h-6 px-3 bg-gray-800 rounded-md flex items-center justify-center">
-                    <span className="text-white text-[10px] font-bold">{mp}</span>
-                </div>
-             );
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center pointer-events-none">
       
@@ -176,10 +135,6 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
                  </h2>
                  <div className="text-right">
                     <div className="text-xl font-black text-brand-blue">{formatPrice(gift.price)}</div>
-                    {/* Marketplace Badge */}
-                    <div className="flex justify-end mt-1">
-                        {getMarketplaceLogo(gift.marketplace)}
-                    </div>
                  </div>
               </div>
 
@@ -232,8 +187,10 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
              </button>
              
              <Button fullWidth onClick={() => alert('Переход в магазин... (Демо)')} className="flex items-center justify-center gap-2">
-                <span>Купить на</span>
-                {getMarketplaceLogo(gift.marketplace)}
+                <span>Купить</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
              </Button>
         </div>
 
