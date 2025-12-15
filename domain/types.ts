@@ -11,7 +11,7 @@ export interface ReviewItem {
 export interface GiftReviews {
   rating: number;
   count: number;
-  source?: "Ozon" | "WB" | "Partner" | "Amazon" | "Other";
+  source?: "Ozon" | "WB" | "Partner" | "Amazon" | "Other" | "AliExpress";
   highlights?: string[];
   items: ReviewItem[];
 }

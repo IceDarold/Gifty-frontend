@@ -92,21 +92,23 @@ export const MockServer = {
   async getRecommendations(answers: QuizAnswers): Promise<RecommendationResponseDTO> {
     await delay(1200); // AI "Thinking" delay
 
-    // Logic migrated from old services/recommendation.ts
     const scoredGifts = MOCK_DB_GIFTS.map(gift => {
       let score = 0;
       
-      let maxBudget = 1000000;
-      if (answers.budget.includes('До 2 000')) maxBudget = 2000;
-      else if (answers.budget.includes('2 000 - 5 000')) maxBudget = 5000;
-      else if (answers.budget.includes('5 000 - 10 000')) maxBudget = 10000;
-      else if (answers.budget.includes('10 000 - 30 000')) maxBudget = 30000;
-      else if (answers.budget.includes('30 000 ₽ +')) maxBudget = 1000000;
+      let maxBudget = 5000; // Default fallback
+      if (answers.budget.includes('До 500')) maxBudget = 500;
+      else if (answers.budget.includes('500 - 1 000')) maxBudget = 1000;
+      else if (answers.budget.includes('1 000 - 1 500')) maxBudget = 1500;
+      else if (answers.budget.includes('1 500 - 2 000')) maxBudget = 2000;
+      else if (answers.budget.includes('Не важно')) maxBudget = 10000;
       
-      if (gift.price <= maxBudget * 1.2) {
-        score += 5;
+      // Strict budget filtering for lower brackets, loose for higher
+      if (gift.price <= maxBudget * 1.1) {
+        score += 10;
+      } else if (gift.price <= maxBudget * 1.3) {
+        score += 2; // Slightly over budget is okay-ish
       } else {
-        score -= 10;
+        score -= 20; // Too expensive
       }
 
       const relationLower = answers.relationship.toLowerCase();
