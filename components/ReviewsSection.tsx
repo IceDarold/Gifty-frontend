@@ -17,22 +17,21 @@ export const ReviewsSection: React.FC<Props> = ({ reviews }) => {
   }, [reviews]);
 
   return (
-    <div className="mt-12 border-t border-ink/10 pt-8">
+    <div className="mt-12 pt-8 border-t-4 border-black">
       {/* Header */}
-      <div className="flex items-baseline justify-between mb-8">
-        <h3 className="font-mono text-xs uppercase tracking-widest">User_Feedback_Log</h3>
-        <div className="font-mono text-sm">
-             Rating: <span className="font-bold text-ink">[{reviews.rating.toFixed(1)} / 5.0]</span>
-             <span className="text-graphite ml-2">:: n={reviews.count}</span>
-        </div>
+      <div className="bg-black text-acid-green p-4 font-mono text-sm mb-6 flex justify-between items-center">
+        <span className="uppercase font-bold blink">>> ACCESSING_USER_OPINIONS...</span>
+        <span>
+             SCORE: {reviews.rating.toFixed(1)}/5.0
+        </span>
       </div>
 
       {/* Highlights Tag Cloud */}
       {reviews.highlights && (
         <div className="flex flex-wrap gap-2 mb-8">
              {reviews.highlights.map(h => (
-               <span key={h} className="font-mono text-[10px] border border-ink/20 px-2 py-1 uppercase tracking-wider text-graphite">
-                 {h}
+               <span key={h} className="font-mono text-xs border-2 border-black bg-white px-2 py-1 uppercase font-bold hover:bg-black hover:text-white transition-colors cursor-help">
+                 #{h}
                </span>
              ))}
         </div>
@@ -40,30 +39,27 @@ export const ReviewsSection: React.FC<Props> = ({ reviews }) => {
 
       {/* Photos Strip */}
       {allPhotos.length > 0 && (
-         <div className="mb-8 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+         <div className="mb-8 flex gap-4 overflow-x-auto pb-4 no-scrollbar">
                {allPhotos.map((photo, i) => (
                  <button 
                     key={i} 
                     onClick={() => setLightboxIndex(i)}
-                    className="shrink-0 w-24 h-24 bg-gray-100 border border-ink/10 hover:border-accent transition-colors relative"
+                    className="shrink-0 w-24 h-24 border-2 border-black bg-white hover:bg-acid-green p-1 transition-colors relative"
                  >
-                    <img src={photo} alt="UGC" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" />
-                    <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white opacity-50"></div>
+                    <img src={photo} alt="UGC" className="w-full h-full object-cover grayscale contrast-125" />
                  </button>
                ))}
          </div>
       )}
 
-      {/* Reviews List - Text Only */}
-      <div className="space-y-8">
-          {reviews.items.slice(0, 3).map(item => (
-            <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4">
-               <div className="col-span-3 font-mono text-xs text-graphite">
-                  <div>{item.date}</div>
-                  <div>User: {item.author}</div>
-                  <div>Score: {item.rating}/5</div>
+      {/* Reviews List - Terminal Style */}
+      <div className="space-y-4 font-mono text-sm">
+          {reviews.items.slice(0, 3).map((item, idx) => (
+            <div key={item.id} className="border-l-2 border-black pl-4 py-2 hover:bg-gray-50">
+               <div className="text-gray-500 text-xs mb-1 uppercase">
+                  [{item.date}] // USER: {item.author} // RATING: {item.rating}
                </div>
-               <div className="col-span-9 font-serif text-lg leading-relaxed border-l border-ink/10 pl-4">
+               <div className="font-bold leading-relaxed">
                    "{item.text}"
                </div>
             </div>

@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { api } from '../api';
-import { UserProfile, CalendarEvent } from '../domain/types';
-import { track } from '../utils/analytics';
+import { UserProfile } from '../domain/types';
 import { RELATIONSHIPS } from '../constants';
 
 export const Profile: React.FC = () => {
@@ -37,108 +36,120 @@ export const Profile: React.FC = () => {
   };
 
   const handleRemoveEvent = async (id: string) => {
-    if (confirm('Delete record?')) {
+    if (confirm('ERASE DATA PERMANENTLY?')) {
         await api.user.removeEvent(id);
         loadData();
     }
   };
 
-  if (loading || !profile) return <div className="p-12 font-mono text-center">Loading Dossier...</div>;
+  if (loading || !profile) return <div className="p-12 font-mono text-center text-xl">DECRYPTING USER DATA...</div>;
 
   return (
-    <div className="animate-reveal">
-      
+    <div className="relative">
+      <div className="absolute top-0 right-0 stamp font-display font-black text-4xl text-error opacity-20 -rotate-12 border-4 border-error p-2 pointer-events-none select-none">
+          CONFIDENTIAL
+      </div>
+
       {/* 1. IDENTITY BLOCK */}
-      <section className="mb-16 border-b border-ink">
-          <div className="flex justify-between items-baseline mb-2">
-              <h1 className="font-mono text-xs uppercase tracking-widest text-graphite">User_Dossier_ID: {profile.name}</h1>
-              <span className="font-mono text-xs text-accent">Status: Active</span>
+      <section className="mb-16 border-b-4 border-black pb-8">
+          <div className="flex justify-between items-baseline mb-4">
+              <h1 className="font-mono text-xs uppercase bg-black text-white px-2 py-1">Subject_Dossier</h1>
+              <span className="font-mono text-xs text-acid-green bg-black px-2 py-1 animate-pulse">● SURVEILLANCE ACTIVE</span>
           </div>
           
-          <div className="py-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <div>
-                  <h2 className="font-serif text-5xl font-light mb-2">{profile.name}</h2>
-                  <div className="font-mono text-sm text-graphite">
-                      Level: <span className="text-ink">{profile.level}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+              <div className="border-l-4 border-black pl-6">
+                  <h2 className="font-display font-black text-6xl uppercase leading-[0.8] mb-4">{profile.name}</h2>
+                  <div className="font-mono text-sm bg-concrete inline-block px-2 border border-black">
+                      CLEARANCE_LEVEL: <span className="font-bold">{profile.level.toUpperCase()}</span>
                   </div>
               </div>
-              <div className="font-mono text-sm space-y-2 md:text-right">
-                   <div>Wishlist_Items: <span className="text-accent">{wishlistCount}</span></div>
-                   <div>Events_Tracked: <span className="text-accent">{profile.events.length}</span></div>
+              <div className="font-mono text-sm space-y-2 md:text-right p-4 border-2 border-black border-dashed bg-gray-50">
+                   <div className="flex justify-between md:justify-end gap-4">
+                       <span>WISHLIST_ARTIFACTS:</span> 
+                       <span className="font-bold bg-black text-white px-1">{wishlistCount}</span>
+                   </div>
+                   <div className="flex justify-between md:justify-end gap-4">
+                       <span>OBLIGATORY_EVENTS:</span> 
+                       <span className="font-bold bg-black text-white px-1">{profile.events.length}</span>
+                   </div>
               </div>
           </div>
       </section>
 
       {/* 2. CALENDAR LOG */}
       <section>
-          <div className="flex justify-between items-center mb-8">
-              <h2 className="font-serif text-2xl italic">Temporal Events Log</h2>
+          <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-2">
+              <h2 className="font-display font-bold text-4xl uppercase">Obligations</h2>
               <button 
                 onClick={() => setShowEventForm(!showEventForm)}
-                className="font-mono text-xs uppercase hover:text-accent border border-ink px-3 py-1 hover:bg-ink hover:text-paper transition-all"
+                className="font-mono text-xs font-bold uppercase hover:bg-black hover:text-white border-2 border-black px-4 py-2 transition-all shadow-[4px_4px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
               >
-                  {showEventForm ? '[- Cancel]' : '[+ New Record]'}
+                  {showEventForm ? 'ABORT' : 'ADD_NEW_THREAT'}
               </button>
           </div>
 
           {showEventForm && (
-              <div className="bg-paper border border-ink p-6 mb-12 relative reticle">
+              <div className="bg-acid-green border-2 border-black p-6 mb-12 shadow-[8px_8px_0px_#000]">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div className="space-y-1">
-                          <label className="font-mono text-xs uppercase text-graphite">Event_Title</label>
+                          <label className="font-mono text-xs uppercase font-bold">Event_Designation</label>
                           <input 
                             type="text" 
-                            className="w-full bg-transparent border-b border-ink py-2 font-serif text-lg outline-none focus:border-accent"
+                            className="w-full bg-white border-2 border-black py-2 px-4 font-mono text-lg outline-none focus:shadow-[4px_4px_0px_#fff]"
                             value={newEvent.title}
                             onChange={e => setNewEvent({...newEvent, title: e.target.value})}
-                            placeholder="e.g. Father's Birthday"
+                            placeholder="e.g. BIRTHDAY_MOM_FINAL"
                           />
                       </div>
                       <div className="space-y-1">
-                          <label className="font-mono text-xs uppercase text-graphite">Date_Timestamp</label>
+                          <label className="font-mono text-xs uppercase font-bold">Deadline</label>
                           <input 
                             type="date" 
-                            className="w-full bg-transparent border-b border-ink py-2 font-mono text-sm outline-none focus:border-accent"
+                            className="w-full bg-white border-2 border-black py-2 px-4 font-mono text-sm outline-none focus:shadow-[4px_4px_0px_#fff]"
                             value={newEvent.date}
                             onChange={e => setNewEvent({...newEvent, date: e.target.value})}
                           />
                       </div>
                   </div>
-                  <Button fullWidth onClick={handleAddEvent} variant="secondary">Commit to Database</Button>
+                  <Button fullWidth onClick={handleAddEvent} variant="secondary">SUBMIT TO RECORD</Button>
               </div>
           )}
 
           {/* TABLE LIST */}
-          <div className="border-t border-ink/20">
+          <div className="space-y-4">
               {profile.events.length === 0 ? (
-                  <div className="py-8 font-mono text-xs text-graphite text-center">No records found in database.</div>
+                  <div className="py-12 border-2 border-black border-dashed font-mono text-sm text-center uppercase opacity-50">
+                      // NO UPCOMING SOCIAL CONTRACTS DETECTED //
+                  </div>
               ) : (
                   profile.events.map(event => (
-                      <div key={event.id} className="group py-6 border-b border-ink/10 flex flex-col md:flex-row justify-between items-baseline gap-4 hover:bg-white transition-colors px-2">
-                          <div className="flex gap-6 items-baseline w-full md:w-auto">
-                              <span className="font-mono text-xs w-24 text-graphite">{event.date}</span>
-                              <span className="font-serif text-xl">{event.title}</span>
+                      <div key={event.id} className="group relative border-2 border-black p-4 bg-white hover:-translate-y-1 transition-transform">
+                          <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <button 
+                                    onClick={() => navigate('/quiz', { state: { name: event.personName || event.title, relationship: event.relationship } })}
+                                    className="bg-black text-white text-xs px-2 hover:bg-acid-green hover:text-black font-mono"
+                                >
+                                    SCAN
+                                </button>
+                                <button 
+                                    onClick={() => handleRemoveEvent(event.id)}
+                                    className="bg-error text-white text-xs px-2 hover:bg-black font-mono"
+                                >
+                                    X
+                                </button>
                           </div>
-                          <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button 
-                                onClick={() => navigate('/quiz', { state: { name: event.personName || event.title, relationship: event.relationship } })}
-                                className="font-mono text-xs uppercase text-accent hover:underline"
-                              >
-                                  [Initiate Search]
-                              </button>
-                              <button 
-                                onClick={() => handleRemoveEvent(event.id)}
-                                className="font-mono text-xs uppercase text-alert hover:underline"
-                              >
-                                  [Delete]
-                              </button>
+                          
+                          <div className="flex flex-col md:flex-row justify-between items-baseline gap-2">
+                              <span className="font-mono text-xs font-bold bg-gray-200 px-1">{event.date}</span>
+                              <span className="font-display font-bold text-2xl uppercase">{event.title}</span>
+                              <span className="font-mono text-xs border border-black px-1 rounded-full">{event.relationship}</span>
                           </div>
                       </div>
                   ))
               )}
           </div>
       </section>
-
     </div>
   );
 };
