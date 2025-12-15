@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Gift, QuizAnswers } from '../domain/types';
 import { api } from '../api';
 import { isInWishlist, addToWishlist, removeFromWishlist } from '../utils/storage'; 
@@ -28,11 +29,6 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
   useEffect(() => {
     if (isOpen) {
         // Reset or set initial state based on the current target gift
-        // Note: We use a separate internal 'gift' state to allow navigating to similar gifts 
-        // without closing the modal.
-        
-        // If the prop changed (user opened a new modal from outside), update state
-        // But if we are just inside, we handle updates via handleSwitchGift
     }
   }, [isOpen]);
 
@@ -74,7 +70,7 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
           setGift(initialGift);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialGift.id, isOpen]); // Only reset when parent changes the specific gift or re-opens
+  }, [initialGift.id, isOpen]); 
 
   // Handle Escape and Body Lock
   useEffect(() => {
@@ -112,7 +108,7 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
 
   const formatPrice = (price: number) => new Intl.NumberFormat('ru-RU').format(price) + ' ₽';
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center pointer-events-none">
       
       {/* Backdrop */}
@@ -299,6 +295,7 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

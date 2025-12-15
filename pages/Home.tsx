@@ -164,14 +164,42 @@ const HorizontalSection: React.FC<{
   gifts: Gift[]; 
   onGiftClick: (g: Gift) => void;
   id?: string;
-  reverse?: boolean;
-}> = ({ title, subtitle, gifts, onGiftClick, id, reverse = false }) => {
+}> = ({ title, subtitle, gifts, onGiftClick, id }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Initialize scroll position to the start of the second set
+  // This allows the user to immediately scroll left without hitting a wall
+  useEffect(() => {
+    if (gifts.length === 0 || !scrollRef.current) return;
+
+    const el = scrollRef.current;
+    // Small timeout to ensure layout is calculated
+    setTimeout(() => {
+        const singleSetWidth = el.scrollWidth / 4;
+        el.scrollLeft = singleSetWidth;
+    }, 0);
+  }, [gifts]);
+
   if (gifts.length === 0) return null;
 
-  // Duplicate items 3 times to ensure smooth looping even on wide screens
-  // The animation moves -50%, so we need [Items][Items] at minimum. 
-  // [Items][Items][Items][Items] makes it super safe.
+  // Duplicate items 4 times to ensure we have enough buffer for infinite looping
   const loopedGifts = [...gifts, ...gifts, ...gifts, ...gifts];
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const el = scrollRef.current;
+    const singleSetWidth = el.scrollWidth / 4;
+
+    // Logic: Keep the user in the middle sets (Set 2 and 3)
+    // If we scroll past the 3rd set (into 4th), jump back to 2nd set
+    if (el.scrollLeft >= singleSetWidth * 3) {
+        el.scrollLeft = el.scrollLeft - singleSetWidth;
+    }
+    // If we scroll back to the start of the 1st set, jump forward to 2nd set
+    else if (el.scrollLeft <= 50) { // Small buffer
+        el.scrollLeft = el.scrollLeft + singleSetWidth;
+    }
+  };
 
   return (
     <div id={id} className="mb-10 relative z-10 scroll-mt-32">
@@ -182,11 +210,13 @@ const HorizontalSection: React.FC<{
          {subtitle && <p className="text-white/70 text-sm font-medium mt-1 tracking-tight">{subtitle}</p>}
       </div>
       
-      {/* Marquee Container with Mask */}
-      <div className="relative w-full overflow-hidden mask-gradient-x">
+      {/* Container with Mask */}
+      <div className="relative w-full mask-gradient-x">
          <div 
-            className={`flex w-max gap-4 animate-scroll hover-pause ${reverse ? 'flex-row-reverse' : ''}`}
-            style={{ animationDuration: '40s' }}
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-6 cursor-grab active:cursor-grabbing"
+            style={{ scrollBehavior: 'auto' }} // Ensure jumps are instant
          >
             {loopedGifts.map((gift, index) => (
               <div 
@@ -439,7 +469,7 @@ export const Home: React.FC = () => {
         subtitle="Гаджеты, о которых все мечтают"
         gifts={techGifts} 
         onGiftClick={openGift} 
-        reverse // Optional: Make this one scroll right? (Requires CSS keyframe change or just standard left scroll for consistency)
+        // Removed reverse prop as it works best left-to-right for manual scroll
       />
 
       {/* Feed Section */}
