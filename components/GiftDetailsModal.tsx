@@ -5,6 +5,7 @@ import { isInWishlist, addToWishlist, removeFromWishlist } from '../utils/storag
 import { track } from '../utils/analytics';
 import { Button } from './Button';
 import { ReviewsSection } from './ReviewsSection';
+import { GiftCard } from './GiftCard';
 
 interface Props {
   gift: Gift;
@@ -16,30 +17,64 @@ interface Props {
 
 export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, isOpen, onClose, onWishlistChange }) => {
   const [gift, setGift] = useState<Gift>(initialGift);
+  const [similarGifts, setSimilarGifts] = useState<Gift[]>([]);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [matchScore, setMatchScore] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Initialize and update when props or internal navigation changes
   useEffect(() => {
     if (isOpen) {
-        setGift(initialGift);
-        setSaved(isInWishlist(initialGift.id));
-        setMatchScore(0);
-        setShowFullDesc(false);
+        // Reset or set initial state based on the current target gift
+        // Note: We use a separate internal 'gift' state to allow navigating to similar gifts 
+        // without closing the modal.
         
-        // Animate score random for demo
+        // If the prop changed (user opened a new modal from outside), update state
+        // But if we are just inside, we handle updates via handleSwitchGift
+    }
+  }, [isOpen]);
+
+  // Specific effect to handle data fetching when the displayed gift ID changes
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    // 1. Reset visual states
+    setSaved(isInWishlist(gift.id));
+    setMatchScore(0);
+    setShowFullDesc(false);
+    if(contentRef.current) contentRef.current.scrollTop = 0;
+
+    // 2. Animate Score only if answers exist
+    if (answers) {
         const targetScore = Math.floor(Math.random() * (99 - 88) + 88);
         setTimeout(() => setMatchScore(targetScore), 400);
-
-        setLoading(true);
-        api.gifts.getById(initialGift.id)
-            .then(fullGift => setGift(fullGift))
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
     }
-  }, [initialGift.id, isOpen]);
+
+    // 3. Fetch Full Details & Similar
+    setLoading(true);
+    
+    Promise.all([
+        api.gifts.getById(gift.id),
+        api.gifts.getSimilar(gift.id)
+    ])
+    .then(([fullGift, similar]) => {
+        setGift(fullGift);
+        setSimilarGifts(similar);
+    })
+    .catch(err => console.error(err))
+    .finally(() => setLoading(false));
+
+  }, [gift.id, isOpen, answers]);
+
+  // Sync with prop when modal opens first time
+  useEffect(() => {
+      if(isOpen && initialGift.id !== gift.id) {
+          setGift(initialGift);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialGift.id, isOpen]); // Only reset when parent changes the specific gift or re-opens
 
   // Handle Escape and Body Lock
   useEffect(() => {
@@ -55,6 +90,11 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
       };
     }
   }, [isOpen, onClose]);
+
+  const handleSwitchGift = (newGift: Gift) => {
+      setGift(newGift);
+      track('click_similar_gift', { from: gift.id, to: newGift.id });
+  };
 
   const handleWishlist = () => {
     if (saved) {
@@ -106,24 +146,26 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#FAFAFA]" />
               
-              {/* Floating Match Score */}
-              <div className="absolute bottom-6 right-6 animate-pop">
-                 <div className="bg-white/80 backdrop-blur-xl p-2 pr-4 rounded-2xl shadow-xl border border-white/50 flex items-center gap-3">
-                     <div className="relative w-12 h-12">
-                        <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                          <path className="text-gray-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
-                          <path className="text-brand-blue drop-shadow-[0_0_4px_rgba(0,111,255,0.5)]" strokeDasharray={`${matchScore}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center text-xs font-black text-brand-blue">
-                           {matchScore}%
+              {/* Floating Match Score - SHOWN ONLY IF ANSWERS EXIST */}
+              {answers && matchScore > 0 && (
+                <div className="absolute bottom-6 right-6 animate-pop">
+                    <div className="bg-white/80 backdrop-blur-xl p-2 pr-4 rounded-2xl shadow-xl border border-white/50 flex items-center gap-3">
+                        <div className="relative w-12 h-12">
+                            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-gray-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className="text-brand-blue drop-shadow-[0_0_4px_rgba(0,111,255,0.5)]" strokeDasharray={`${matchScore}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center text-xs font-black text-brand-blue">
+                            {matchScore}%
+                            </div>
                         </div>
-                     </div>
-                     <div>
-                        <div className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">AI Match</div>
-                        <div className="text-xs font-bold text-gray-800">Идеально</div>
-                     </div>
-                 </div>
-              </div>
+                        <div>
+                            <div className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">AI Match</div>
+                            <div className="text-xs font-bold text-gray-800">Идеально</div>
+                        </div>
+                    </div>
+                </div>
+              )}
            </div>
 
            {/* --- BODY CONTENT --- */}
@@ -199,6 +241,26 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
                 <div className="mb-8">
                    <ReviewsSection reviews={gift.reviews} />
                 </div>
+              )}
+
+              {/* Similar Products */}
+              {similarGifts.length > 0 && (
+                  <div className="mb-12 border-t border-gray-100 pt-8">
+                      <h3 className="text-xl font-bold text-brand-dark mb-4 px-1">Вам может понравиться</h3>
+                      <div className="overflow-x-auto no-scrollbar -mx-6 px-6 pb-4">
+                          <div className="flex gap-4 w-max">
+                              {similarGifts.map(similar => (
+                                  <div 
+                                    key={similar.id} 
+                                    className="w-[160px] shrink-0"
+                                    onClick={() => handleSwitchGift(similar)}
+                                  >
+                                      <GiftCard gift={similar} />
+                                  </div>
+                              ))}
+                          </div>
+                      </div>
+                  </div>
               )}
            </div>
         </div>

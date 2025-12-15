@@ -164,8 +164,14 @@ const HorizontalSection: React.FC<{
   gifts: Gift[]; 
   onGiftClick: (g: Gift) => void;
   id?: string;
-}> = ({ title, subtitle, gifts, onGiftClick, id }) => {
+  reverse?: boolean;
+}> = ({ title, subtitle, gifts, onGiftClick, id, reverse = false }) => {
   if (gifts.length === 0) return null;
+
+  // Duplicate items 3 times to ensure smooth looping even on wide screens
+  // The animation moves -50%, so we need [Items][Items] at minimum. 
+  // [Items][Items][Items][Items] makes it super safe.
+  const loopedGifts = [...gifts, ...gifts, ...gifts, ...gifts];
 
   return (
     <div id={id} className="mb-10 relative z-10 scroll-mt-32">
@@ -175,13 +181,22 @@ const HorizontalSection: React.FC<{
          </h2>
          {subtitle && <p className="text-white/70 text-sm font-medium mt-1 tracking-tight">{subtitle}</p>}
       </div>
-      <div className="flex overflow-x-auto gap-4 px-6 pb-8 no-scrollbar snap-x -mx-2 md:mx-0">
-         {gifts.map((gift) => (
-           <div key={gift.id} className="min-w-[160px] w-[160px] md:min-w-[180px] md:w-[180px] snap-center shrink-0">
-              <GiftCard gift={gift} onClick={onGiftClick} />
-           </div>
-         ))}
-         <div className="w-2 shrink-0" /> {/* Spacer */}
+      
+      {/* Marquee Container with Mask */}
+      <div className="relative w-full overflow-hidden mask-gradient-x">
+         <div 
+            className={`flex w-max gap-4 animate-scroll hover-pause ${reverse ? 'flex-row-reverse' : ''}`}
+            style={{ animationDuration: '40s' }}
+         >
+            {loopedGifts.map((gift, index) => (
+              <div 
+                key={`${gift.id}-${index}`} 
+                className="w-[160px] md:w-[180px] shrink-0"
+              >
+                 <GiftCard gift={gift} onClick={onGiftClick} />
+              </div>
+            ))}
+         </div>
       </div>
     </div>
   );
@@ -409,7 +424,7 @@ export const Home: React.FC = () => {
         <CategoryPills onSelect={handleCategory} />
       </div>
 
-      {/* Horizontal Sections with IDs for Scroll Detection */}
+      {/* Horizontal Sections with Cyclic Animation */}
       <HorizontalSection 
         id="section-cozy"
         title="Зимний уют ❄️" 
@@ -424,6 +439,7 @@ export const Home: React.FC = () => {
         subtitle="Гаджеты, о которых все мечтают"
         gifts={techGifts} 
         onGiftClick={openGift} 
+        reverse // Optional: Make this one scroll right? (Requires CSS keyframe change or just standard left scroll for consistency)
       />
 
       {/* Feed Section */}

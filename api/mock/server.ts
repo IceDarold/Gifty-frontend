@@ -89,6 +89,27 @@ export const MockServer = {
     return toDTO(gift);
   },
 
+  async getSimilarGifts(id: string): Promise<GiftDTO[]> {
+    await delay(400);
+    const currentGift = MOCK_DB_GIFTS.find(g => g.id === id);
+    if (!currentGift) return [];
+
+    // Simple similarity logic: same category OR sharing at least one tag
+    let candidates = MOCK_DB_GIFTS.filter(g => g.id !== id);
+    
+    const scoredCandidates = candidates.map(g => {
+        let score = 0;
+        if (g.category === currentGift.category) score += 5;
+        const sharedTags = g.tags.filter(t => currentGift.tags.includes(t));
+        score += sharedTags.length * 2;
+        return { gift: g, score };
+    });
+
+    // Sort by relevance and take top 4
+    scoredCandidates.sort((a, b) => b.score - a.score);
+    return scoredCandidates.slice(0, 4).map(wrapper => toDTO(wrapper.gift));
+  },
+
   async getRecommendations(answers: QuizAnswers): Promise<RecommendationResponseDTO> {
     await delay(1200); // AI "Thinking" delay
 

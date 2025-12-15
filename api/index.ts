@@ -19,6 +19,10 @@ export const api = {
     list: async (params?: { limit?: number; tag?: string; category?: string }): Promise<Gift[]> => {
       const dtos = await MockServer.getGifts(params);
       return dtos.map(mapGiftDTOToGift);
+    },
+    getSimilar: async (id: string): Promise<Gift[]> => {
+      const dtos = await MockServer.getSimilarGifts(id);
+      return dtos.map(mapGiftDTOToGift);
     }
   },
   recommendations: {
