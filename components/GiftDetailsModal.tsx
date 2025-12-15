@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Gift, QuizAnswers } from '../domain/types';
 import { api } from '../api';
-import { isInWishlist } from '../utils/storage'; 
+import { isInWishlist, addToWishlist, removeFromWishlist } from '../utils/storage'; 
 import { track } from '../utils/analytics';
 import { Button } from './Button';
 import { Mascot } from './Mascot';
@@ -58,81 +58,57 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
     }
   }, [isOpen, onClose]);
 
+  const handleWishlist = () => {
+    if (saved) {
+      removeFromWishlist(gift.id);
+      track('remove_wishlist_modal', { id: gift.id });
+    } else {
+      addToWishlist(gift.id);
+      track('add_wishlist_modal', { id: gift.id });
+    }
+    setSaved(!saved);
+    onWishlistChange();
+  };
+
   if (!isOpen) return null;
 
-  const handleWishlist = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-        if (saved) {
-            await api.wishlist.remove(gift.id);
-            track('remove_wishlist_modal', { id: gift.id });
-        } else {
-            await api.wishlist.add(gift.id);
-            track('add_wishlist_modal', { id: gift.id });
-        }
-        setSaved(!saved);
-        onWishlistChange();
-    } catch (e) {
-        console.error("Wishlist action failed", e);
-    }
-  };
+  const formatPrice = (price: number) => new Intl.NumberFormat('ru-RU').format(price) + ' ₽';
 
-  const handleShare = () => {
-    const text = `Смотри, что я нашел: ${gift.title} - ${gift.price}₽`;
-    if (navigator.share) {
-      navigator.share({ title: gift.title, text: text, url: window.location.href });
-    } else {
-      alert("Ссылка скопирована!");
-    }
-  };
-
-  const getPersonalizedReasons = () => {
-    const reasons = [];
-    if (answers) {
-      if (answers.interests && answers.interests.length > 3) {
-        reasons.push(`Подходит под: "${answers.interests.split(',')[0].trim()}"`);
-      }
-      reasons.push(`Отличный выбор для: ${answers.relationship}`);
-    } else {
-      reasons.push('Хит продаж в категории ' + gift.category);
-      reasons.push('Высокий рейтинг у покупателей');
-    }
-    return reasons;
-  };
-
-  const getMarketplaceBadge = (mp: string) => {
+  const getMarketplaceLogo = (mp: string) => {
     switch (mp) {
         case 'Ozon':
             return (
-               <img 
-                 src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Ozon_App_Logo.svg" 
-                 alt="Ozon" 
-                 className="h-6 w-auto rounded-[6px] shadow-sm mb-2" 
-               />
+               <div className="h-6 px-3 bg-[#005bff] rounded-md flex items-center justify-center">
+                 <img 
+                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ozon.ru_Logo_2019.svg/320px-Ozon.ru_Logo_2019.svg.png" 
+                   alt="Ozon" 
+                   className="h-3.5 w-auto brightness-0 invert" 
+                 />
+               </div>
             );
         case 'WB':
              return (
-                <div className="h-6 px-2 bg-gradient-to-r from-[#cb11ab] to-[#e617ca] rounded-[6px] flex items-center justify-center shadow-sm mb-2 w-max">
+                <div className="h-6 px-3 bg-gradient-to-r from-[#cb11ab] to-[#e617ca] rounded-md flex items-center justify-center">
                      <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/2/22/Wildberries_Logo.svg" 
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Wildberries_logo.svg/320px-Wildberries_logo.svg.png" 
                         alt="WB" 
-                        className="h-3 w-auto brightness-0 invert" 
+                        className="h-3.5 w-auto brightness-0 invert" 
                      />
                 </div>
              );
         case 'Amazon':
              return (
-                <div className="h-6 px-2 bg-[#232f3e] rounded-[6px] flex items-center justify-center shadow-sm mb-2 w-max">
+                <div className="h-6 px-3 bg-[#232f3e] rounded-md flex items-center justify-center">
                      <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" 
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png" 
                         alt="Amazon" 
-                        className="h-3.5 w-auto brightness-0 invert" 
+                        className="h-4 w-auto brightness-0 invert" 
                      />
                 </div>
              );
         default:
              return (
-                <div className="h-6 px-2 bg-gray-800 rounded-[6px] flex items-center justify-center shadow-sm mb-2 w-max">
+                <div className="h-6 px-3 bg-gray-800 rounded-md flex items-center justify-center">
                     <span className="text-white text-[10px] font-bold">{mp}</span>
                 </div>
              );
@@ -140,201 +116,128 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center pointer-events-none">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center pointer-events-none">
+      
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-brand-dark/80 backdrop-blur-sm pointer-events-auto transition-opacity opacity-100 animate-fade-in"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto transition-opacity" 
         onClick={onClose}
       />
 
-      {/* Modal Container */}
-      <div className="bg-white w-full md:w-[600px] h-[92vh] md:h-[85vh] md:rounded-3xl rounded-t-[2rem] shadow-2xl overflow-hidden flex flex-col pointer-events-auto transform transition-transform animate-slide-up-mobile md:animate-pop relative">
+      {/* Modal Content */}
+      <div className="bg-white w-full max-w-lg h-[90vh] sm:h-auto sm:max-h-[90vh] rounded-t-[2.5rem] sm:rounded-[2.5rem] relative z-10 overflow-hidden flex flex-col pointer-events-auto shadow-2xl animate-slide-up-mobile">
         
-        {/* --- Immersive Header --- */}
-        <div className="relative h-72 md:h-80 shrink-0 bg-gray-100 group">
-          <img 
-            src={gift.image} 
-            alt={gift.title} 
-            className="w-full h-full object-cover"
-          />
-          {/* Top Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 via-transparent to-transparent opacity-80" />
-          
-          {/* Navigation Controls */}
-          <div className="absolute top-4 left-0 right-0 px-4 flex justify-between items-start z-20">
-             <button 
-                onClick={onClose}
-                className="bg-white/20 hover:bg-white/40 backdrop-blur-md w-10 h-10 rounded-full flex items-center justify-center text-white transition-all active:scale-90"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        {/* Close Button */}
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 z-20 w-10 h-10 bg-black/10 hover:bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-              <button 
-                onClick={handleShare}
-                className="bg-white/20 hover:bg-white/40 backdrop-blur-md w-10 h-10 rounded-full flex items-center justify-center text-white transition-all active:scale-90"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-              </button>
-          </div>
-
-          {/* Bottom Gradient for Text Contrast */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent" />
-          
-          {/* Main Title Block (Overlapping Image) */}
-          <div className="absolute bottom-4 left-6 right-6 z-10">
-              <div className="flex items-start justify-between gap-4">
-                 <div>
-                    {getMarketplaceBadge(gift.marketplace)}
-                    <h2 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight drop-shadow-sm">{gift.title}</h2>
+        {/* Scrollable Content */}
+        <div className="overflow-y-auto flex-grow overscroll-contain no-scrollbar">
+           
+           {/* Image Header */}
+           <div className="relative h-72 sm:h-80 w-full shrink-0">
+              <img 
+                src={gift.image} 
+                alt={gift.title} 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-80" />
+              
+              {/* Match Score Badge */}
+              <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-xl px-4 py-2 rounded-2xl shadow-lg border border-white/50 flex items-center gap-2">
+                 <div className="relative w-8 h-8">
+                     <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                        <path className="text-gray-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                        <path className="text-brand-purple drop-shadow-md" strokeDasharray={`${matchScore}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                     </svg>
+                     <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-brand-dark">
+                        {matchScore}%
+                     </div>
+                 </div>
+                 <div className="flex flex-col leading-none">
+                     <span className="text-[10px] font-bold text-gray-500 uppercase">Совпадение</span>
+                     <span className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-purple">Идеально</span>
                  </div>
               </div>
-          </div>
-        </div>
+           </div>
 
-        {/* --- Content Scroll --- */}
-        <div className="flex-1 overflow-y-auto no-scrollbar bg-white relative">
-          <div className="px-6 pb-28 pt-2">
-            
-            {/* Price & Score Row */}
-            <div className="flex items-center justify-between mb-8">
-               <div>
-                  <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-purple">
-                    {gift.price.toLocaleString('ru-RU')} ₽
-                  </div>
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wide mt-1">Средняя цена</div>
-               </div>
-               
-               {/* Match Score Indicator */}
-               <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="text-xs font-bold text-gray-400 uppercase">Совпадение</div>
-                    <div className="text-sm font-bold text-brand-purple">Отличный выбор</div>
-                  </div>
-                  <div className="relative w-14 h-14 flex items-center justify-center">
-                     <svg className="w-full h-full transform -rotate-90">
-                       <circle cx="28" cy="28" r="24" stroke="#e5e7eb" strokeWidth="4" fill="transparent" />
-                       <circle 
-                         cx="28" cy="28" r="24" stroke="#AE00FF" strokeWidth="4" fill="transparent" 
-                         strokeDasharray={2 * Math.PI * 24}
-                         strokeDashoffset={2 * Math.PI * 24 * (1 - matchScore / 100)}
-                         className="transition-all duration-1000 ease-out"
-                         strokeLinecap="round"
-                       />
-                     </svg>
-                     <span className="absolute text-sm font-black text-gray-800">{matchScore}%</span>
-                  </div>
-               </div>
-            </div>
-
-            {/* AI Assistant Insight */}
-            <div className="mb-8 animate-slide-up-mobile" style={{ animationDelay: '0.1s' }}>
-                <div className="flex items-end gap-3 mb-2">
-                    <Mascot className="w-14 h-14 shrink-0 -mb-2 z-10" emotion="happy" />
-                    <div className="bg-blue-50 rounded-2xl rounded-bl-none p-4 relative border border-blue-100/50 shadow-sm flex-grow">
-                        <p className="text-sm text-brand-dark font-medium leading-relaxed">
-                           <span className="block font-bold text-brand-blue text-xs uppercase mb-1">Мнение AI</span>
-                           "{gift.reason}"
-                        </p>
+           <div className="px-6 pb-24 -mt-6 relative z-10">
+              
+              {/* Title & Price */}
+              <div className="flex justify-between items-start mb-4">
+                 <h2 className="text-2xl font-bold text-gray-900 leading-tight w-3/4">
+                    {gift.title}
+                 </h2>
+                 <div className="text-right">
+                    <div className="text-xl font-black text-brand-blue">{formatPrice(gift.price)}</div>
+                    {/* Marketplace Badge */}
+                    <div className="flex justify-end mt-1">
+                        {getMarketplaceLogo(gift.marketplace)}
                     </div>
-                </div>
-                {/* Visual Reasons Tags */}
-                <div className="flex flex-wrap gap-2 pl-[4.5rem]">
-                   {getPersonalizedReasons().map((r, i) => (
-                     <span key={i} className="inline-flex items-center gap-1.5 bg-gray-50 text-gray-600 px-3 py-1.5 rounded-full text-xs font-bold border border-gray-100">
-                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 fill-brand-purple" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-                       {r}
-                     </span>
-                   ))}
-                </div>
-            </div>
+                 </div>
+              </div>
 
-            {/* Visual Specs Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-8">
-               <div className="bg-gray-50 p-3 rounded-2xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm">🎯</div>
-                  <div>
-                     <div className="text-[10px] text-gray-400 font-bold uppercase">Категория</div>
-                     <div className="text-sm font-bold text-gray-800">{gift.category}</div>
-                  </div>
-               </div>
-               <div className="bg-gray-50 p-3 rounded-2xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm">🎂</div>
-                  <div>
-                     <div className="text-[10px] text-gray-400 font-bold uppercase">Возраст</div>
-                     <div className="text-sm font-bold text-gray-800">{gift.ageRange[0]}-{gift.ageRange[1]} лет</div>
-                  </div>
-               </div>
-            </div>
+              {/* AI Insight Block */}
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-2xl border border-indigo-100 mb-6 flex gap-4">
+                 <div className="shrink-0">
+                    <Mascot className="w-12 h-12" emotion="happy" />
+                 </div>
+                 <div>
+                    <h3 className="text-sm font-bold text-indigo-900 mb-1 flex items-center gap-1">
+                       ✨ Почему это подойдет
+                    </h3>
+                    <p className="text-sm text-indigo-800/80 leading-relaxed">
+                       {gift.reason}
+                    </p>
+                 </div>
+              </div>
 
-            {/* Reviews Section */}
-            {gift.reviews && <ReviewsSection reviews={gift.reviews} />}
-
-            {/* Description */}
-            <div className="mb-6">
-              <h3 className="font-bold text-gray-900 text-lg mb-3">О товаре</h3>
-              <div className={`relative overflow-hidden transition-all duration-300 ${showFullDesc ? 'max-h-[500px]' : 'max-h-24'}`}>
-                 <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-                   {gift.description || "Описание товара загружается..."}
+              {/* Description */}
+              <div className="mb-6">
+                 <h3 className="font-bold text-gray-900 mb-2">О товаре</h3>
+                 <p className={`text-gray-600 text-sm leading-relaxed ${!showFullDesc && gift.description && gift.description.length > 150 ? 'line-clamp-3' : ''}`}>
+                    {gift.description || 'Описание отсутствует.'}
                  </p>
-                 {!showFullDesc && (
-                   <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
+                 {gift.description && gift.description.length > 150 && (
+                    <button 
+                       onClick={() => setShowFullDesc(!showFullDesc)}
+                       className="text-brand-blue font-bold text-sm mt-1"
+                    >
+                       {showFullDesc ? 'Скрыть' : 'Читать далее'}
+                    </button>
                  )}
               </div>
-              <button 
-                 onClick={() => setShowFullDesc(!showFullDesc)} 
-                 className="text-brand-blue text-sm font-bold mt-2 hover:underline flex items-center gap-1"
-               >
-                 {showFullDesc ? 'Свернуть описание' : 'Читать полностью'}
-                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform ${showFullDesc ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                 </svg>
-               </button>
-            </div>
 
-          </div>
-        </div>
+              {/* Reviews */}
+              {gift.reviews && <ReviewsSection reviews={gift.reviews} />}
 
-        {/* --- Floating Action Bar --- */}
-        <div className="absolute bottom-6 left-6 right-6 z-30">
-           <div className="bg-white/80 backdrop-blur-md border border-white/50 p-2 rounded-[1.5rem] shadow-2xl flex items-center gap-2 pr-2">
-              <button 
-                onClick={handleWishlist}
-                className={`w-14 h-14 flex items-center justify-center rounded-full transition-all duration-300 active:scale-90 shrink-0 ${saved ? 'bg-red-50 text-red-500 shadow-inner' : 'bg-gray-100 text-gray-400 hover:text-red-400'}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-7 w-7 transition-transform ${saved ? 'scale-110 fill-current' : ''}`} viewBox="0 0 20 20" fill={saved ? "currentColor" : "none"} stroke="currentColor">
-                  <path strokeWidth={saved ? 0 : 2} fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                </svg>
-              </button>
-              
-              <Button 
-                variant="primary" 
-                fullWidth 
-                onClick={() => { track('buy_link_click', {id: gift.id}); window.open('#', '_blank'); }}
-                className="h-14 !rounded-[1.2rem] text-lg"
-              >
-                В магазин
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 inline-block opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </Button>
            </div>
         </div>
 
+        {/* Footer Actions */}
+        <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 px-6 pb-safe flex items-center gap-3">
+             <button 
+                onClick={handleWishlist}
+                className={`w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center border transition-all ${saved ? 'bg-red-50 border-red-200 text-red-500' : 'bg-white border-gray-200 text-gray-400 hover:border-gray-300'}`}
+             >
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${saved ? 'fill-current' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+             </button>
+             
+             <Button fullWidth onClick={() => alert('Переход в магазин... (Демо)')} className="flex items-center justify-center gap-2">
+                <span>Купить на</span>
+                {getMarketplaceLogo(gift.marketplace)}
+             </Button>
+        </div>
+
       </div>
-      
-      <style>{`
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.2s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

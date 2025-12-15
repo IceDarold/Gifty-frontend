@@ -30,6 +30,8 @@
               'blob': 'blob 7s infinite',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'wave': 'wave 2s infinite linear',
+              'snow': 'snow 10s linear infinite',
+              'twinkle': 'twinkle 2s ease-in-out infinite',
             },
             keyframes: {
               float: {
@@ -50,6 +52,15 @@
                 '0%, 100%': { transform: 'rotate(0deg)' },
                 '25%': { transform: 'rotate(-10deg)' },
                 '75%': { transform: 'rotate(10deg)' },
+              },
+              snow: {
+                '0%': { transform: 'translateY(-10px) translateX(0)', opacity: 0 },
+                '10%': { opacity: 1 },
+                '100%': { transform: 'translateY(100vh) translateX(20px)', opacity: 0.3 },
+              },
+              twinkle: {
+                '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+                '50%': { opacity: 0.5, transform: 'scale(0.8)' },
               }
             }
           }
@@ -60,8 +71,8 @@
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
-        /* Updated Gradient to match screenshot: White Top -> Light Blue -> Vibrant Blue -> Purple Bottom */
-        background: linear-gradient(180deg, #FFFFFF 0%, #E0F2FE 25%, #3B82F6 60%, #7C3AED 100%);
+        /* Winter Holiday Gradient: Deep Blue Top -> Icy Blue -> Festive Purple */
+        background: linear-gradient(180deg, #0f172a 0%, #1e40af 30%, #60a5fa 60%, #7c3aed 100%);
         background-attachment: fixed;
       }
       /* Hide scrollbar for clean UI */

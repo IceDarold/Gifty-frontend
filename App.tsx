@@ -11,8 +11,11 @@ const AppRoutes = () => {
     const location = useLocation();
     
     // Logic for UI elements visibility
-    const showNav = location.pathname !== '/' && location.pathname !== '/quiz';
-    // Show footer everywhere except the Quiz flow to avoid distraction
+    // Show Nav everywhere EXCEPT inside the active Quiz flow to prevent distraction.
+    // Home, Results, Wishlist, Profile ALL get the stable bottom bar.
+    const showNav = location.pathname !== '/quiz';
+    
+    // Show footer everywhere except the Quiz flow
     const showFooter = location.pathname !== '/quiz';
 
     return (

@@ -8,15 +8,74 @@ import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
 
+// --- Decorative Components ---
+
+const Snowfall: React.FC = () => {
+  // Generate static snowflakes to avoid hydration mismatch
+  const snowflakes = Array.from({ length: 25 }).map((_, i) => ({
+    left: `${Math.random() * 100}%`,
+    animationDelay: `${Math.random() * 5}s`,
+    animationDuration: `${Math.random() * 5 + 5}s`,
+    opacity: Math.random() * 0.5 + 0.3,
+    size: Math.random() * 0.5 + 0.5 // rem
+  }));
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+      {snowflakes.map((flake, i) => (
+        <div
+          key={i}
+          className="absolute top-[-20px] bg-white rounded-full animate-snow"
+          style={{
+            left: flake.left,
+            width: `${flake.size}rem`,
+            height: `${flake.size}rem`,
+            opacity: flake.opacity,
+            animationDelay: flake.animationDelay,
+            animationDuration: flake.animationDuration,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+const ChristmasGarland: React.FC = () => (
+  <div className="fixed top-0 left-0 right-0 h-12 z-40 pointer-events-none flex justify-around overflow-hidden">
+     {/* Wire */}
+     <div className="absolute top-[-5px] left-[-10%] right-[-10%] h-8 border-b-2 border-gray-400/30 rounded-[100%]"></div>
+     
+     {/* Lights */}
+     {Array.from({ length: 12 }).map((_, i) => {
+         const colors = ['bg-red-500', 'bg-yellow-400', 'bg-green-500', 'bg-blue-500'];
+         const color = colors[i % colors.length];
+         const glow = `shadow-[0_0_10px_2px_currentColor]`;
+         
+         return (
+             <div 
+               key={i} 
+               className={`relative mt-2 w-3 h-4 rounded-full ${color} animate-twinkle`}
+               style={{ 
+                   animationDelay: `${i * 0.2}s`,
+                   boxShadow: `0 0 12px 2px ${i % 2 === 0 ? 'rgba(255,255,255,0.6)' : 'rgba(255,230,0,0.6)'}` 
+               }}
+             >
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1.5 bg-gray-600"></div>
+             </div>
+         );
+     })}
+  </div>
+);
+
 // --- Components ---
 
 const TypewriterText: React.FC = () => {
   const phrases = [
-    "Найти идеальный подарок...",
-    "Что подарить маме на ДР?",
-    "Сюрприз для девушки...",
+    "Подарок на Тайного Санту...",
+    "Что подарить на Новый Год?",
+    "Сюрприз под елочку...",
     "Недорогой подарок коллеге",
-    "Что-то необычное для гика"
+    "Что-то волшебное для мамы"
   ];
   const [text, setText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -58,16 +117,16 @@ const TypewriterText: React.FC = () => {
 const SearchTrigger: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <div 
     onClick={onClick}
-    className="bg-white/10 backdrop-blur-2xl border border-white/30 rounded-[1.5rem] p-3 pr-4 flex items-center gap-4 shadow-2xl cursor-pointer group transition-all hover:bg-white/20 active:scale-[0.98] mx-4 mb-8 relative overflow-hidden"
+    className="bg-white/10 backdrop-blur-2xl border border-white/30 rounded-[1.5rem] p-3 pr-4 flex items-center gap-4 shadow-2xl cursor-pointer group transition-all hover:bg-white/20 active:scale-[0.98] mx-4 mb-8 relative overflow-hidden ring-2 ring-white/10"
   >
     {/* Shine effect */}
     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out pointer-events-none"></div>
 
     <div className="bg-white w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-2xl group-hover:rotate-12 transition-transform duration-300">
-      ✨
+      🎅
     </div>
     <div className="flex-grow text-left overflow-hidden">
-      <p className="text-brand-blue text-[10px] bg-white inline-block px-1.5 rounded-md font-bold uppercase tracking-widest mb-1 shadow-sm">AI-помощник</p>
+      <p className="text-brand-blue text-[10px] bg-white inline-block px-1.5 rounded-md font-bold uppercase tracking-widest mb-1 shadow-sm">AI-Санта</p>
       <TypewriterText />
     </div>
     <div className="bg-brand-blue w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white group-hover:scale-110 transition-transform">
@@ -80,7 +139,7 @@ const SearchTrigger: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 
 const CategoryPills: React.FC<{ onSelect: (tag: string) => void }> = ({ onSelect }) => {
   const categories = [
-    '🔥 Тренды', '👩 Для неё', '👨 Для него', '🏠 Дом', '💻 Гаджеты', '🎨 Хобби', '🧸 Детям'
+    '🎄 Новый год', '🔥 Тренды', '👩 Для неё', '👨 Для него', '🏠 Дом', '💻 Гаджеты', '🎨 Хобби'
   ];
 
   return (
@@ -89,7 +148,7 @@ const CategoryPills: React.FC<{ onSelect: (tag: string) => void }> = ({ onSelect
         <button
           key={cat}
           onClick={() => onSelect(cat)}
-          className="bg-white/10 hover:bg-white hover:text-brand-blue hover:scale-105 active:scale-95 backdrop-blur-md border border-white/20 hover:border-white text-white px-5 py-2.5 rounded-2xl font-bold text-sm whitespace-nowrap transition-all shadow-sm"
+          className={`px-5 py-2.5 rounded-2xl font-bold text-sm whitespace-nowrap transition-all shadow-sm backdrop-blur-md border ${i === 0 ? 'bg-red-500 text-white border-red-400 hover:bg-red-600 animate-pulse-slow' : 'bg-white/10 text-white border-white/20 hover:bg-white hover:text-brand-blue'}`}
           style={{ animationDelay: `${i * 0.05}s` }}
         >
           {cat}
@@ -133,9 +192,8 @@ const HorizontalSection: React.FC<{
 const useMascotBehavior = () => {
   const [eyes, setEyes] = useState({ x: 0, y: 0 });
   const [docked, setDocked] = useState(false);
-  const [accessory, setAccessory] = useState<'none' | 'glasses' | 'scarf'>('none');
+  const [accessory, setAccessory] = useState<'none' | 'glasses' | 'scarf' | 'santa-hat'>('santa-hat');
   const [emotion, setEmotion] = useState<'happy' | 'cool' | 'excited' | 'thinking'>('happy');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const scrollRef = useRef(0);
   
   // Performance: Use requestAnimationFrame for eye tracking
@@ -178,13 +236,7 @@ const useMascotBehavior = () => {
       const isDocked = y > 220; // Threshold to switch mascots
       setDocked(isDocked);
 
-      // Automatically close menu if scrolling significantly
-      if (Math.abs(y - scrollRef.current) > 50) {
-          setIsMenuOpen(false);
-          scrollRef.current = y;
-      }
-
-      setAccessory('none');
+      setAccessory('santa-hat'); // Keep festive hat always
       setEmotion(docked ? 'happy' : 'happy');
     };
 
@@ -203,7 +255,7 @@ const useMascotBehavior = () => {
     return () => window.removeEventListener('scroll', throttledScroll);
   }, [docked]);
 
-  return { eyes, docked, accessory, emotion, isMenuOpen, setIsMenuOpen };
+  return { eyes, docked, accessory, emotion };
 };
 
 
@@ -211,7 +263,7 @@ const useMascotBehavior = () => {
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { eyes, docked, accessory, emotion, isMenuOpen, setIsMenuOpen } = useMascotBehavior();
+  const { eyes, docked, accessory, emotion } = useMascotBehavior();
   
   // Data States
   const [feedGifts, setFeedGifts] = useState<Gift[]>([]);
@@ -223,7 +275,6 @@ export const Home: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Logo Path Logic
-  // Try: /logo.png -> /public/logo.png -> logo.png -> Fallback Text
   const logoPaths = ['/logo.png', '/public/logo.png', 'logo.png'];
   const [currentLogoIndex, setCurrentLogoIndex] = useState(0);
   const [logoError, setLogoError] = useState(false);
@@ -258,7 +309,6 @@ export const Home: React.FC = () => {
   const startQuiz = () => {
     track('start_quiz', { source: 'concierge_search' });
     navigate('/quiz');
-    setIsMenuOpen(false);
   };
 
   const handleCategory = (cat: string) => {
@@ -272,24 +322,21 @@ export const Home: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  // Close menu on click outside
-  useEffect(() => {
-    const handleClick = () => setIsMenuOpen(false);
-    if (isMenuOpen) window.addEventListener('click', handleClick);
-    return () => window.removeEventListener('click', handleClick);
-  }, [isMenuOpen, setIsMenuOpen]);
-
   return (
     <div className="min-h-screen relative overflow-x-hidden pb-12">
       
-      {/* Dynamic Background Elements - Bubbles */}
+      {/* Holiday Decor */}
+      <Snowfall />
+      <ChristmasGarland />
+
+      {/* Dynamic Background Elements - Bubbles (Updated to cool tones) */}
       <div className="fixed inset-0 bg-transparent -z-20"></div>
       
-      <div className="fixed -top-10 -right-10 w-96 h-96 bg-brand-purple/40 rounded-full mix-blend-screen filter blur-[100px] animate-blob -z-10" />
-      <div className="fixed top-40 -left-10 w-80 h-80 bg-brand-blue/40 rounded-full mix-blend-screen filter blur-[90px] animate-blob animation-delay-2000 -z-10" />
+      <div className="fixed -top-10 -right-10 w-96 h-96 bg-blue-500/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob -z-10" />
+      <div className="fixed top-40 -left-10 w-80 h-80 bg-purple-500/30 rounded-full mix-blend-screen filter blur-[90px] animate-blob animation-delay-2000 -z-10" />
 
       {/* --- FLOATING LOGO (Top Left) --- */}
-      <div className="fixed top-4 left-4 z-50">
+      <div className="fixed top-6 left-4 z-50">
           <div 
             className="cursor-pointer transition-transform active:scale-95" 
             onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
@@ -310,70 +357,18 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* --- SMART ASSISTANT HUB (Top Right) --- */}
-      <div 
-        onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
-        className={`fixed top-4 right-4 z-50 flex flex-col items-end transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isMenuOpen ? 'w-56' : 'w-auto'}`}
-      >
-        {/* The Capsule / Toggle */}
-        <div className={`relative flex items-center gap-3 cursor-pointer transition-all duration-500 ${docked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-20px] pointer-events-none'}`}>
-            
-            {/* Expanded Menu Container */}
-            <div className={`absolute top-0 right-0 bg-white/95 backdrop-blur-xl border border-white/50 shadow-2xl overflow-hidden transition-all duration-300 origin-top-right rounded-[2rem] ${isMenuOpen ? 'w-56 h-auto p-4 pt-16 opacity-100 scale-100' : 'w-14 h-14 p-0 opacity-0 scale-50 pointer-events-none'}`}>
-                 <div className="flex flex-col gap-2">
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); startQuiz(); }}
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 text-left transition-colors group"
-                    >
-                        <span className="w-8 h-8 rounded-full bg-brand-blue text-white flex items-center justify-center text-sm shadow-sm group-hover:scale-110 transition-transform">✨</span>
-                        <div className="leading-none">
-                            <div className="font-bold text-gray-800 text-sm">Подобрать</div>
-                            <div className="text-[10px] text-gray-400">Пройти квиз</div>
-                        </div>
-                    </button>
-
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); navigate('/wishlist'); }}
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-purple-50 text-left transition-colors group"
-                    >
-                        <span className="w-8 h-8 rounded-full bg-brand-purple text-white flex items-center justify-center text-sm shadow-sm group-hover:scale-110 transition-transform">❤️</span>
-                        <div className="leading-none">
-                            <div className="font-bold text-gray-800 text-sm">Избранное</div>
-                            <div className="text-[10px] text-gray-400">Сохраненные</div>
-                        </div>
-                    </button>
-                    
-                     <button 
-                        onClick={(e) => { e.stopPropagation(); navigate('/profile'); }}
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 text-left transition-colors group"
-                     >
-                        <span className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm shadow-sm group-hover:scale-110 transition-transform">👤</span>
-                        <div className="leading-none">
-                            <div className="font-bold text-gray-800 text-sm">Профиль</div>
-                            <div className="text-[10px] text-gray-400">Календарь</div>
-                        </div>
-                    </button>
-                 </div>
-            </div>
-
-            {/* The Floating Mascot (Trigger) */}
-            <div className={`relative w-16 h-16 transition-transform duration-300 z-20 ${isMenuOpen ? 'scale-110' : 'scale-100 hover:scale-105'}`}>
-                {/* Status Ring / Border */}
-                <div className={`absolute inset-0 rounded-full border-2 transition-all duration-300 ${isMenuOpen ? 'border-brand-blue bg-white' : 'border-white/20 bg-white/10 backdrop-blur-md shadow-sm'}`}></div>
-                
-                {/* Close Icon (visible when open) */}
-                <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0' : 'opacity-0 rotate-90 scale-50'}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </div>
-                
-                {/* Mascot Face (visible when closed) */}
-                <div className={`absolute inset-0 flex items-center justify-center overflow-hidden rounded-full transition-all duration-300 ${isMenuOpen ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
+      {/* --- MASCOT HUB (Top Right - Simplified) --- */}
+      <div className="fixed top-6 right-4 z-50">
+        <div className={`relative flex items-center gap-3 transition-all duration-500 ${docked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-20px] pointer-events-none'}`}>
+            <div 
+                onClick={startQuiz}
+                className="relative w-16 h-16 transition-transform duration-300 z-20 cursor-pointer hover:scale-105 active:scale-95"
+            >
+                <div className="absolute inset-0 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md shadow-sm"></div>
+                <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full">
                    <Mascot className="w-20 h-20 mt-4" emotion={emotion} accessory={accessory} />
                 </div>
             </div>
-            
         </div>
       </div>
 
@@ -389,6 +384,7 @@ export const Home: React.FC = () => {
                <Mascot 
                     className="w-32 h-32 mb-5 drop-shadow-2xl hover:scale-105 transition-transform cursor-pointer animate-float" 
                     emotion="happy"
+                    accessory="santa-hat"
                     eyesX={eyes.x}
                     eyesY={eyes.y}
                />
@@ -397,12 +393,12 @@ export const Home: React.FC = () => {
             <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-[1.1] drop-shadow-lg tracking-tight">
               Дарите <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">
-                эмоции
+                волшебство
               </span>
             </h1>
             
             <p className="text-white/80 text-sm max-w-xs mx-auto mb-8 font-medium leading-relaxed">
-               Твой персональный AI-ассистент.<br/> Подберет подарок за 30 секунд.
+               Твой персональный AI-Санта.<br/> Подберет подарок за 30 секунд.
             </p>
         </div>
 
@@ -433,7 +429,7 @@ export const Home: React.FC = () => {
       {/* Feed Section */}
       <div className="relative z-10 px-4 mt-6">
         <div className="flex items-center gap-2 mb-6 px-2">
-           <span className="text-2xl animate-pulse">✨</span>
+           <span className="text-2xl animate-pulse">🎁</span>
            <h2 className="text-2xl font-bold text-white">Вдохновение дня</h2>
         </div>
 
@@ -446,23 +442,23 @@ export const Home: React.FC = () => {
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
               
               <div className="relative z-10">
-                <span className="inline-block bg-brand-blue text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider mb-3">
-                  Бесплатный подбор
+                <span className="inline-block bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider mb-3 shadow-md">
+                   🎄 Праздник к нам приходит
                 </span>
                 <h3 className="text-brand-dark font-black text-2xl leading-tight">
-                   Сложный случай?
+                   Не знаешь что дарить?
                 </h3>
                 <p className="text-gray-500 text-sm mt-1 font-medium">
-                   Пройди квиз, и AI найдет решение
+                   Спроси у AI-Санты
                 </p>
               </div>
-              <div className="relative z-10 flex items-center gap-2 text-brand-blue font-bold text-sm mt-4 group-hover:gap-3 transition-all">
-                 <div className="w-8 h-8 rounded-full bg-brand-blue text-white flex items-center justify-center shadow-lg">
+              <div className="relative z-10 flex items-center gap-2 text-red-500 font-bold text-sm mt-4 group-hover:gap-3 transition-all">
+                 <div className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                  </div>
-                 <span>Начать тест</span>
+                 <span>Начать подбор</span>
               </div>
            </div>
 

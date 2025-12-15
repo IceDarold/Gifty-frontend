@@ -55,18 +55,20 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
     switch (mp) {
         case 'Ozon':
             return (
-               <img 
-                 src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Ozon_App_Logo.svg" 
-                 alt="Ozon" 
-                 className="h-5 w-auto rounded-[6px] shadow-sm" 
-                 loading="lazy"
-               />
+               <div className="h-5 px-2 bg-[#005bff] rounded-[6px] flex items-center justify-center shadow-sm">
+                 <img 
+                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ozon.ru_Logo_2019.svg/320px-Ozon.ru_Logo_2019.svg.png" 
+                   alt="Ozon" 
+                   className="h-2.5 w-auto brightness-0 invert" 
+                   loading="lazy"
+                 />
+               </div>
             );
         case 'WB':
              return (
                 <div className="h-5 px-2 bg-gradient-to-r from-[#cb11ab] to-[#e617ca] rounded-[6px] flex items-center justify-center shadow-sm">
                      <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/2/22/Wildberries_Logo.svg" 
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Wildberries_logo.svg/320px-Wildberries_logo.svg.png" 
                         alt="WB" 
                         className="h-2.5 w-auto brightness-0 invert"
                         loading="lazy" 
@@ -77,7 +79,7 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
              return (
                 <div className="h-5 px-2 bg-[#232f3e] rounded-[6px] flex items-center justify-center shadow-sm">
                      <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" 
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png" 
                         alt="Amazon" 
                         className="h-3 w-auto brightness-0 invert" 
                         loading="lazy"
