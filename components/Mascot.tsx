@@ -10,36 +10,22 @@ export const Mascot: React.FC<MascotProps> = ({
   emotion = 'happy',
 }) => {
   
-  // Anti-Design faces
   const faces = {
-    happy: "ʕ •`ᴥ•´ʔ",
-    thinking: "Loading...",
-    surprised: "!!!_ERROR_!!!",
-    excited: "↖(^ω^)↗",
-    cool: "[ SYSTEM_OK ]"
-  };
-
-  const captions = {
-    happy: "I am legally required to smile.",
-    thinking: "Pretending to think.",
-    surprised: "That was unexpected.",
-    excited: "Dopamine levels rising.",
-    cool: "I feel nothing."
+    happy: "( ◡‿◡ )",
+    thinking: "( ._. )?",
+    surprised: "( O_O )",
+    excited: "★_★",
+    cool: "( -_-)b"
   };
 
   return (
-    <div className={`font-mono border border-dashed border-black p-4 inline-block bg-white relative ${className}`}>
-        {/* Tape effect */}
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-yellow-200/50 rotate-2"></div>
-        
-        <div className="flex flex-col items-center justify-center gap-2">
-            <div className="text-xl font-bold whitespace-nowrap">
-                {faces[emotion]}
-            </div>
-            <div className="text-[10px] bg-black text-white px-1 uppercase max-w-[150px] text-center leading-tight">
-                {captions[emotion]}
-            </div>
-        </div>
+    <div className={`
+        bg-yellow-200 w-24 h-24 shadow-md flex items-center justify-center rotate-3 
+        font-handwritten text-xl font-bold text-ink border-b-4 border-yellow-300/50
+        ${className}
+    `}>
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-6 bg-tape/40 rotate-[-2deg]"></div>
+        {faces[emotion]}
     </div>
   );
 };

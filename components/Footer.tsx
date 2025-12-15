@@ -2,31 +2,41 @@ import React from 'react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full border-t-4 border-black bg-black text-white p-8 mb-12">
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-           <div>
-               <h2 className="font-display font-black text-6xl md:text-8xl leading-none text-outline-white hover:text-white transition-all cursor-help select-none">
-                   THE<br/>END.
-               </h2>
-           </div>
+    <footer className="w-full mt-24 pb-32 flex justify-center px-4">
+       {/* RECEIPT / BUSINESS CARD OBJECT */}
+       <div className="relative bg-white p-6 shadow-floating max-w-md w-full transform rotate-1 texture-paper border-t-4 border-double border-gray-300">
            
-           <div className="font-mono text-xs space-y-4">
-               <div className="border border-white p-4">
-                   <p className="uppercase font-bold mb-2 text-acid-green">Legal Disclaimer:</p>
-                   <p className="opacity-70">
-                       We are not responsible for ruined friendships, awkward birthdays, or bad reactions to gifts suggested by our algorithm. The machine feels no remorse.
-                   </p>
+           {/* Torn edge effect top */}
+           <div className="absolute -top-2 left-0 w-full h-4 bg-white" style={{clipPath: 'polygon(0% 100%, 5% 0%, 10% 100%, 15% 0%, 20% 100%, 25% 0%, 30% 100%, 35% 0%, 40% 100%, 45% 0%, 50% 100%, 55% 0%, 60% 100%, 65% 0%, 70% 100%, 75% 0%, 80% 100%, 85% 0%, 90% 100%, 95% 0%, 100% 100%)'}}></div>
+
+           <div className="text-center font-typewriter text-ink space-y-4">
+               <div className="border-b-2 border-dashed border-gray-300 pb-4">
+                   <h2 className="text-2xl font-bold tracking-widest">GIFTY.AI</h2>
+                   <p className="text-[10px] text-gray-500">LABORATORY OF HUMAN AFFECTION</p>
                </div>
                
-               <div className="flex gap-4 text-lg font-bold">
-                   <a href="#" className="hover:text-acid-green hover:underline decoration-wavy">INSTAGRAM?</a>
-                   <a href="#" className="hover:text-acid-green hover:underline decoration-wavy">TIKTOK?</a>
-                   <a href="#" className="hover:text-acid-green hover:underline decoration-wavy">VOID?</a>
+               <div className="text-xs space-y-1 text-left pl-4">
+                   <p>ITEM: FRIENDSHIP.................[PRICELESS]</p>
+                   <p>ITEM: ADVICE.....................[FREE]</p>
+                   <p>ITEM: IRONY......................[INCLUDED]</p>
                </div>
 
-               <p className="opacity-30 pt-8">
-                   GIFTY.AI © 2025 // NO RIGHTS RESERVED // COPY LEFT
-               </p>
+               <div className="border-t-2 border-dashed border-gray-300 pt-4 text-[10px] text-gray-400 leading-tight">
+                   <p className="uppercase mb-2">Disclaimer:</p>
+                   <p>
+                       We are mere algorithms pretending to be a desk. 
+                       Do not trust us with life-altering decisions.
+                   </p>
+               </div>
+
+               <div className="flex justify-center gap-6 pt-2 font-handwritten text-lg text-blue-600">
+                   <a href="#" className="hover:underline hover:rotate-2 decoration-wavy">Instagram</a>
+                   <a href="#" className="hover:underline hover:-rotate-2 decoration-wavy">TikTok</a>
+               </div>
+               
+               <div className="text-[8px] text-gray-300 pt-2">
+                   RECEIPT #000-2025-AI
+               </div>
            </div>
        </div>
     </footer>

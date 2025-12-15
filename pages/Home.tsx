@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/Button';
-import { Mascot } from '../components/Mascot';
 import { GiftCard } from '../components/GiftCard';
 import { GiftDetailsModal } from '../components/GiftDetailsModal';
 import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
+import { Mascot } from '../components/Mascot';
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -17,7 +16,7 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const feed = await api.gifts.list({ limit: 8 });
+        const feed = await api.gifts.list({ limit: 6 });
         setFeedGifts(feed);
       } catch (e) {
         console.error(e);
@@ -38,72 +37,62 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="relative w-full h-full flex flex-col items-center">
       
-      {/* 1. ANTI-HERO */}
-      <section className="mb-32 mt-12 relative">
-         {/* Background Giant Text */}
-         <h1 className="font-display font-black text-[12vw] leading-[0.8] tracking-tighter uppercase text-gray-100 absolute -top-10 -left-10 z-0 select-none pointer-events-none">
-             Consume<br/>Consume<br/>Consume
-         </h1>
-
-         <div className="relative z-10 pl-4 sm:pl-12 pt-8">
-             <div className="inline-block bg-black text-white px-2 py-1 font-mono text-xs mb-4 -rotate-2">
-                 BETA v.0.0.1 (Unstable)
+      {/* 1. CENTRAL OBJECT: The "Magic Box" (Quiz Starter) */}
+      <div className="mt-12 mb-24 relative group cursor-pointer" onClick={startQuiz}>
+         {/* Shadow */}
+         <div className="absolute bottom-0 left-4 right-4 h-4 bg-black/20 blur-xl rounded-[50%] transition-all duration-500 group-hover:scale-110 group-hover:bg-black/30"></div>
+         
+         {/* The Box */}
+         <div className="relative w-64 h-48 bg-cardboard rounded-lg shadow-2xl transition-transform duration-500 group-hover:-translate-y-2 group-hover:rotate-1 flex items-center justify-center border-t border-white/20">
+             {/* Flaps */}
+             <div className="absolute top-0 left-0 w-1/2 h-full bg-black/5 rounded-l-lg origin-left transform group-hover:rotate-y-12 transition-transform"></div>
+             <div className="absolute top-0 right-0 w-1/2 h-full bg-black/10 rounded-r-lg origin-right transform group-hover:-rotate-y-12 transition-transform"></div>
+             
+             {/* Sticker */}
+             <div className="z-10 bg-white p-4 shadow-sm rotate-[-2deg] transform transition-transform group-hover:rotate-[2deg]">
+                 <h2 className="font-handwritten text-4xl font-bold text-stamp-red">Подобрать</h2>
+                 <p className="font-typewriter text-xs text-pencil text-center mt-1">Нажми, чтобы открыть</p>
              </div>
              
-             <h2 className="font-display font-bold text-5xl sm:text-7xl leading-[0.9] mb-8 mix-blend-exclusion text-white sm:text-black">
-                 We judge<br/>
-                 your friends.<br/>
-                 <span className="text-stroke text-outline text-black sm:text-gray-400">So you don't have to.</span>
-             </h2>
-
-             <div className="max-w-md bg-white border-2 border-black p-6 shadow-[8px_8px_0px_#000] rotate-1">
-                <p className="font-mono text-sm mb-4">
-                    Buying gifts is a social ritual designed to prove affection through material exchange. Our algorithms minimize the risk of social rejection.
-                </p>
-                <Button variant="primary" onClick={startQuiz}>
-                    Initiate Protocol
-                </Button>
-                <div className="mt-2 text-[10px] text-gray-500">
-                    * Results may vary based on your honesty.
-                </div>
+             {/* Mascot peering out */}
+             <div className="absolute -top-12 right-4 transition-transform duration-300 group-hover:-translate-y-4">
+                 <Mascot emotion="happy" className="scale-75 rotate-12" />
              </div>
          </div>
-         
-         <Mascot emotion="cool" className="absolute right-0 top-20 hidden sm:block rotate-12" />
-      </section>
+      </div>
 
-      {/* 2. CHAOTIC FEED */}
-      <section className="relative z-10 px-2">
-          <div className="flex justify-between items-end border-b-4 border-black mb-12">
-              <h3 className="font-display font-black text-4xl uppercase">
-                  Objects
-              </h3>
-              <span className="font-mono text-xs bg-acid-green px-2 mb-2">
-                  Live Feed // Not Curated
-              </span>
+      {/* 2. SCATTERED OBJECTS: The Feed */}
+      <div className="w-full max-w-5xl relative">
+          <h3 className="font-handwritten text-3xl text-pencil mb-8 ml-8 -rotate-2 inline-block border-b-2 border-pencil/20 pb-1">
+              Недавние находки:
+          </h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 sm:gap-16 px-4">
+              {feedGifts.map((gift, index) => {
+                  // Generate random rotation for natural feel
+                  const rotation = index % 2 === 0 ? 'rotate-2' : '-rotate-1';
+                  const offset = index % 3 === 0 ? 'translate-y-4' : 'translate-y-0';
+                  
+                  return (
+                      <div key={gift.id} className={`${rotation} ${offset} transition-all duration-300 hover:z-20 hover:scale-105 hover:rotate-0`}>
+                          <GiftCard 
+                            gift={gift} 
+                            variant="polaroid"
+                            onClick={openGift} 
+                          />
+                      </div>
+                  );
+              })}
           </div>
+      </div>
 
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
-              {feedGifts.map((gift, index) => (
-                  <div key={gift.id} className="break-inside-avoid">
-                      <GiftCard 
-                        gift={gift} 
-                        variant={index % 2 === 0 ? 'brutal' : 'minimal'}
-                        onClick={openGift} 
-                      />
-                  </div>
-              ))}
-          </div>
-
-          <div className="mt-32 text-center relative">
-              <div className="absolute top-1/2 left-0 w-full h-px bg-black -z-10"></div>
-              <Button variant="secondary" onClick={startQuiz} className="rotate-3">
-                  I demand more options
-              </Button>
-          </div>
-      </section>
+      {/* 3. RANDOM DESK ITEMS (Decor) */}
+      <div className="absolute top-20 left-4 w-32 h-32 bg-yellow-200/20 rounded-full blur-2xl pointer-events-none"></div>
+      <div className="fixed top-32 right-8 hidden xl:block pointer-events-none">
+          <div className="w-24 h-24 border-4 border-black/10 rounded-full"></div> {/* Coffee stain */}
+      </div>
 
       {selectedGift && (
         <GiftDetailsModal 

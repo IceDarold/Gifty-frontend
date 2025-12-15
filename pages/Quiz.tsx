@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { AGE_GROUPS, RELATIONSHIPS, BUDGETS } from '../constants';
 import { QuizAnswers } from '../types';
-import { track } from '../utils/analytics';
 
 const INITIAL_ANSWERS: QuizAnswers = {
   name: '',
@@ -43,160 +42,141 @@ export const Quiz: React.FC = () => {
     }
   };
 
-  // Helper: History Log
-  const renderHistory = () => {
-    const history = [];
-    if (step > 0) history.push({ q: "SUBJECT_NAME", a: answers.name });
-    if (step > 1) history.push({ q: "CHRONO_AGE", a: answers.ageGroup });
-    if (step > 2) history.push({ q: "SOCIAL_LINK", a: answers.relationship });
-    if (step > 3) history.push({ q: "COORDINATES", a: answers.city });
-    if (step > 4) history.push({ q: "PSYCH_PROFILE", a: answers.interests });
+  const QuestionCard = ({ title, children, active }: any) => (
+      <div className={`
+        relative w-full max-w-md bg-white p-8 shadow-paper mb-8 transition-all duration-500
+        ${active ? 'opacity-100 rotate-0 scale-100 z-10' : 'opacity-50 blur-[1px] rotate-1 scale-95 grayscale'}
+      `}>
+         {/* Texture overlay */}
+         <div className="absolute inset-0 texture-paper pointer-events-none opacity-50"></div>
+         
+         {/* Question Number Stamp */}
+         <div className="absolute -top-4 -right-4 w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center font-typewriter font-bold text-gray-500 shadow-inner">
+             {step + 1}
+         </div>
 
-    return history.map((h, i) => (
-        <div key={i} className="mb-2 font-mono text-xs text-gray-400 flex gap-4 border-b border-dashed border-gray-300 pb-1">
-            <span className="w-24 shrink-0 uppercase">{h.q}:</span>
-            <span className="text-black line-through decoration-acid-green decoration-2">{h.a}</span>
-        </div>
-    ));
-  };
+         <h2 className="font-handwritten text-3xl mb-6 relative z-10">{title}</h2>
+         <div className="relative z-10">{children}</div>
+      </div>
+  );
 
   const renderCurrentStep = () => {
     switch (step) {
         case 0:
             return (
-                <div className="animate-glitch">
-                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block -rotate-1">INPUT_01</label>
-                    <h2 className="font-display font-bold text-4xl mb-4">Identify the Target.</h2>
+                <QuestionCard title="Кто этот счастливчик?" active>
                     <input 
                         autoFocus
                         type="text" 
                         value={answers.name}
                         onChange={e => updateAnswer('name', e.target.value)}
-                        placeholder="Name or Alias..."
-                        className="w-full bg-concrete border-2 border-black p-4 font-mono text-xl focus:bg-acid-green focus:outline-none transition-colors placeholder:text-gray-400"
+                        placeholder="Впишите имя..."
+                        className="w-full bg-transparent border-b-2 border-pencil/30 p-2 font-handwritten text-2xl focus:border-stamp-red outline-none placeholder:text-gray-300"
                         onKeyDown={e => e.key === 'Enter' && answers.name && handleNext()}
                     />
-                    <p className="mt-2 text-xs font-mono text-gray-500">We will not contact them. Probably.</p>
-                </div>
+                </QuestionCard>
             );
         case 1:
             return (
-                <div>
-                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block rotate-1">INPUT_02</label>
-                    <h2 className="font-display font-bold text-4xl mb-6">Age Estimation.</h2>
-                    <div className="grid grid-cols-1 gap-2">
+                <QuestionCard title="Сколько им лет?" active>
+                    <div className="grid grid-cols-2 gap-3">
                         {AGE_GROUPS.map(age => (
                             <button 
                                 key={age}
                                 onClick={() => { updateAnswer('ageGroup', age); handleNext(); }}
-                                className="text-left font-mono text-lg border-2 border-transparent hover:border-black hover:bg-acid-green p-2 transition-all uppercase"
+                                className="border border-pencil/20 p-2 rounded-sm font-typewriter text-xs hover:bg-yellow-50 hover:border-yellow-300 transition-colors text-left"
                             >
-                                [ {age} ]
+                                {age}
                             </button>
                         ))}
                     </div>
-                </div>
+                </QuestionCard>
             );
         case 2:
             return (
-                <div>
-                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block">INPUT_03</label>
-                    <h2 className="font-display font-bold text-4xl mb-6">Relation Protocol.</h2>
-                    <div className="flex flex-wrap gap-3">
+                <QuestionCard title="Кто вы друг другу?" active>
+                    <div className="flex flex-wrap gap-2">
                         {RELATIONSHIPS.map(rel => (
                             <button 
                                 key={rel}
                                 onClick={() => { updateAnswer('relationship', rel); handleNext(); }}
-                                className="font-display font-bold text-2xl hover:text-white hover:bg-black px-2 hover:-rotate-2 transition-all"
+                                className="bg-gray-100 px-3 py-2 rounded-sm font-handwritten text-xl hover:bg-white hover:shadow-md hover:-translate-y-1 transition-all"
                             >
                                 {rel}
                             </button>
                         ))}
                     </div>
-                </div>
+                </QuestionCard>
             );
         case 3:
             return (
-                <div>
-                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block">INPUT_04</label>
-                    <h2 className="font-display font-bold text-4xl mb-4">Location Data.</h2>
-                    <input 
+                <QuestionCard title="Где искать?" active>
+                     <input 
                         autoFocus
                         type="text" 
                         value={answers.city}
                         onChange={e => updateAnswer('city', e.target.value)}
-                        placeholder="City..."
-                        className="w-full bg-concrete border-b-4 border-black p-4 font-mono text-xl focus:border-acid-green focus:outline-none"
+                        placeholder="Город..."
+                        className="w-full bg-transparent border-b-2 border-pencil/30 p-2 font-handwritten text-2xl focus:border-stamp-red outline-none"
                         onKeyDown={e => e.key === 'Enter' && answers.city && handleNext()}
                     />
-                </div>
+                </QuestionCard>
             );
         case 4:
             return (
-                <div>
-                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block">INPUT_05</label>
-                    <h2 className="font-display font-bold text-4xl mb-2">Obsessions.</h2>
-                    <p className="font-mono text-xs mb-4">List their hobbies. Be specific.</p>
+                <QuestionCard title="Чем увлекаются?" active>
+                    <p className="font-typewriter text-xs text-gray-500 mb-2">Напиши списком или через запятую</p>
                     <textarea 
                         autoFocus
                         value={answers.interests}
                         onChange={e => updateAnswer('interests', e.target.value)}
-                        placeholder="e.g. Conspiracy theories, Cats, Silence..."
-                        className="w-full border-2 border-black p-4 font-mono text-lg outline-none focus:shadow-[4px_4px_0px_#000] h-32 resize-none"
+                        placeholder="Котики, рисование, сон..."
+                        className="w-full bg-yellow-50 p-4 font-typewriter text-sm outline-none shadow-inner h-32 resize-none border border-yellow-200"
                     />
-                </div>
+                </QuestionCard>
             );
         case 5:
             return (
-                <div>
-                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block">INPUT_06</label>
-                    <h2 className="font-display font-bold text-4xl mb-6">Monetary Sacrifice.</h2>
+                <QuestionCard title="Бюджет операции?" active>
                     <div className="space-y-2">
                         {BUDGETS.map(b => (
                             <button 
                                 key={b}
                                 onClick={() => { updateAnswer('budget', b); handleNext(); }}
-                                className="block w-full text-left font-mono font-bold py-3 border-2 border-black hover:bg-black hover:text-white px-4 transition-all"
+                                className="block w-full text-left font-typewriter text-sm py-2 px-4 border-b border-dashed border-gray-300 hover:bg-green-50 hover:text-green-800 transition-colors"
                             >
                                 {b}
                             </button>
                         ))}
                     </div>
-                </div>
+                </QuestionCard>
             );
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex flex-col justify-end pb-12 px-2 max-w-xl mx-auto">
-        <div className="mb-12 border-l-4 border-gray-200 pl-4">
-            {renderHistory()}
+    <div className="flex flex-col items-center pt-8 pb-32 w-full">
+        {/* Progress: Stack of papers effect */}
+        <div className="w-full max-w-md mb-8 flex justify-between items-center px-4">
+            <button 
+                onClick={() => navigate('/')} 
+                className="font-handwritten text-xl text-gray-500 hover:text-ink"
+            >
+                ← Вернуться
+            </button>
+            <span className="font-typewriter text-xs text-gray-400">Стр. {step + 1} из 6</span>
         </div>
+
+        {renderCurrentStep()}
         
-        <div className="min-h-[300px]">
-            {renderCurrentStep()}
-        </div>
-
-        <div className="mt-12 flex justify-between items-center border-t-2 border-black pt-6">
-             <div className="font-mono text-xs">
-                 PROGRESS: {Math.round(((step)/6)*100)}%
-             </div>
-             
-             {step > 0 && (
-                <button 
-                    onClick={() => setStep(s => s - 1)}
-                    className="font-mono text-xs underline decoration-error"
-                >
-                    &lt; REVERT
-                </button>
-             )}
-
-             {(step === 0 || step === 3 || step === 4) && (
-                 <Button onClick={handleNext} disabled={step === 0 && !answers.name || step === 3 && !answers.city || step === 4 && !answers.interests}>
-                     CONFIRM
+        {step > 0 && step < 5 && (
+            <div className="fixed bottom-32 right-4 md:right-32">
+                 <Button onClick={handleNext} disabled={false}>
+                     Дальше →
                  </Button>
-             )}
-        </div>
+            </div>
+        )}
+        
         <div ref={bottomRef} />
     </div>
   );

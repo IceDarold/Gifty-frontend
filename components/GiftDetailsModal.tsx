@@ -51,79 +51,79 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
-      {/* Chaotic Overlay */}
+      {/* Darkened Room Overlay */}
       <div 
-        className="absolute inset-0 bg-acid-green/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* CONTENT WINDOW */}
-      <div className="relative w-full max-w-4xl h-[90vh] bg-white border-[3px] border-black shadow-[15px_15px_0px_#000] flex flex-col overflow-hidden animate-glitch">
+      {/* THE FOLDER OBJECT */}
+      <div className="relative w-full max-w-4xl h-[85vh] bg-[#f0e6d2] shadow-2xl rounded-sm transform rotate-1 flex flex-col overflow-hidden paper-texture">
         
-        {/* Title Bar */}
-        <div className="bg-black text-white p-2 flex justify-between items-center cursor-move">
-            <span className="font-mono text-xs uppercase">System_File: {gift.id}.json</span>
-            <button 
-                onClick={onClose} 
-                className="w-6 h-6 bg-error flex items-center justify-center border border-white hover:bg-white hover:text-black font-bold"
-            >
-                X
-            </button>
+        {/* Folder Tab */}
+        <div className="absolute -top-8 left-8 w-48 h-10 bg-[#f0e6d2] rounded-t-lg shadow-sm flex items-center px-4">
+             <span className="font-typewriter font-bold text-xs uppercase tracking-widest text-ink">DELO № {gift.id}</span>
         </div>
 
-        {/* Scrollable Area */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Close Button (Red Stamp) */}
+        <button 
+            onClick={onClose} 
+            className="absolute top-4 right-4 z-20 w-12 h-12 rounded-full border-2 border-stamp-red text-stamp-red flex items-center justify-center font-bold text-xl rotate-12 hover:bg-stamp-red hover:text-white transition-colors"
+        >
+            X
+        </button>
+
+        {/* Content Area (Paper inside folder) */}
+        <div className="flex-1 overflow-y-auto p-8 bg-white m-2 shadow-inner rounded-sm relative">
+            {/* Paper texture */}
+             <div className="absolute inset-0 opacity-20 pointer-events-none" style={{backgroundImage: 'url("data:image/svg+xml,...")'}}></div>
              
-             {/* Left: Visuals */}
-             <div className="space-y-4">
-                 <div className="relative border-2 border-black">
-                     <img src={gift.image} alt={gift.title} className="w-full object-cover grayscale contrast-125" />
-                     <div className="absolute top-2 left-2 bg-acid-green px-2 font-bold text-xl mix-blend-hard-light transform -rotate-2">
-                         {gift.price} RUB
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
+                 
+                 {/* Visuals: Paperclipped Photo */}
+                 <div className="relative">
+                     {/* Paperclip */}
+                     <div className="absolute -top-4 right-1/2 translate-x-1/2 w-8 h-16 border-4 border-gray-400 rounded-full z-20"></div>
+                     
+                     <div className="bg-white p-2 shadow-lg rotate-[-2deg]">
+                         <img src={gift.image} alt={gift.title} className="w-full object-cover filter contrast-110" />
+                     </div>
+
+                     <div className="mt-8 bg-yellow-100 p-4 shadow-sm rotate-1 font-handwritten text-xl text-ink transform relative">
+                         <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-24 h-6 bg-tape/50 rotate-[-1deg]"></div>
+                         <p>Цена: <span className="font-bold">{gift.price} ₽</span></p>
+                         <p>Где найти: {gift.marketplace}</p>
                      </div>
                  </div>
-                 
-                 <div className="border border-black p-4 bg-concrete font-mono text-xs">
-                     <p>SOURCE: {gift.marketplace}</p>
-                     <p>CATEGORY: {gift.category.toUpperCase()}</p>
-                     <p>AGE_RANGE: {gift.ageRange[0]}-{gift.ageRange[1]}</p>
-                 </div>
-             </div>
 
-             {/* Right: Text Dump */}
-             <div className="font-mono">
-                 <h2 className="font-display font-black text-4xl sm:text-5xl uppercase leading-[0.9] mb-6">
-                     {gift.title}
-                 </h2>
-
-                 <div className="mb-6 relative">
-                     <span className="bg-black text-white text-xs px-1 absolute -top-3 left-0">AI_OPINION</span>
-                     <p className="border border-black p-4 text-sm bg-white">
-                         "{gift.reason}"
-                         <br/><br/>
-                         <span className="text-gray-500">// Confidence: 87% // Margin of error: High</span>
-                     </p>
-                 </div>
-
-                 <div className="prose font-sans text-sm border-l-4 border-acid-green pl-4 mb-8">
-                     {gift.description}
-                 </div>
-
-                 <div className="flex gap-4 items-center border-t-2 border-black pt-6">
-                     <Button 
-                        fullWidth 
-                        variant="primary"
-                        onClick={() => window.open('#', '_blank')}
-                     >
-                        Acquire Object
-                     </Button>
+                 {/* Text: Typed Report */}
+                 <div className="font-typewriter text-ink">
+                     <h2 className="text-3xl font-bold mb-6 underline decoration-wavy decoration-pencil/30">{gift.title}</h2>
                      
-                     <Button 
-                        variant="secondary"
-                        onClick={handleWishlist}
-                     >
-                        {saved ? 'FORGET' : 'REMEMBER'}
-                     </Button>
+                     <div className="mb-6 p-4 border-l-4 border-red-900/20 bg-gray-50">
+                         <span className="block text-xs text-gray-400 mb-1">МНЕНИЕ ИИ-ЭКСПЕРТА:</span>
+                         <p className="italic">"{gift.reason}"</p>
+                     </div>
+
+                     <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed mb-8 font-sans">
+                         {gift.description}
+                     </div>
+
+                     <div className="flex gap-4 items-center border-t-2 border-dashed border-gray-300 pt-6 mt-auto">
+                         <Button 
+                            variant="primary"
+                            onClick={() => window.open('#', '_blank')}
+                         >
+                            ЗАКАЗАТЬ
+                         </Button>
+                         
+                         <Button 
+                            variant="secondary"
+                            onClick={handleWishlist}
+                         >
+                            {saved ? 'В АРХИВ' : 'СОХРАНИТЬ'}
+                         </Button>
+                     </div>
                  </div>
              </div>
         </div>

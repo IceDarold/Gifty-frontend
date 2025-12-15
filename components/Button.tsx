@@ -13,26 +13,26 @@ export const Button: React.FC<ButtonProps> = ({
   ...props 
 }) => {
   
-  const baseStyles = "relative font-mono font-bold text-sm uppercase transition-all duration-75 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "relative font-typewriter font-bold text-sm uppercase transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    // Primary: Acid Green, Black Border, Hard Shadow
+    // Primary: A Red Ink Stamp or Tag
     primary: `
-        bg-acid-green text-black border-2 border-black
-        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-        hover:bg-white hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1
-        px-8 py-4
+        bg-stamp-red text-white border-2 border-transparent
+        shadow-md hover:shadow-lg
+        px-6 py-3 rounded-sm rotate-[-1deg] hover:rotate-0
+        tracking-widest
     `,
-    // Secondary: Black block, White text, Brutalist
+    // Secondary: A pencil sketch box
     secondary: `
-        bg-black text-white border-2 border-black
-        hover:bg-error hover:border-error
-        px-6 py-3
+        bg-white text-pencil border-2 border-pencil
+        shadow-sm hover:shadow-md
+        px-5 py-3 rounded-sm rotate-[1deg] hover:rotate-0
     `,
-    // Ghost: Looks like raw text link
+    // Ghost: Just text with underline
     ghost: `
-        bg-transparent text-black underline decoration-2 underline-offset-4 decoration-black
-        hover:decoration-acid-green hover:bg-black hover:text-white px-2
+        bg-transparent text-ink underline decoration-2 underline-offset-4 decoration-stamp-red
+        hover:decoration-wavy px-2 font-handwritten text-lg
     `
   };
 
@@ -41,10 +41,6 @@ export const Button: React.FC<ButtonProps> = ({
       className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full block' : 'inline-block'} ${className}`}
       {...props}
     >
-        {/* Random glitch element on primary buttons */}
-        {variant === 'primary' && (
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-error pointer-events-none"></span>
-        )}
       {children}
     </button>
   );

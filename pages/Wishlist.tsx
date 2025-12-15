@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Gift } from '../domain/types';
 import { api } from '../api';
-import { Mascot } from '../components/Mascot';
 import { GiftDetailsModal } from '../components/GiftDetailsModal';
 
 export const Wishlist: React.FC = () => {
@@ -26,68 +25,47 @@ export const Wishlist: React.FC = () => {
   useEffect(() => { loadItems(); }, []);
 
   return (
-    <div className="">
-      <div className="border-b-4 border-black pb-8 mb-12">
-          <h1 className="font-display font-black text-6xl uppercase leading-[0.8]">
-              Evidence<br/>Locker
-          </h1>
-          <div className="mt-4 font-mono bg-black text-white inline-block px-2">
-              COUNT: {items.length} OBJECTS RETAINED
-          </div>
+    <div className="w-full min-h-[80vh] relative">
+      {/* CORKBOARD BACKGROUND */}
+      <div className="absolute inset-0 bg-[#e0cda8] z-0 shadow-inner rounded-lg border-[12px] border-[#8d6e63]" 
+           style={{backgroundImage: 'url("https://www.transparenttextures.com/patterns/cork-board.png")'}}>
       </div>
 
-      {loading ? (
-           <div className="font-mono text-xl animate-pulse">Scanning database...</div>
-      ) : items.length === 0 ? (
-           <div className="py-24 border-2 border-dashed border-gray-300 text-center">
-               <Mascot emotion="cool" className="mb-8" />
-               <h2 className="font-display text-2xl font-bold">THE VOID IS EMPTY.</h2>
-               <p className="font-mono text-sm mt-2">You desire nothing. That is suspicious.</p>
-           </div>
-      ) : (
-           <div className="border-2 border-black">
-               {/* HEADER */}
-               <div className="hidden md:grid grid-cols-12 bg-black text-white font-mono text-sm uppercase font-bold py-2 px-2 border-b-2 border-black">
-                   <div className="col-span-1">ID</div>
-                   <div className="col-span-5">Artifact</div>
-                   <div className="col-span-2">Class</div>
-                   <div className="col-span-2 text-right">Cost</div>
-                   <div className="col-span-2 text-right">Status</div>
-               </div>
+      <div className="relative z-10 p-8">
+          <div className="bg-white p-4 shadow-md rotate-[-1deg] inline-block mb-12 relative">
+               <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-600 rounded-full shadow-sm z-20"></div>
+               <h1 className="font-handwritten text-4xl text-ink">Доска Идей</h1>
+               <p className="font-typewriter text-xs text-pencil">Сохранено: {items.length}</p>
+          </div>
 
-               {/* ROWS */}
-               {items.map((gift, idx) => (
-                   <div 
-                        key={gift.id} 
-                        className={`
-                            group grid grid-cols-1 md:grid-cols-12 gap-4 py-4 px-2 items-center cursor-pointer hover:bg-acid-green transition-colors
-                            ${idx !== items.length - 1 ? 'border-b-2 border-black' : ''}
-                        `} 
-                        onClick={() => setSelectedGift(gift)}
-                   >
-                       <div className="col-span-1 font-mono text-xs opacity-50 hidden md:block">#{gift.id.padStart(3, '0')}</div>
-                       <div className="col-span-12 md:col-span-5 flex items-center gap-4">
-                           <div className="w-12 h-12 border border-black overflow-hidden relative">
-                                <img src={gift.image} className="w-full h-full object-cover grayscale contrast-125" />
-                                <div className="absolute inset-0 bg-acid-green mix-blend-multiply opacity-0 group-hover:opacity-50"></div>
-                           </div>
-                           <span className="font-display font-bold text-lg leading-tight uppercase">{gift.title}</span>
+          {loading ? (
+               <div className="font-handwritten text-2xl text-white/50 animate-pulse">Ищем записи...</div>
+          ) : items.length === 0 ? (
+               <div className="bg-yellow-100 p-8 max-w-sm mx-auto shadow-floating rotate-2 text-center relative">
+                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 bg-tape/60 rotate-1"></div>
+                   <p className="font-handwritten text-2xl mb-2">Пусто...</p>
+                   <p className="font-typewriter text-sm">Приколите сюда что-нибудь интересное!</p>
+               </div>
+          ) : (
+               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                   {items.map((gift, idx) => (
+                       <div 
+                            key={gift.id} 
+                            onClick={() => setSelectedGift(gift)}
+                            className="bg-white p-2 shadow-paper hover:shadow-floating hover:scale-105 transition-all cursor-pointer relative"
+                            style={{transform: `rotate(${idx % 2 === 0 ? '2deg' : '-1deg'})`}}
+                       >
+                           {/* Push pin */}
+                           <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-green-600 rounded-full shadow-sm z-20"></div>
+                           
+                           <img src={gift.image} className="w-full h-32 object-cover mb-2 filter contrast-110" />
+                           <p className="font-handwritten text-lg leading-none">{gift.title}</p>
+                           <p className="font-typewriter text-xs text-right mt-1">{gift.price} ₽</p>
                        </div>
-                       <div className="col-span-6 md:col-span-2 font-mono text-xs uppercase border border-black px-1 text-center w-max md:w-full mt-2 md:mt-0 bg-white">
-                           {gift.category}
-                       </div>
-                       <div className="col-span-6 md:col-span-2 font-mono text-sm font-bold text-right mt-2 md:mt-0">
-                           {gift.price} RUB
-                       </div>
-                       <div className="col-span-12 md:col-span-2 text-right mt-2 md:mt-0">
-                           <span className="font-mono text-xs uppercase bg-black text-white px-2 py-1 group-hover:bg-white group-hover:text-black transition-colors">
-                               INSPECT ->
-                           </span>
-                       </div>
-                   </div>
-               ))}
-           </div>
-      )}
+                   ))}
+               </div>
+          )}
+      </div>
 
       {selectedGift && (
         <GiftDetailsModal 

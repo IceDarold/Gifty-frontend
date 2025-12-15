@@ -5,12 +5,12 @@ import { track } from '../utils/analytics';
 
 interface Props {
   gift: Gift;
-  variant?: 'brutal' | 'minimal';
+  variant?: 'polaroid' | 'minimal';
   onToggleWishlist?: () => void;
   onClick?: (gift: Gift) => void;
 }
 
-export const GiftCard: React.FC<Props> = ({ gift, variant = 'brutal', onToggleWishlist, onClick }) => {
+export const GiftCard: React.FC<Props> = ({ gift, variant = 'polaroid', onToggleWishlist, onClick }) => {
   const [saved, setSaved] = useState(isInWishlist(gift.id));
 
   useEffect(() => {
@@ -33,61 +33,48 @@ export const GiftCard: React.FC<Props> = ({ gift, variant = 'brutal', onToggleWi
   return (
     <div 
       onClick={() => onClick && onClick(gift)}
-      className={`
-        group relative cursor-pointer transition-transform hover:-translate-y-1
-        ${variant === 'brutal' 
-            ? 'bg-white border-2 border-black shadow-[4px_4px_0px_#000]' 
-            : 'bg-transparent border-l-4 border-acid-green pl-4'}
-      `}
+      className="group relative cursor-pointer"
     >
-      {/* Glitch Overlay on Hover */}
-      <div className="absolute inset-0 bg-acid-green opacity-0 group-hover:opacity-20 z-10 pointer-events-none mix-blend-multiply transition-opacity"></div>
+      {/* POLAROID BODY */}
+      <div className="bg-white p-3 pb-4 shadow-paper transition-shadow duration-300 group-hover:shadow-floating">
+        
+        {/* Tape at top (Visual anchor) */}
+        <div className="tape-top"></div>
 
-      {/* 1. Image */}
-      <div className="relative overflow-hidden border-b-2 border-black">
-        <img 
-          src={gift.image} 
-          alt={gift.title} 
-          className="w-full aspect-square object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-500"
-          loading="lazy"
-        />
-        {/* Anti-Badge */}
-        {variant === 'brutal' && (
-            <div className="absolute top-2 left-2 bg-black text-white px-2 py-1 font-mono text-xs z-20">
-                ITEM #{gift.id}
+        {/* 1. Image Area */}
+        <div className="relative aspect-square w-full bg-gray-100 mb-3 overflow-hidden filter sepia-[0.2]">
+            <img 
+              src={gift.image} 
+              alt={gift.title} 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+            />
+            
+            {/* Price Tag (Sticker on image) */}
+            <div className="absolute bottom-2 right-2 bg-yellow-300 text-ink px-2 py-1 font-typewriter font-bold text-xs rotate-[-2deg] shadow-sm transform transition-transform group-hover:scale-110">
+                {gift.price.toLocaleString()} ₽
             </div>
-        )}
-         <button 
-          onClick={handleWishlist}
-          className="absolute top-2 right-2 z-30 bg-white border border-black p-1 hover:bg-error hover:text-white transition-colors"
-        >
-           {saved ? 'SAVED' : 'SAVE?'}
-        </button>
-      </div>
-      
-      {/* 2. Content */}
-      <div className="p-4 flex flex-col gap-2">
-        <div className="flex justify-between items-start">
-             <h3 className="font-display font-bold text-xl leading-none uppercase pr-4 group-hover:underline decoration-wavy decoration-acid-green">
-                {gift.title}
-             </h3>
-             <span className="font-mono text-sm bg-black text-white px-1">
-                {gift.price.toLocaleString()}
-             </span>
         </div>
         
-        {variant === 'brutal' && (
-            <p className="font-mono text-xs leading-tight text-gray-600 border-l-2 border-gray-300 pl-2 mt-2">
-                Ai_Reasoning: "{gift.reason.toLowerCase()}"
-            </p>
-        )}
-
-        <div className="mt-2 flex gap-1 flex-wrap">
-             {gift.tags.slice(0, 3).map(tag => (
-                 <span key={tag} className="text-[10px] font-mono border border-black px-1 rounded-full bg-white">
-                     #{tag}
-                 </span>
-             ))}
+        {/* 2. Handwriting Area */}
+        <div className="px-1 min-h-[60px] flex flex-col justify-between">
+           <h3 className="font-handwritten text-2xl leading-none text-ink mb-2 line-clamp-2">
+              {gift.title}
+           </h3>
+           
+           <div className="flex justify-between items-end border-t border-pencil/10 pt-2">
+               <span className="font-typewriter text-[10px] text-pencil uppercase tracking-wider">
+                   #{gift.category}
+               </span>
+               
+               <button 
+                onClick={handleWishlist}
+                className="text-xl transition-transform hover:scale-125 active:scale-95"
+                title="Сохранить"
+               >
+                   {saved ? '❤️' : '♡'}
+               </button>
+           </div>
         </div>
       </div>
     </div>
