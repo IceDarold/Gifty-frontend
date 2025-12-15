@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ export const Footer: React.FC = () => {
        
        <div className="flex items-center justify-center gap-6 mb-4">
           <a href="#" className="text-indigo-200/60 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">О сервисе</a>
-          <a href="#" className="text-indigo-200/60 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Блог</a>
+          <Link to="/blog" className="text-indigo-200/60 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Блог</Link>
           <a href="#" className="text-indigo-200/60 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Политика</a>
        </div>
        

@@ -4,6 +4,7 @@ import { Button } from '../components/Button';
 import { Mascot } from '../components/Mascot';
 import { GiftCard } from '../components/GiftCard';
 import { GiftDetailsModal } from '../components/GiftDetailsModal';
+import { Logo } from '../components/Logo';
 import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
@@ -319,20 +320,6 @@ export const Home: React.FC = () => {
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Logo Path Logic
-  const logoPaths = ['/logo.png', '/public/logo.png', 'logo.png'];
-  const [currentLogoIndex, setCurrentLogoIndex] = useState(0);
-  const [logoError, setLogoError] = useState(false);
-
-  const handleLogoError = () => {
-    const nextIndex = currentLogoIndex + 1;
-    if (nextIndex < logoPaths.length) {
-      setCurrentLogoIndex(nextIndex);
-    } else {
-      setLogoError(true);
-    }
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -382,24 +369,9 @@ export const Home: React.FC = () => {
 
       {/* --- FLOATING LOGO (Top Left) --- */}
       <div className="fixed top-6 left-4 z-50">
-          <div 
-            className="cursor-pointer transition-transform active:scale-95" 
-            onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-          >
-             {!logoError ? (
-                <img 
-                    src={logoPaths[currentLogoIndex]}
-                    alt="Gifty AI" 
-                    className="h-10 w-auto object-contain drop-shadow-sm" 
-                    onError={handleLogoError}
-                />
-             ) : (
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md p-1.5 pr-4 rounded-full border border-white/20">
-                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center font-black text-brand-blue text-lg shadow-sm">G</div>
-                    <span className="font-bold tracking-wide text-sm text-white drop-shadow-md">Gifty</span>
-                </div>
-             )}
-        </div>
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl px-3 py-1.5 shadow-lg border border-white/50 hover:bg-white transition-all">
+             <Logo onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} />
+          </div>
       </div>
 
       {/* --- MASCOT HUB (Top Right - Simplified) --- */}

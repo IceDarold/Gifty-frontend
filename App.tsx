@@ -6,6 +6,8 @@ import { Quiz } from './pages/Quiz';
 import { Results } from './pages/Results';
 import { Wishlist } from './pages/Wishlist';
 import { Profile } from './pages/Profile';
+import { Blog } from './pages/Blog';
+import { BlogPost } from './pages/BlogPost';
 
 const AppRoutes = () => {
     const location = useLocation();
@@ -13,7 +15,8 @@ const AppRoutes = () => {
     // Logic for UI elements visibility
     // Show Nav everywhere EXCEPT inside the active Quiz flow to prevent distraction.
     // Home, Results, Wishlist, Profile ALL get the stable bottom bar.
-    const showNav = location.pathname !== '/quiz';
+    // Blog details page also hides nav to be immersive.
+    const showNav = location.pathname !== '/quiz' && !location.pathname.startsWith('/blog/');
     
     // Show footer everywhere except the Quiz flow
     const showFooter = location.pathname !== '/quiz';
@@ -26,6 +29,8 @@ const AppRoutes = () => {
                 <Route path="/results" element={<Results />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:id" element={<BlogPost />} />
             </Routes>
         </Layout>
     );

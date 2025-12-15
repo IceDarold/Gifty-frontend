@@ -64,3 +64,23 @@ export interface UserProfile {
   level: string; // "Novice", "Expert", etc.
   events: CalendarEvent[];
 }
+
+export interface BlogContentBlock {
+  type: 'paragraph' | 'h2' | 'quote' | 'list';
+  text?: string;
+  items?: string[];
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  category: string;
+  readTime: string;
+  date: string;
+  author: string;
+  authorAvatar: string;
+  featured?: boolean;
+  content: BlogContentBlock[];
+}
