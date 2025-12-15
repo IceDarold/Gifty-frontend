@@ -1,4 +1,3 @@
-
 export interface ReviewItem {
   id: string;
   author: string;
@@ -22,7 +21,7 @@ export interface Gift {
   title: string;
   price: number;
   image: string;
-  marketplace: 'Ozon' | 'WB' | 'Amazon' | 'Other';
+  marketplace: 'Ozon' | 'WB' | 'Amazon' | 'AliExpress' | 'Local' | 'Other';
   category: string;
   tags: string[];
   reason: string;
