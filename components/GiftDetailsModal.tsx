@@ -7,6 +7,7 @@ import { track } from '../utils/analytics';
 import { Button } from './Button';
 import { ReviewsSection } from './ReviewsSection';
 import { GiftCard } from './GiftCard';
+import { BetaRegistrationModal } from './BetaRegistrationModal';
 
 interface Props {
   gift: Gift;
@@ -23,6 +24,10 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
   const [saved, setSaved] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [matchScore, setMatchScore] = useState(0);
+  
+  // Registration Modal State
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+  
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Initialize and update when props or internal navigation changes
@@ -104,11 +109,17 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
     onWishlistChange();
   };
 
+  const handleBuyClick = () => {
+      track('click_buy', { id: gift.id });
+      setIsRegistrationOpen(true);
+  };
+
   if (!isOpen) return null;
 
   const formatPrice = (price: number) => new Intl.NumberFormat('ru-RU').format(price) + ' ₽';
 
   return createPortal(
+    <>
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center pointer-events-none">
       
       {/* Backdrop */}
@@ -277,7 +288,7 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
                  {/* Buy Button */}
                  <Button 
                     fullWidth 
-                    onClick={() => alert('Переход в магазин...')} 
+                    onClick={handleBuyClick} 
                     className="h-[4.5rem] rounded-[1.5rem] shadow-[0_8px_30px_rgba(0,111,255,0.3)] text-xl relative overflow-hidden group border-2 border-white/10"
                  >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-in-out" />
@@ -295,7 +306,11 @@ export const GiftDetailsModal: React.FC<Props> = ({ gift: initialGift, answers, 
         </div>
 
       </div>
-    </div>,
+    </div>
+    
+    {/* Beta Registration Overlay */}
+    {isRegistrationOpen && <BetaRegistrationModal onClose={() => setIsRegistrationOpen(false)} />}
+    </>,
     document.body
   );
 };
