@@ -368,10 +368,11 @@ export const Home: React.FC = () => {
       <div className="fixed top-40 -left-10 w-80 h-80 bg-purple-500/30 rounded-full mix-blend-screen filter blur-[90px] animate-blob animation-delay-2000 -z-10" />
 
       {/* --- FLOATING LOGO (Top Left) --- */}
-      <div className="fixed top-6 left-4 z-50">
-          <div className="bg-white/90 backdrop-blur-md rounded-2xl px-3 py-1.5 shadow-lg border border-white/50 hover:bg-white transition-all">
-             <Logo onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} />
-          </div>
+      <div className="fixed top-6 left-6 z-50">
+         <Logo 
+            variant="white" 
+            onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} 
+         />
       </div>
 
       {/* --- MASCOT HUB (Top Right - Simplified) --- */}
