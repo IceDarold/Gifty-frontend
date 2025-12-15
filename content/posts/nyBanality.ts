@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const nyBanality: BlogPost = {
-  id: 'ny-banality',
+  id: 'kak-ne-podarit-banalnost-na-noviy-god',
   title: 'Как не подарить банальность на Новый год',
+  metaTitle: 'Банальные подарки на Новый год — как избежать шаблонов',
+  metaDescription: 'Свечи, наборы и символы года — почему мы дарим банальности и как разорвать этот круг. Идеи подарков со смыслом.',
   excerpt: 'Свечи, наборы, символ года. Каждый раз мы обещаем себе быть оригинальными, и каждый раз скатываемся в шаблоны. Как разорвать круг.',
   image: 'https://images.unsplash.com/photo-1543258103-a62bdc069871?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

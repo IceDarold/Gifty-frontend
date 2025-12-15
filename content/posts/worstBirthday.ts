@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const worstBirthday: BlogPost = {
-  id: 'psy-worst-birthday',
+  id: 'khudshie-podarki-na-den-rozhdeniya',
   title: 'Худшие подарки на день рождения',
+  metaTitle: 'Худшие подарки на День рождения — ошибки гостей',
+  metaDescription: 'Почему в личный праздник мы получаем обезличенные вещи. Как выбрать подарок имениннику, чтобы не обидеть.',
   excerpt: 'День рождения — личный праздник, но именно в этот день мы часто получаем самые «чужие» подарки. Почему так происходит и как не промахнуться.',
   image: 'https://images.unsplash.com/photo-1530103862676-de3c9da59af7?q=80&w=1000&auto=format&fit=crop',
   category: 'Антирейтинг',

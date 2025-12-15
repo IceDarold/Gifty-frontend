@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const almostEveryone: BlogPost = {
-  id: 'psy-almost-everyone',
+  id: 'podarki-kotorye-nravyatsya-vsem',
   title: 'Подарки, которые подойдут почти всем',
+  metaTitle: 'Подарки, которые подойдут почти всем — безопасный выбор',
+  metaDescription: 'Универсальные идеи для ситуаций, когда вы боитесь не угадать. Нейтрально, полезно и приятно.',
   excerpt: 'Полностью универсальных подарков не существует. Но есть те, которые подходят почти всем — и при этом не раздражают.',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

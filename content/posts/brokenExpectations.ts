@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const brokenExpectations: BlogPost = {
-  id: 'psy-expectations',
+  id: 'ozhidanie-i-realnost-podarkov-psikhologiya',
   title: 'Подарки, которые разрушают ожидания',
+  metaTitle: 'Ожидание и реальность в подарках — как избежать разочарования',
+  metaDescription: 'Почему разрыв между ожиданием и реальностью так ранит. Как работать с ожиданиями партнера и не дарить сковородку вместо романтики.',
   excerpt: 'Я ждал романтики, а получил сковородку. Почему разрыв между ожиданием и реальностью так ранит и как с этим работать.',
   image: 'https://images.unsplash.com/photo-1598586861614-22b724508496?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

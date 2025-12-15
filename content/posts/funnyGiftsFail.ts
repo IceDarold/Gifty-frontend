@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const funnyGiftsFail: BlogPost = {
-  id: 'psy-funny-fail',
+  id: 'pochemu-prikolnye-podarki-ne-rabotayut',
   title: 'Почему «прикольный подарок» редко бывает удачным',
+  metaTitle: 'Прикольные подарки — почему шутки быстро надоедают',
+  metaDescription: 'Фартук с торсом и каска с пивом. Почему юмор в подарках часто неуместен и вызывает неловкость.',
   excerpt: 'Если вы говорите «зато смешно» — скорее всего, это плохой подарок. Почему юмор в коробке быстро устаревает.',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

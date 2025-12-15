@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const worstRelationship: BlogPost = {
-  id: 'psy-worst-relationship',
+  id: 'khudshie-podarki-dlya-vtoroy-polovinki',
   title: 'Худшие подарки в отношениях',
+  metaTitle: 'Худшие подарки в отношениях — как не поссориться',
+  metaDescription: 'Парадокс: подарки любимым часто ранят больнее всего. Бытовая техника, деньги и другие убийцы романтики.',
   excerpt: 'Парадокс: в отношениях подарки должны сближать, но именно здесь они чаще всего ранят. Как не разрушить близость одной коробкой.',
   image: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=1000&auto=format&fit=crop',
   category: 'Отношения',

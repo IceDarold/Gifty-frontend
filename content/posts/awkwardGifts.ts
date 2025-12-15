@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const awkwardGifts: BlogPost = {
-  id: 'psy-awkward',
+  id: 'podarki-vyzyvayushchie-nelovkost',
   title: 'Подарки, которые вызывают неловкость',
+  metaTitle: 'Подарки, вызывающие неловкость — как не попасть впросак',
+  metaDescription: 'Слишком личное, слишком дорогое или неуместное. Что делать с вещами, которые заставляют краснеть.',
   excerpt: 'Вы открыли подарок — и повисла тишина. Что делать с вещами, которые нарушают границы и заставляют краснеть.',
   image: 'https://images.unsplash.com/photo-1545310834-c7827b822005?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

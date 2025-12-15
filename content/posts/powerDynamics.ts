@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const powerDynamics: BlogPost = {
-  id: 'psy-power',
+  id: 'podarok-kak-forma-vlasti-psikhologiya',
   title: 'Подарок как форма власти: Кто в отношениях сверху?',
+  metaTitle: 'Подарок как форма власти — кто сверху в отношениях',
+  metaDescription: 'Когда дорогой подарок — это способ контроля. Как распознать токсичную заботу, манипуляции и сохранить независимость.',
   excerpt: 'Когда дорогой подарок — это не щедрость, а способ контроля. Как распознать токсичную заботу и сохранить независимость.',
   image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

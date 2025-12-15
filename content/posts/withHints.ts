@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const withHints: BlogPost = {
-  id: 'psy-with-hints',
+  id: 'kak-delat-podarki-s-namekom',
   title: 'Подарки с намёком (и когда это уместно)',
+  metaTitle: 'Подарки с намёком — искусство подтекста',
+  metaDescription: 'Как использовать подарок, чтобы сказать о чувствах или желаниях, и не обидеть человека.',
   excerpt: 'Не все намёки плохи. Но почти все — рискованны. Как использовать подтекст, чтобы сблизиться, а не обидеть.',
   image: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=1000&auto=format&fit=crop',
   category: 'Отношения',

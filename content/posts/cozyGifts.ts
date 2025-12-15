@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const cozyGifts: BlogPost = {
-  id: 'psy-cozy',
+  id: 'top-podarkov-dlya-uyuta-doma',
   title: 'Подарки для людей, которые любят уют',
+  metaTitle: 'Подарки для уюта — тепло, текстиль и свет',
+  metaDescription: 'Уют — это безопасность. Как выбрать плед, свечи или декор, которые действительно согревают душу.',
   excerpt: 'Уют — это не просто плед. Это ощущение безопасности. Как выбрать подарок, который согревает не только тело, но и душу.',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

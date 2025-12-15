@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const dislikedGift: BlogPost = {
-  id: 'psy-disliked',
+  id: 'chto-delat-esli-podarok-ne-ponravilsya',
   title: 'Что делать, если подарок не понравился',
+  metaTitle: 'Что делать, если подарок не понравился — этикет реакции',
+  metaDescription: 'Как реагировать на плохой подарок, чтобы не обидеть, но и не врать. И как пережить провал, если неудачный подарок сделали вы.',
   excerpt: 'Запретная тема: как реагировать, чтобы не обидеть, но и не врать. И как пережить провал, если даритель — вы.',
   image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

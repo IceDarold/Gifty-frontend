@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const unusedGifts: BlogPost = {
-  id: 'psy-unused',
+  id: 'podarki-kotorye-nikto-ne-ispolzuet',
   title: 'Подарки, которые никто не использует',
+  metaTitle: 'Бесполезные подарки — вещи, которые сразу идут в шкаф',
+  metaDescription: 'Фондюшницы и сложные гаджеты. Как не подарить «мертвый груз», который жалко выкинуть и невозможно использовать.',
   excerpt: 'Правда без стыда: есть подарки, которые сразу отправляются в дальний ящик. Навсегда. Как не подарить «мертвый груз».',
   image: 'https://images.unsplash.com/photo-1512418490979-92798cec1380?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

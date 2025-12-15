@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const hateGifts: BlogPost = {
-  id: 'psy-hate-gifts',
+  id: 'podarki-tem-kto-ne-lyubit-prazdniki',
   title: 'Подарки для людей, которые не любят подарки',
+  metaTitle: 'Подарки для людей, которые не любят подарки',
+  metaDescription: 'Как проявить внимание к Гринчу? Варианты заботы без давления, мишуры и обязательств.',
   excerpt: '«Мне ничего не надо» может быть правдой. Как проявить заботу о человеке, который избегает праздничной суеты.',
   image: 'https://images.unsplash.com/photo-1605218427368-35b86d9a04a3?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

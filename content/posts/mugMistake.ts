@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const mugMistake: BlogPost = {
-  id: 'psy-mug',
+  id: 'pochemu-ne-stoit-darit-kruzhku',
   title: 'Почему кружка с надписью — почти всегда ошибка',
+  metaTitle: 'Почему кружка с надписью — плохой подарок',
+  metaDescription: 'Офисная классика, которую никто не хочет. Разбираем феномен «Кружки Босса» и ищем достойные альтернативы.',
   excerpt: 'Самый популярный офисный подарок, который на самом деле никто не хочет. Разбираем феномен «Кружки Босса».',
   image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=1000&auto=format&fit=crop',
   category: 'Антирейтинг',

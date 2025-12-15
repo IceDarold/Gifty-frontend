@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const attentionTest: BlogPost = {
-  id: 'psy-attention',
-  title: 'Подарок как тест на внимательность: «Ты вообще меня слушал?»',
+  id: 'podarok-kak-test-na-vnimatelnost',
+  title: 'Подарок как тест на внимательность',
+  metaTitle: 'Подарок как тест на внимательность в отношениях',
+  metaDescription: 'Почему мы обижаемся на «не те» подарки? Как подарки показывают, слышит ли нас партнер на самом деле.',
   excerpt: 'Почему мы обижаемся на «не те» подарки? Потому что воспринимаем их как доказательство того, что нас не слышат.',
   image: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=1000&auto=format&fit=crop',
   category: 'Отношения',

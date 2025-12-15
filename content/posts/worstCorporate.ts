@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const worstCorporate: BlogPost = {
-  id: 'psy-worst-corporate',
+  id: 'khudshie-korporativnye-podarki',
   title: 'Худшие корпоративные подарки',
+  metaTitle: 'Худшие корпоративные подарки — что бесит сотрудников',
+  metaDescription: 'Брендированные кружки и ненужные календари. Почему подарки от компании часто провал и как сделать нормально.',
   excerpt: 'Брендированные кружки, календари и наборы, которые никто не хочет. Почему корпоративные подарки почти всегда провал и как это исправить.',
   image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1000&auto=format&fit=crop',
   category: 'Антирейтинг',

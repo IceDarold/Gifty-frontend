@@ -25,6 +25,36 @@ export const BlogPost: React.FC = () => {
     }
   }, [id, navigate]);
 
+  // SEO Update Effect
+  useEffect(() => {
+    if (!post) return;
+
+    // 1. Update Title
+    const baseTitle = 'Gifty AI';
+    document.title = post.metaTitle 
+        ? post.metaTitle 
+        : `${post.title} — ${baseTitle}`;
+
+    // 2. Update Meta Description
+    let metaDesc = document.querySelector("meta[name='description']");
+    if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', post.metaDescription || post.excerpt);
+
+    // 3. Update Canonical (Optional but good practice)
+    let linkCanonical = document.querySelector("link[rel='canonical']");
+    if (!linkCanonical) {
+        linkCanonical = document.createElement('link');
+        linkCanonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(linkCanonical);
+    }
+    linkCanonical.setAttribute('href', window.location.href);
+
+  }, [post]);
+
   useEffect(() => {
     const handleScroll = () => {
         const totalScroll = document.documentElement.scrollTop;

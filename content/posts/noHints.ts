@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const noHints: BlogPost = {
-  id: 'psy-no-hints',
+  id: 'podarki-bez-namekov-i-podteksta',
   title: 'Подарки без намёков',
+  metaTitle: 'Подарки без намёков — простота и ясность',
+  metaDescription: 'Когда важна прямота. Вещи, которые не нужно расшифровывать, и почему они часто лучше сложных сюрпризов.',
   excerpt: 'Иногда лучший подарок — тот, в котором ничего не нужно расшифровывать. Почему прямота и нейтральность часто выигрывают.',
   image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

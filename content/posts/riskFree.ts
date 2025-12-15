@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const riskFree: BlogPost = {
-  id: 'psy-risk-free',
+  id: 'bezopasnye-podarki-bez-riska',
   title: 'Подарки без риска',
+  metaTitle: 'Подарки без риска — для работы и знакомых',
+  metaDescription: 'Иногда лучший подарок — тот, который ничего не ломает. Идеи для формальных и полуофициальных поводов.',
   excerpt: 'Иногда лучший подарок — тот, который ничего не ломает. Как выбрать вещь, которая будет безопасной эмоционально и контекстуально.',
   image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

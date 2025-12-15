@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const differentCity: BlogPost = {
-  id: 'psy-different-city',
+  id: 'podarki-v-drugoy-gorod-idei',
   title: 'Что подарить человеку из другого города',
+  metaTitle: 'Что подарить человеку из другого города',
+  metaDescription: 'Логистика любви. Как выбрать подарок с доставкой, чтобы не создать проблем получателю.',
   excerpt: 'Когда вы в разных городах, подарок перестаёт быть вещью. Он становится связью. Как избежать логистических провалов.',
   image: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

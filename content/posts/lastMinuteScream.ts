@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const lastMinuteScream: BlogPost = {
-  id: 'psy-last-minute',
+  id: 'podarki-v-posledniy-moment-priznaki',
   title: 'Подарки, которые кричат: «Я купил это в последний момент»',
+  metaTitle: 'Подарки, купленные в последний момент — как избежать позора',
+  metaDescription: 'Кружки с зодиаком и наборы из супермаркета. Вещи, которые кричат «я забыл о тебе». Как спасти ситуацию, если времени нет.',
   excerpt: 'Некоторые подарки не нужно объяснять. Они всё говорят сами. Как не показать человеку, что вы о нем забыли.',
   image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?q=80&w=1000&auto=format&fit=crop',
   category: 'Антирейтинг',

@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const nyCandles: BlogPost = {
-  id: 'ny-candles',
+  id: 'chto-podarit-na-noviy-god-krome-svechey',
   title: 'Что подарить на Новый год, кроме свечей',
+  metaTitle: 'Что подарить на Новый год кроме свечей — идеи уютных подарков',
+  metaDescription: 'Свечи стали символом новогоднего тупика. Ищем альтернативы: подарки для уюта, тепла и ритуалов, которые не пылятся на полке.',
   excerpt: 'Свечи стали символом новогоднего тупика. Мы путаем уют как состояние и уют как объект. Ищем альтернативы «свечному» мышлению.',
   image: 'https://images.unsplash.com/photo-1608754484468-6d2c6769f379?q=80&w=1000&auto=format&fit=crop',
   category: 'Подборки',

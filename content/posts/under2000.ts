@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const under2000: BlogPost = {
-  id: 'psy-under-2000',
+  id: 'luchshie-podarki-do-2000-rubley',
   title: 'Подарки до 2000 рублей, которые выглядят дорого',
+  metaTitle: 'Подарки до 2000 рублей, которые выглядят дорого',
+  metaDescription: 'Стильные и качественные находки. Секреты выбора бюджетных подарков, за которые не стыдно.',
   excerpt: 'Они не кричат о цене, но создают ощущение ценности. Секреты выбора недорогих, но эстетичных подарков.',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Подборки',

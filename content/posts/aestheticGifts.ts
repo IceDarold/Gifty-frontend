@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const aestheticGifts: BlogPost = {
-  id: 'psy-aesthetic',
+  id: 'estetichnye-podarki-dlya-vizualov',
   title: 'Подарки для тех, кто любит эстетику',
+  metaTitle: 'Эстетичные подарки для людей с хорошим вкусом',
+  metaDescription: 'Как подарить вещь эстету и не испортить интерьер. Визуальная тишина, минимализм и правильные формы.',
   excerpt: 'Эстетика — это не «красиво». Это визуальная тишина. Как подарить вещь человеку, у которого идеальный вкус, и не испортить интерьер.',
   image: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?q=80&w=1000&auto=format&fit=crop',
   category: 'Тренды',

@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const betterNothing: BlogPost = {
-  id: 'psy-nothing',
+  id: 'kogda-luchshe-nichego-ne-darit',
   title: 'Почему иногда лучше ничего не дарить',
+  metaTitle: 'Когда лучше ничего не дарить — этикет уместности',
+  metaDescription: 'Ситуации, когда подарок только все портит. Конфликты, неравенство и просьбы «без подарков». Учимся вовремя останавливаться.',
   excerpt: 'Контринтуитивно, но факт: бывают ситуации, когда подарок только все портит. Учимся вовремя останавливаться.',
   image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

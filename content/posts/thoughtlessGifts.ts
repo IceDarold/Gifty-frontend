@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const thoughtlessGifts: BlogPost = {
-  id: 'psy-thoughtless',
+  id: 'podarki-bez-dushi-priznaki',
   title: 'Подарки, которые выглядят как «я не думал»',
+  metaTitle: 'Подарки «на отвали» — как не выглядеть равнодушным',
+  metaDescription: 'Вещи с ценниками и пакеты из супермаркета. Подарки, которые кричат «я не думал», и как исправить впечатление.',
   excerpt: 'Хуже плохого подарка — только подарок, в котором видно, что вы не старались. Как не прослыть равнодушным.',
   image: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

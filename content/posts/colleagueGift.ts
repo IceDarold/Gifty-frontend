@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const colleagueGift: BlogPost = {
-  id: 'psy-colleague',
+  id: 'chto-podarit-kollege-nedorogo-i-so-vkusom',
   title: 'Что подарить коллеге, чтобы было не неловко',
+  metaTitle: 'Что подарить коллеге — идеи без неловкости',
+  metaDescription: 'Баланс между вниманием и субординацией. Как выбрать подарок сотруднику, чтобы было вежливо, но не странно.',
   excerpt: 'Вы хотите быть вежливым, а не странным. Как соблюсти баланс между вниманием и профессиональной дистанцией.',
   image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

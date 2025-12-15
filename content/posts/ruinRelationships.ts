@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const ruinRelationships: BlogPost = {
-  id: 'psy-ruin',
+  id: 'podarki-kotorye-portyat-otnosheniya',
   title: 'Подарки, которые портят отношения',
+  metaTitle: 'Подарки, которые портят отношения — скрытые смыслы',
+  metaDescription: 'Парадокс: иногда подарок не сближает, а отдаляет. Дело в нарушении границ и токсичных сообщениях.',
   excerpt: 'Парадокс: иногда подарок не сближает, а отдаляет. Дело не в цене, а в скрытых сообщениях, которые мы передаем вместе с вещью.',
   image: 'https://images.unsplash.com/photo-1575825447781-0812239d2e1d?q=80&w=1000&auto=format&fit=crop',
   category: 'Отношения',

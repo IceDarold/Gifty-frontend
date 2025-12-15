@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const universalMyth: BlogPost = {
-  id: 'psy-universal',
+  id: 'pochemu-universalnykh-podarkov-ne-sushchestvuet',
   title: 'Почему универсальных подарков не существует',
+  metaTitle: 'Универсальные подарки — почему это миф',
+  metaDescription: '«Подойдет всем» — опасная иллюзия. Почему попытка угодить всем приводит к провалу и чем заменить универсальность.',
   excerpt: '«Подойдет всем» — самая опасная фраза в маркетинге подарков. Почему попытка угодить всем приводит к провалу.',
   image: 'https://images.unsplash.com/photo-1512418490979-92798cec1380?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const hardlyKnow: BlogPost = {
-  id: 'psy-hardly-know',
+  id: 'chto-podarit-malo-znakomomu-cheloveku',
   title: 'Что подарить, если вы почти не знакомы',
+  metaTitle: 'Что подарить малознакомому человеку — безопасные варианты',
+  metaDescription: 'Коллега, дальний родственник или новый знакомый. Как выбрать подарок, который не нарушит границы и будет приятен.',
   excerpt: 'Вы знаете имя, профессию и примерно — характер. Всё. Как выбрать подарок, который не нарушит границы и не создаст неловкость.',
   image: 'https://images.unsplash.com/photo-1512418490979-92798cec1380?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

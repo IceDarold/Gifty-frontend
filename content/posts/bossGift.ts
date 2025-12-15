@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const bossGift: BlogPost = {
-  id: 'psy-boss',
+  id: 'chto-podarit-nachalniku-etika',
   title: 'Что подарить начальнику (и чего точно не стоит)',
+  metaTitle: 'Что подарить начальнику и не выглядеть подхалимом',
+  metaDescription: 'Где грань между уважением и взяткой. Антирейтинг и удачные идеи подарков для босса.',
   excerpt: 'Начальнику хочется подарить что-то нормальное, но не выглядеть подхалимом. Где грань между уважением и взяткой?',
   image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1000&auto=format&fit=crop',
   category: 'Антирейтинг',

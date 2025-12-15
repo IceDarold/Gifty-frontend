@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const strangeGifts: BlogPost = {
-  id: 'psy-strange',
+  id: 'samye-strannye-podarki-antireyting',
   title: 'Самые странные подарки, которые мы видели',
+  metaTitle: 'Самые странные подарки — когда оригинальность во вред',
+  metaDescription: 'Не смешные, а пугающие. Подарки, вызывающие вопрос «Зачем?». Как отличить креатив от безумия.',
   excerpt: 'Не смешные, а именно странные. Подарки, которые вызывают только один вопрос: «Зачем?». Разбираем природу неуместной оригинальности.',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Антирейтинг',

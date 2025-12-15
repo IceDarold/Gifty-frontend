@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const guiltTop7: BlogPost = {
-  id: 'psy-guilt-top7',
+  id: 'podarki-iz-chuvstva-viny',
   title: 'Топ-7 подарков, которые дарят только из вины',
+  metaTitle: '7 подарков, которые дарят из чувства вины',
+  metaDescription: 'Как понять, что вы пытаетесь «откупиться» подарком вместо извинения. Почему это не работает и что делать.',
   excerpt: 'Иногда подарок — это не радость, а извинение, завернутое в бумагу. Как понять, что вы пытаетесь «откупиться», и почему это не работает.',
   image: 'https://images.unsplash.com/photo-1616091093747-4c80336a948e?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Mascot } from '../components/Mascot';
@@ -13,13 +13,13 @@ import { track } from '../utils/analytics';
 
 const Snowfall: React.FC = () => {
   // Generate static snowflakes to avoid hydration mismatch
-  const snowflakes = Array.from({ length: 25 }).map((_, i) => ({
+  const snowflakes = useMemo(() => Array.from({ length: 25 }).map((_, i) => ({
     left: `${Math.random() * 100}%`,
     animationDelay: `${Math.random() * 5}s`,
     animationDuration: `${Math.random() * 5 + 5}s`,
     opacity: Math.random() * 0.5 + 0.3,
     size: Math.random() * 0.5 + 0.5 // rem
-  }));
+  })), []);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
@@ -50,7 +50,6 @@ const ChristmasGarland: React.FC = () => (
      {Array.from({ length: 12 }).map((_, i) => {
          const colors = ['bg-red-500', 'bg-yellow-400', 'bg-green-500', 'bg-blue-500'];
          const color = colors[i % colors.length];
-         const glow = `shadow-[0_0_10px_2px_currentColor]`;
          
          return (
              <div 

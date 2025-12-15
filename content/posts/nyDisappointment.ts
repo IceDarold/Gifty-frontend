@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const nyDisappointment: BlogPost = {
-  id: 'ny-disappointment',
+  id: 'pochemu-novogodnie-podarki-razocharovyvayut',
   title: 'Почему новогодние подарки часто разочаровывают',
+  metaTitle: 'Разочарование в новогодних подарках — психология ожиданий',
+  metaDescription: 'Завышенные ожидания, усталость и обезличенность. Почему даже хорошие подарки под елкой иногда вызывают грусть и как этого избежать.',
   excerpt: 'Завышенные ожидания, обезличенность и усталость. Почему даже хорошие вещи под елкой иногда вызывают грусть, а не радость.',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

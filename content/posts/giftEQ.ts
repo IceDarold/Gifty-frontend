@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const giftEQ: BlogPost = {
-  id: 'psy-eq',
+  id: 'podarki-i-emotsionalnyy-intellekt',
   title: 'Подарки и эмоциональный интеллект',
+  metaTitle: 'Подарки и эмоциональный интеллект — как развить эмпатию',
+  metaDescription: 'Почему одни угадывают желания, а другие промахиваются? Подарок как тренажер эмпатии и эмоционального интеллекта.',
   excerpt: 'Почему одни интуитивно дарят то, что нужно, а другие вечно промахиваются? Подарок как тренажер эмпатии.',
   image: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

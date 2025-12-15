@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const cliches: BlogPost = {
-  id: 'psy-cliches',
+  id: 'samye-banalnye-podarki-klishe',
   title: 'Самые клишированные подарки всех времён',
+  metaTitle: 'Самые банальные подарки — клише, которые пора забыть',
+  metaDescription: 'Носки на 23 февраля и цветы на 8 марта. Почему мы продолжаем дарить клише и как разорвать этот круг банальности.',
   excerpt: 'Есть подарки, которые пережили эпохи и до сих пор не умерли. Почему мы продолжаем дарить цветы на 8 марта и носки на 23 февраля?',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Тренды',

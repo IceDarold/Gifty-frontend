@@ -74,6 +74,8 @@ export interface BlogContentBlock {
 export interface BlogPost {
   id: string;
   title: string;
+  metaTitle?: string; // SEO Title: "Main Keyword - Benefit"
+  metaDescription?: string; // SEO Desc: Pain point + Value (160 chars)
   excerpt: string;
   image: string;
   category: string;

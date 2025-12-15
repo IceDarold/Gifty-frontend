@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const worstNewYear: BlogPost = {
-  id: 'psy-worst-ny',
+  id: 'khudshie-podarki-na-noviy-god-reyting',
   title: 'Худшие подарки на Новый год',
+  metaTitle: 'Худшие подарки на Новый год — антирейтинг',
+  metaDescription: 'Символы года, свечи и магниты. Почему именно в Новый год мы дарим больше всего мусора и как этого избежать.',
   excerpt: 'Сезонное обострение плохих подарков. Почему именно в Новый год мы получаем больше всего ненужных вещей.',
   image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?q=80&w=1000&auto=format&fit=crop',
   category: 'Антирейтинг',

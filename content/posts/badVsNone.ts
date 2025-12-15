@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const badVsNone: BlogPost = {
-  id: 'psy-bad-vs-none',
+  id: 'chto-khuzhe-plokhoy-podarok-ili-ego-otsutstvie',
   title: 'Что хуже: плохой подарок или его отсутствие?',
+  metaTitle: 'Что хуже: плохой подарок или его отсутствие — этикет',
+  metaDescription: 'Стоит ли дарить «хоть что-нибудь» или лучше прийти с пустыми руками? Почему отсутствие подарка иногда честнее.',
   excerpt: 'Вечный вопрос: купить «хоть что-нибудь» или прийти с пустыми руками? Спойлер: отсутствие подарка иногда честнее.',
   image: 'https://images.unsplash.com/photo-1549488497-17cb12999496?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

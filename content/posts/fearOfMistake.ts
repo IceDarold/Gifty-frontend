@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const fearOfMistake: BlogPost = {
-  id: 'psy-fear-mistake',
+  id: 'kak-vybrat-podarok-bez-strakha',
   title: 'Что подарить, если вы боитесь ошибиться',
+  metaTitle: 'Страх не угадать с подарком — как преодолеть',
+  metaDescription: '«Лучше ничего, чем плохое». Психология выбора и простые техники, чтобы перестать бояться праздников.',
   excerpt: '«Я лучше ничего не подарю, чем подарю что-то не то». Почему страх ошибки так силён и как его преодолеть.',
   image: 'https://images.unsplash.com/photo-1631557283626-29a35e7df22a?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

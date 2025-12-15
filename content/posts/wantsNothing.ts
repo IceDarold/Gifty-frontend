@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const wantsNothing: BlogPost = {
-  id: 'psy-wants-nothing',
+  id: 'chto-podarit-esli-chelovek-nichego-ne-khochet',
   title: 'Подарки для людей, которые ничего не хотят',
+  metaTitle: 'Подарки для тех, кто ничего не хочет — как быть',
+  metaDescription: '«Мне ничего не надо» — правда или кокетство? Как проявить заботу и не подарить лишний хлам аскету.',
   excerpt: '«Мне ничего не нужно». Правда ничего? Или человек просто не хочет напрягать? Как обойти эту фразу и не подарить лишнее.',
   image: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

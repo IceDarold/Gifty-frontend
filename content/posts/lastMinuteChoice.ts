@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const lastMinuteChoice: BlogPost = {
-  id: 'psy-last-minute-choice',
+  id: 'bystrye-podarki-chto-kupit-srochno',
   title: 'Что подарить в последний момент',
+  metaTitle: 'Что подарить в последний момент — идеи спасения',
+  metaDescription: 'Жизнь случилась, а подарок нужен сейчас. Варианты, которые можно купить быстро, но без ощущения «на бегу».',
   excerpt: 'Иногда правда нет времени. Не «я плохо планировал», а просто жизнь случилась. Как выбрать подарок быстро, но без ощущения «на бегу».',
   image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

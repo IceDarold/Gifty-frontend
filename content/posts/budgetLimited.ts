@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const budgetLimited: BlogPost = {
-  id: 'psy-budget-limited',
+  id: 'chto-podarit-esli-malo-deneg',
   title: 'Что подарить, если бюджет ограничен',
+  metaTitle: 'Что подарить, если бюджет ограничен — идеи',
+  metaDescription: 'Как сделать теплый подарок без больших трат. Внимание, креатив и смысл важнее ценника.',
   excerpt: 'Есть неловкий вопрос, который редко задают вслух: а что, если денег правда немного? Как сделать подарок теплым, не компенсируя внимательность ценой.',
   image: 'https://images.unsplash.com/photo-1554260570-e9689a3418b8?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

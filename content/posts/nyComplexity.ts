@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const nyComplexity: BlogPost = {
-  id: 'ny-complexity',
+  id: 'pochemu-novogodnie-podarki-slozhnie',
   title: 'Почему новогодние подарки — самые сложные',
+  metaTitle: 'Почему новогодние подарки самые сложные — психология выбора подарков',
+  metaDescription: 'Почему подарки на Новый год вызывают стресс, разочарование и тревогу. Психология новогодних подарков и как выбрать подарок без банальности.',
   excerpt: 'Новый год кажется простым, но на деле это логистический и эмоциональный ад. Почему контекст праздника ломает привычную логику дарения.',
   image: 'https://images.unsplash.com/photo-1512418490979-92798cec1380?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const eco: BlogPost = {
-  id: '4',
+  id: 'eko-upakovka-podarkov-idei',
   title: 'Эко-упаковка: Красиво и без пластика',
+  metaTitle: 'Эко-упаковка подарков — красиво и без пластика',
+  metaDescription: 'Фуросики, крафт и сухоцветы. Как упаковать подарок стильно и экологично, используя подручные средства.',
   excerpt: 'Фуросики, крафт, сухоцветы и старые карты. Учимся заворачивать подарки так, чтобы жалко было открывать.',
   image: 'https://images.unsplash.com/photo-1606834789547-104443916297?auto=format&fit=crop&w=1000&q=80',
   category: 'DIY',

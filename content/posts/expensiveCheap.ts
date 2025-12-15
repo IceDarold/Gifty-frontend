@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const expensiveCheap: BlogPost = {
-  id: 'psy-expensive-cheap',
+  id: 'kak-vybrat-podarok-kotoryy-vyglyadit-dorogo',
   title: 'Подарки, которые выглядят дороже, чем они есть — и наоборот',
+  metaTitle: 'Как выбрать недорогой подарок, который выглядит роскошно',
+  metaDescription: 'Почему вещь за 1000 рублей может выглядеть лучше люкса. Секреты восприятия ценности, упаковки и материалов.',
   excerpt: 'Иногда вещь за 1000 рублей выглядит как люкс, а дорогой гаджет ощущается пустышкой. В чем секрет восприятия ценности?',
   image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const introvertGifts: BlogPost = {
-  id: 'psy-introvert',
+  id: 'luchshie-podarki-dlya-introvertov',
   title: 'Подарки для интровертов',
+  metaTitle: 'Подарки для интровертов — тишина и уют',
+  metaDescription: 'Они не любят шумных сюрпризов. Идеи подарков, которые уважают личное пространство и заряжают энергией.',
   excerpt: 'Интроверты не любят подарки? Миф. Они просто не любят лишний шум и вторжение. Как подарить радость, не нарушая границ.',
   image: 'https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const nyAnxiety: BlogPost = {
-  id: 'ny-anxiety',
+  id: 'pochemu-novogodnie-podarki-vyzyvayut-trevogu',
   title: 'Почему Новый год усиливает тревогу из-за подарков',
+  metaTitle: 'Тревога перед Новым годом — почему мы боимся дарить подарки',
+  metaDescription: 'Социальное сравнение, финансовое давление и страх оценки. Как справиться с новогодним неврозом и получать удовольствие от дарения.',
   excerpt: 'Праздник радости начинается с паники. Социальное сравнение, финансовое давление и страх оценки — как справиться с новогодним неврозом.',
   image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

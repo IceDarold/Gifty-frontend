@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const longDistance: BlogPost = {
-  id: 'psy-long-distance',
+  id: 'kak-podarit-podarok-na-rasstoyanii',
   title: 'Что подарить на расстоянии',
+  metaTitle: 'Подарки на расстоянии — как передать тепло',
+  metaDescription: 'Когда вас разделяют километры. Цифровые сюрпризы, доставка и слова, которые заменят объятия.',
   excerpt: 'Нет момента вручения, нет реакции, нет взгляда. Как сделать подарок осмысленным, когда вас разделяют километры.',
   image: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

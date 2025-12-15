@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const priceValue: BlogPost = {
-  id: 'psy-price-value',
+  id: 'pochemu-my-pereotsenivaem-tsenu-podarka',
   title: 'Почему мы переоцениваем цену подарка',
+  metaTitle: 'Цена подарка не равна ценности — психология трат',
+  metaDescription: '«Я потратил ползарплаты, почему она не рада?» Миф о том, что любовь измеряется деньгами, и что на самом деле важно.',
   excerpt: '«Я потратил ползарплаты, почему она не рада?» Миф о том, что любовь измеряется нулями на ценнике.',
   image: 'https://images.unsplash.com/photo-1559563362-c667ba5f5480?q=80&w=1000&auto=format&fit=crop',
   category: 'Финансы',

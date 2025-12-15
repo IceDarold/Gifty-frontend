@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const honestIgnorance: BlogPost = {
-  id: 'psy-honest-ignorance',
+  id: 'kak-skazat-ya-ne-znayu-chto-podarit',
   title: 'Почему «я не знаю, что тебе подарить» — честнее, чем кажется',
+  metaTitle: '«Я не знаю, что тебе подарить» — почему это честно',
+  metaDescription: 'Фраза, которую мы боимся произнести, может спасти праздник. Учимся превращать незнание в диалог и выбирать лучшее.',
   excerpt: 'Фраза, которую мы боимся произнести, на самом деле может спасти праздник. Учимся превращать незнание в диалог.',
   image: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=1000&auto=format&fit=crop',
   category: 'Коммуникация',

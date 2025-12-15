@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const repetitiveGifts: BlogPost = {
-  id: 'psy-repetitive',
+  id: 'pochemu-my-darim-odno-i-to-zhe',
   title: 'Почему одинаковые подарки — показатель усталости',
+  metaTitle: 'Одинаковые подарки каждый год — признак кризиса?',
+  metaDescription: 'Опять носки? Повторяющиеся подарки как сигнал усталости в отношениях. Когда традиции превращаются в рутину.',
   excerpt: 'В этом году — опять то же самое, только в другой упаковке. Когда традиции превращаются в сигнал тревоги для отношений.',
   image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

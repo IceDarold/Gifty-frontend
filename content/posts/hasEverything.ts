@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const hasEverything: BlogPost = {
-  id: 'psy-has-everything',
+  id: 'chto-podarit-esli-u-cheloveka-vse-est',
   title: 'Что подарить человеку, у которого всё есть',
+  metaTitle: 'Что подарить человеку, у которого всё есть — идеи',
+  metaDescription: 'Проблема не в деньгах, а в фантазии. Эмоции, впечатления и персонализация для тех, кого сложно удивить вещами.',
   excerpt: 'Проблема не в бюджете, а в потере ориентиров. Почему дорогие вещи здесь не работают и что на самом деле ценят такие люди.',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const minimalistGifts: BlogPost = {
-  id: 'psy-minimalist',
+  id: 'chto-podarit-minimalistu',
   title: 'Подарки для минималистов',
+  metaTitle: 'Что подарить минималисту, чтобы он не выбросил',
+  metaDescription: 'Они ненавидят хлам. Идеи полезных, цифровых и расходных подарков для тех, кто ценит пустоту.',
   excerpt: 'Минималисты не против подарков. Они против хлама. Как подарить радость тому, кто выбрасывает лишнее.',
   image: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',

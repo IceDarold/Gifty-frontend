@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const surpriseMyth: BlogPost = {
-  id: 'psy-surprise',
+  id: 'pochemu-syurprizy-nravyatsya-ne-vsem',
   title: 'Почему сюрпризы нравятся не всем',
+  metaTitle: 'Почему сюрпризы нравятся не всем — психология подарка',
+  metaDescription: 'Для одних сюрприз — это восторг, для других — стресс. Как понять тип личности и выбрать комфортный формат поздравления.',
   excerpt: 'Для одних сюрприз — это восторг, для других — паническая атака. Разбираем типы личности и их реакции.',
   image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1000&auto=format&fit=crop',
   category: 'Психология',

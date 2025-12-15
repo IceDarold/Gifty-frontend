@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const hatedGifts: BlogPost = {
-  id: 'psy-hated',
+  id: 'top-10-podarkov-kotorye-nenavidyat',
   title: '10 подарков, которые люди ненавидят (но продолжают получать)',
+  metaTitle: '10 подарков, которые все ненавидят (но дарят)',
+  metaDescription: 'Гели для душа, статуэтки и кружки с именами. Список вещей, которые мы дарим из страха, а получатели несут на свалку.',
   excerpt: 'Вы улыбаетесь, говорите «спасибо», а потом несете это на балкон. Список вещей, которые мы дарим из страха, а не из любви.',
   image: 'https://images.unsplash.com/photo-1628151016006-253c39132148?q=80&w=1000&auto=format&fit=crop',
   category: 'Антирейтинг',

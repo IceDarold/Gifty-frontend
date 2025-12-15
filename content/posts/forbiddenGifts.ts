@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const forbiddenGifts: BlogPost = {
-  id: 'psy-forbidden',
+  id: 'zapreshchennye-podarki-etiko',
   title: 'Подарки, которые лучше не дарить никому',
+  metaTitle: 'Запрещенные подарки — что нельзя дарить никогда',
+  metaDescription: 'Весы, кремы от морщин и животные. Список вещей, которые нарушают границы, вызывают обиду и могут разрушить отношения.',
   excerpt: 'Весы, кремы от морщин и домашние животные. Список вещей, которые нарушают границы и могут разрушить отношения.',
   image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1000&auto=format&fit=crop',
   category: 'Этикет',

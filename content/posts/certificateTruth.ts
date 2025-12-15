@@ -1,8 +1,10 @@
 import { BlogPost } from '../../domain/types';
 
 export const certificateTruth: BlogPost = {
-  id: 'psy-certificate',
+  id: 'sertifikat-v-podarok-za-i-protiv',
   title: 'Почему сертификат — это не всегда лень',
+  metaTitle: 'Сертификат в подарок — лень или забота?',
+  metaDescription: 'Когда подарочная карта — это спасение и уважение выбора, а когда — признак безразличия. Как дарить деньги красиво.',
   excerpt: 'Его считают либо спасением, либо провалом. Разбираемся, когда пластиковая карта — это проявление уважения, а когда — безразличия.',
   image: 'https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=1000&auto=format&fit=crop',
   category: 'Лайфхаки',
