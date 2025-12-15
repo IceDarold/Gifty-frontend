@@ -3,43 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Gifty.ai / Data-Poetry</title>
+    <title>Gifty.ai / ERROR_404_GIFT_NOT_FOUND</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              mono: ['"IBM Plex Mono"', 'monospace'],
-              serif: ['"Spectral"', 'serif'],
+              mono: ['"Space Mono"', 'monospace'],
+              display: ['"Syne"', 'sans-serif'],
             },
             colors: {
-              ink: '#111111', 
-              graphite: '#555555', 
-              paper: '#F2F0EB', // Slightly darker, more texture feel
-              accent: '#2B4ACB', // Deep International Klein Blue
-              alert: '#FF3333',
+              raw: '#000000', 
+              void: '#FFFFFF', 
+              'acid-green': '#CCFF00', // Radioactive Highligher
+              'error': '#FF4400', // International Orange
+              'hyper-blue': '#0033FF',
+              'concrete': '#F0F0F0',
+            },
+            spacing: {
+              'screen-10': '10vw',
+              'screen-20': '20vw',
             },
             animation: {
-              'reveal': 'reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'ticker': 'ticker 20s linear infinite',
-              'blink': 'blink 1s step-end infinite',
+              'float': 'float 6s ease-in-out infinite',
+              'marquee': 'marquee 15s linear infinite',
+              'glitch': 'glitch 0.4s cubic-bezier(.25, .46, .45, .94) both infinite',
+              'spin-slow': 'spin 12s linear infinite',
             },
             keyframes: {
-              reveal: {
-                '0%': { opacity: '0', transform: 'translateY(10px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
               },
-              ticker: {
-                '0%': { transform: 'translateX(100%)' },
+              marquee: {
+                '0%': { transform: 'translateX(0%)' },
                 '100%': { transform: 'translateX(-100%)' },
               },
-              blink: {
-                '0%, 100%': { opacity: '1' },
-                '50%': { opacity: '0' },
+              glitch: {
+                '0%': { transform: 'translate(0)' },
+                '20%': { transform: 'translate(-2px, 2px)' },
+                '40%': { transform: 'translate(-2px, -2px)' },
+                '60%': { transform: 'translate(2px, 2px)' },
+                '80%': { transform: 'translate(2px, -2px)' },
+                '100%': { transform: 'translate(0)' }
               }
             }
           }
@@ -47,57 +57,56 @@
       }
     </script>
     <style>
-      body {
-        background-color: #F2F0EB;
-        color: #111111;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        cursor: crosshair; /* Technical feel */
-      }
-
-      /* Custom Selection */
-      ::selection {
-        background: #2B4ACB;
-        color: #fff;
-      }
-
-      /* Hide Scrollbar but keep functionality */
-      ::-webkit-scrollbar {
-        width: 2px;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #111111;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
+      :root {
+        --cursor-size: 20px;
       }
       
-      /* Reticle Corners Utility */
-      .reticle::before, .reticle::after {
-        content: '';
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        border-color: currentColor;
-        border-style: solid;
-        transition: all 0.3s ease;
-        pointer-events: none;
+      body {
+        background-color: #FFFFFF;
+        color: #000000;
+        cursor: crosshair;
+        overflow-x: hidden;
       }
-      .reticle::before {
-        top: 0; left: 0;
-        border-width: 1px 0 0 1px;
-      }
-      .reticle::after {
-        bottom: 0; right: 0;
-        border-width: 0 1px 1px 0;
-      }
-      .reticle:hover::before { top: -4px; left: -4px; }
-      .reticle:hover::after { bottom: -4px; right: -4px; }
 
+      /* BRUTALIST SCROLLBAR */
+      ::-webkit-scrollbar {
+        width: 12px;
+        border-left: 2px solid #000;
+      }
+      ::-webkit-scrollbar-track {
+        background: #F0F0F0;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #000;
+        border: 2px solid #F0F0F0;
+      }
+
+      ::selection {
+        background: #CCFF00;
+        color: #000;
+      }
+
+      /* UTILITIES */
+      .blend-diff { mix-blend-mode: difference; color: white; }
+      .text-outline { -webkit-text-stroke: 1px #000; color: transparent; }
+      .text-outline-white { -webkit-text-stroke: 1px #fff; color: transparent; }
+      
+      .brutal-border {
+        border: 2px solid #000;
+        box-shadow: 4px 4px 0px #000;
+        transition: all 0.2s ease;
+      }
+      .brutal-border:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px #000;
+      }
+
+      .hover-underline-wavy:hover {
+        text-decoration: underline;
+        text-decoration-style: wavy;
+        text-decoration-thickness: 2px;
+        text-decoration-color: #FF4400;
+      }
     </style>
   <script type="importmap">
 {

@@ -5,13 +5,12 @@ import { track } from '../utils/analytics';
 
 interface Props {
   gift: Gift;
-  featured?: boolean;
+  variant?: 'brutal' | 'minimal';
   onToggleWishlist?: () => void;
   onClick?: (gift: Gift) => void;
-  layout?: 'standard' | 'compact' | 'poster';
 }
 
-export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWishlist, onClick, layout = 'standard' }) => {
+export const GiftCard: React.FC<Props> = ({ gift, variant = 'brutal', onToggleWishlist, onClick }) => {
   const [saved, setSaved] = useState(isInWishlist(gift.id));
 
   useEffect(() => {
@@ -31,86 +30,64 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
     if (onToggleWishlist) onToggleWishlist();
   };
 
-  // POSTER LAYOUT (Featured)
-  if (layout === 'poster' || featured) {
-      return (
-        <div 
-          onClick={() => onClick && onClick(gift)}
-          className="group relative w-full cursor-pointer mb-16 border-b border-ink/10 pb-8"
-        >
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-               {/* Image Block */}
-               <div className="relative aspect-[4/5] bg-gray-100 overflow-hidden reticle text-ink">
-                    <img 
-                        src={gift.image} 
-                        alt={gift.title} 
-                        className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0"
-                    />
-                    <div className="absolute top-2 left-2 font-mono text-[10px] bg-white/80 px-1 uppercase tracking-widest">
-                        Fig. {gift.id}
-                    </div>
-               </div>
-
-               {/* Text Block */}
-               <div className="flex flex-col h-full justify-between pt-2">
-                   <div>
-                        <div className="flex justify-between items-start mb-4 border-b border-ink/20 pb-2">
-                            <span className="font-mono text-xs uppercase tracking-widest text-accent">Top Recommendation</span>
-                            <span className="font-mono text-xs">{gift.category}</span>
-                        </div>
-                        <h2 className="font-serif text-4xl font-light leading-none mb-6 group-hover:text-accent transition-colors">
-                            {gift.title}
-                        </h2>
-                        <p className="font-serif text-lg italic text-graphite mb-4 leading-relaxed pl-4 border-l border-ink/20">
-                            "{gift.reason}"
-                        </p>
-                   </div>
-                   
-                   <div className="flex justify-between items-end mt-8">
-                       <span className="font-mono text-2xl">{gift.price.toLocaleString()} RUB</span>
-                       <button onClick={handleWishlist} className="font-mono text-xs uppercase hover:underline hover:text-accent">
-                           [{saved ? 'SAVED' : 'SAVE TO ARCHIVE'}]
-                       </button>
-                   </div>
-               </div>
-           </div>
-        </div>
-      );
-  }
-
-  // STANDARD LAYOUT
   return (
     <div 
       onClick={() => onClick && onClick(gift)}
-      className="group relative flex flex-col gap-4 cursor-pointer mb-8"
+      className={`
+        group relative cursor-pointer transition-transform hover:-translate-y-1
+        ${variant === 'brutal' 
+            ? 'bg-white border-2 border-black shadow-[4px_4px_0px_#000]' 
+            : 'bg-transparent border-l-4 border-acid-green pl-4'}
+      `}
     >
-      <div className="relative aspect-square w-full bg-gray-50 overflow-hidden reticle text-ink/50">
+      {/* Glitch Overlay on Hover */}
+      <div className="absolute inset-0 bg-acid-green opacity-0 group-hover:opacity-20 z-10 pointer-events-none mix-blend-multiply transition-opacity"></div>
+
+      {/* 1. Image */}
+      <div className="relative overflow-hidden border-b-2 border-black">
         <img 
           src={gift.image} 
           alt={gift.title} 
-          className="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
+          className="w-full aspect-square object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-500"
           loading="lazy"
         />
-        {/* Hover Info */}
-        <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-             <span className="bg-paper text-ink font-mono text-xs px-2 py-1 uppercase tracking-widest">View Data</span>
-        </div>
+        {/* Anti-Badge */}
+        {variant === 'brutal' && (
+            <div className="absolute top-2 left-2 bg-black text-white px-2 py-1 font-mono text-xs z-20">
+                ITEM #{gift.id}
+            </div>
+        )}
+         <button 
+          onClick={handleWishlist}
+          className="absolute top-2 right-2 z-30 bg-white border border-black p-1 hover:bg-error hover:text-white transition-colors"
+        >
+           {saved ? 'SAVED' : 'SAVE?'}
+        </button>
       </div>
       
-      <div className="flex flex-col gap-1 border-t border-ink/10 pt-2">
+      {/* 2. Content */}
+      <div className="p-4 flex flex-col gap-2">
         <div className="flex justify-between items-start">
-             <h3 className="font-serif text-lg leading-tight font-normal text-ink group-hover:text-accent transition-colors w-3/4">
+             <h3 className="font-display font-bold text-xl leading-none uppercase pr-4 group-hover:underline decoration-wavy decoration-acid-green">
                 {gift.title}
              </h3>
-             <span className="font-mono text-xs shrink-0">
+             <span className="font-mono text-sm bg-black text-white px-1">
                 {gift.price.toLocaleString()}
              </span>
         </div>
-        <div className="flex justify-between items-center mt-1">
-             <span className="font-mono text-[10px] text-graphite uppercase tracking-widest">{gift.category}</span>
-             <button onClick={handleWishlist} className="text-lg hover:text-accent transition-colors leading-none">
-                 {saved ? '●' : '○'}
-             </button>
+        
+        {variant === 'brutal' && (
+            <p className="font-mono text-xs leading-tight text-gray-600 border-l-2 border-gray-300 pl-2 mt-2">
+                Ai_Reasoning: "{gift.reason.toLowerCase()}"
+            </p>
+        )}
+
+        <div className="mt-2 flex gap-1 flex-wrap">
+             {gift.tags.slice(0, 3).map(tag => (
+                 <span key={tag} className="text-[10px] font-mono border border-black px-1 rounded-full bg-white">
+                     #{tag}
+                 </span>
+             ))}
         </div>
       </div>
     </div>

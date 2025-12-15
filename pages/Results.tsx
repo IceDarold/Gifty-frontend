@@ -14,11 +14,8 @@ export const Results: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   
-  // Modal State
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  const [wishlistVersion, setWishlistVersion] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,105 +27,66 @@ export const Results: React.FC = () => {
           navigate('/quiz');
           return;
         }
-        
-        const parsedAnswers: QuizAnswers = JSON.parse(stored);
-        setAnswers(parsedAnswers);
-        
-        const recommendation = await api.recommendations.create(parsedAnswers);
+        setAnswers(JSON.parse(stored));
+        const recommendation = await api.recommendations.create(JSON.parse(stored));
         const gifts = await api.gifts.getMany(recommendation.gift_ids);
         setResults(gifts);
       } catch (err) {
         console.error(err);
-        setError("Calculation Error. Data corrupted.");
+        setError("SYSTEM_FAILURE. TRY_AGAIN.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchResults();
   }, [navigate]);
-
-  const handleGiftClick = (gift: Gift) => {
-    track('view_gift_details', { id: gift.id });
-    setSelectedGift(gift);
-    setIsModalOpen(true);
-  };
 
   if (loading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
-        <Mascot className="mb-8 animate-pulse" emotion="thinking" />
-        <div className="font-mono text-xs uppercase tracking-widest space-y-2">
-            <p>Accessing Global Database...</p>
-            <p className="text-accent">Matching Patterns...</p>
-            <p>Generating Output...</p>
+        <Mascot className="mb-8 animate-spin-slow" emotion="thinking" />
+        <h2 className="font-display font-black text-4xl uppercase animate-pulse">Computing...</h2>
+        <div className="font-mono text-xs mt-4">
+            Analyzing social constructs...<br/>
+            Judging taste levels...<br/>
+            Optimizing for maximum gratitude...
         </div>
       </div>
     );
   }
 
-  if (error) return <div className="p-12 text-center font-mono text-error">{error}</div>;
-
-  const featured = results[0];
-  const others = results.slice(1);
+  if (error) return <div className="p-12 text-center font-mono text-error font-bold text-2xl">{error}</div>;
 
   return (
-    <div className="animate-reveal">
-      
-      {/* HEADER: Computation Report */}
-      <div className="mb-16 border-b border-ink/20 pb-8">
-          <div className="flex justify-between items-end mb-4">
-              <h1 className="font-mono text-xs uppercase tracking-widest text-graphite">
-                  Computation_Report_#{(Math.random() * 10000).toFixed(0)}
-              </h1>
-              <div className="font-mono text-xs text-right">
-                  Target: <span className="text-ink">{answers?.name}</span><br/>
-                  Context: <span className="text-ink">{answers?.relationship}</span>
-              </div>
+    <div className="">
+      {/* HEADER */}
+      <div className="mb-16 border-b-4 border-black pb-8 pt-8">
+          <div className="font-mono text-xs bg-black text-white inline-block px-2 mb-2 rotate-1">
+              OUTPUT_GENERATED
           </div>
-          <div className="font-serif text-3xl sm:text-4xl leading-tight">
-              Analysis complete. <br/>
-              <span className="text-accent">{results.length} matches</span> found based on psychographic profile.
-          </div>
+          <h1 className="font-display font-black text-5xl sm:text-6xl uppercase leading-[0.8]">
+              We found {results.length}<br/>
+              Distractions.
+          </h1>
       </div>
 
-      {/* FEATURED ITEM (Poster) */}
-      {featured && (
-          <GiftCard 
-            gift={featured} 
-            layout="poster"
-            onClick={handleGiftClick}
-            onToggleWishlist={() => setWishlistVersion(v => v + 1)}
-          />
-      )}
-
-      {/* INVENTORY GRID (Mixed Layout) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12">
-          {others.map((gift, i) => {
-              // Generative layout logic: make some items span 6 cols, others 4 or 3
-              // Use index to deterministically assign sizes so it doesn't jump on re-render
-              let colSpan = 'md:col-span-4'; // default
-              if (i % 5 === 0) colSpan = 'md:col-span-6';
-              else if (i % 5 === 1) colSpan = 'md:col-span-6';
-              else if (i % 5 === 2) colSpan = 'md:col-span-4';
-              else if (i % 5 === 3) colSpan = 'md:col-span-4';
-              else colSpan = 'md:col-span-4';
-
-              return (
-                <div key={gift.id} className={colSpan}>
-                    <GiftCard 
-                        gift={gift} 
-                        onClick={handleGiftClick}
-                        onToggleWishlist={() => setWishlistVersion(v => v + 1)}
-                    />
-                </div>
-              );
-          })}
+      {/* GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {results.map((gift, i) => (
+             <div key={gift.id} className={`${i === 0 ? 'md:col-span-2' : ''}`}>
+                <GiftCard 
+                    gift={gift} 
+                    variant="brutal"
+                    onClick={(g) => { setSelectedGift(g); setIsModalOpen(true); }}
+                />
+             </div>
+          ))}
       </div>
       
-      <div className="mt-24 pt-12 border-t border-ink/10 text-center flex flex-col items-center gap-4">
-          <span className="font-mono text-xs text-graphite">End of Report</span>
-          <Button variant="ghost" onClick={() => navigate('/quiz')}>Run New Query</Button>
+      <div className="mt-24 pt-12 border-t-2 border-dashed border-black text-center">
+          <Button variant="ghost" onClick={() => navigate('/quiz')}>
+              [ Reject Reality & Try Again ]
+          </Button>
       </div>
 
       {selectedGift && (
@@ -137,7 +95,7 @@ export const Results: React.FC = () => {
           isOpen={isModalOpen} 
           onClose={() => setIsModalOpen(false)}
           answers={answers}
-          onWishlistChange={() => setWishlistVersion(v => v + 1)}
+          onWishlistChange={() => {}}
         />
       )}
     </div>

@@ -4,7 +4,6 @@ import { Button } from '../components/Button';
 import { AGE_GROUPS, RELATIONSHIPS, BUDGETS } from '../constants';
 import { QuizAnswers } from '../types';
 import { track } from '../utils/analytics';
-import { Mascot } from '../components/Mascot';
 
 const INITIAL_ANSWERS: QuizAnswers = {
   name: '',
@@ -25,7 +24,6 @@ export const Quiz: React.FC = () => {
     return saved ? JSON.parse(saved) : INITIAL_ANSWERS;
   });
 
-  // For scrolling to bottom
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,19 +43,19 @@ export const Quiz: React.FC = () => {
     }
   };
 
-  // Helper to render completed steps as "Log History"
+  // Helper: History Log
   const renderHistory = () => {
     const history = [];
-    if (step > 0) history.push({ q: "Input: Name", a: answers.name });
-    if (step > 1) history.push({ q: "Input: Age", a: answers.ageGroup });
-    if (step > 2) history.push({ q: "Input: Relation", a: answers.relationship });
-    if (step > 3) history.push({ q: "Input: Location", a: answers.city });
-    if (step > 4) history.push({ q: "Input: Interests", a: answers.interests });
+    if (step > 0) history.push({ q: "SUBJECT_NAME", a: answers.name });
+    if (step > 1) history.push({ q: "CHRONO_AGE", a: answers.ageGroup });
+    if (step > 2) history.push({ q: "SOCIAL_LINK", a: answers.relationship });
+    if (step > 3) history.push({ q: "COORDINATES", a: answers.city });
+    if (step > 4) history.push({ q: "PSYCH_PROFILE", a: answers.interests });
 
     return history.map((h, i) => (
-        <div key={i} className="mb-4 opacity-40 font-mono text-xs border-l border-ink pl-3">
-            <div className="uppercase tracking-widest mb-1">{h.q}</div>
-            <div className="text-lg">{h.a}</div>
+        <div key={i} className="mb-2 font-mono text-xs text-gray-400 flex gap-4 border-b border-dashed border-gray-300 pb-1">
+            <span className="w-24 shrink-0 uppercase">{h.q}:</span>
+            <span className="text-black line-through decoration-acid-green decoration-2">{h.a}</span>
         </div>
     ));
   };
@@ -66,37 +64,34 @@ export const Quiz: React.FC = () => {
     switch (step) {
         case 0:
             return (
-                <div className="animate-reveal">
-                    <label className="font-mono text-xs uppercase tracking-widest text-accent mb-4 block">
-                        Query_01: Target Identity
-                    </label>
-                    <h2 className="font-serif text-3xl mb-8">Who are we looking for?</h2>
+                <div className="animate-glitch">
+                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block -rotate-1">INPUT_01</label>
+                    <h2 className="font-display font-bold text-4xl mb-4">Identify the Target.</h2>
                     <input 
                         autoFocus
                         type="text" 
                         value={answers.name}
                         onChange={e => updateAnswer('name', e.target.value)}
-                        placeholder="Type name..."
-                        className="w-full bg-transparent border-b border-ink font-serif text-2xl py-2 outline-none placeholder-gray-300 focus:border-accent transition-colors"
+                        placeholder="Name or Alias..."
+                        className="w-full bg-concrete border-2 border-black p-4 font-mono text-xl focus:bg-acid-green focus:outline-none transition-colors placeholder:text-gray-400"
                         onKeyDown={e => e.key === 'Enter' && answers.name && handleNext()}
                     />
+                    <p className="mt-2 text-xs font-mono text-gray-500">We will not contact them. Probably.</p>
                 </div>
             );
         case 1:
             return (
-                <div className="animate-reveal">
-                    <label className="font-mono text-xs uppercase tracking-widest text-accent mb-4 block">
-                        Query_02: Chronological Age
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block rotate-1">INPUT_02</label>
+                    <h2 className="font-display font-bold text-4xl mb-6">Age Estimation.</h2>
+                    <div className="grid grid-cols-1 gap-2">
                         {AGE_GROUPS.map(age => (
                             <button 
                                 key={age}
                                 onClick={() => { updateAnswer('ageGroup', age); handleNext(); }}
-                                className="text-left font-serif text-xl py-3 border-b border-gray-200 hover:border-accent hover:text-accent transition-all group"
+                                className="text-left font-mono text-lg border-2 border-transparent hover:border-black hover:bg-acid-green p-2 transition-all uppercase"
                             >
-                                <span className="opacity-0 group-hover:opacity-100 mr-2 text-accent font-mono text-sm">[x]</span>
-                                {age}
+                                [ {age} ]
                             </button>
                         ))}
                     </div>
@@ -104,16 +99,15 @@ export const Quiz: React.FC = () => {
             );
         case 2:
             return (
-                <div className="animate-reveal">
-                     <label className="font-mono text-xs uppercase tracking-widest text-accent mb-4 block">
-                        Query_03: Social Connection
-                    </label>
-                    <div className="flex flex-wrap gap-x-8 gap-y-4">
+                <div>
+                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block">INPUT_03</label>
+                    <h2 className="font-display font-bold text-4xl mb-6">Relation Protocol.</h2>
+                    <div className="flex flex-wrap gap-3">
                         {RELATIONSHIPS.map(rel => (
                             <button 
                                 key={rel}
                                 onClick={() => { updateAnswer('relationship', rel); handleNext(); }}
-                                className="font-serif text-xl hover:text-accent hover:underline decoration-1 underline-offset-4"
+                                className="font-display font-bold text-2xl hover:text-white hover:bg-black px-2 hover:-rotate-2 transition-all"
                             >
                                 {rel}
                             </button>
@@ -123,51 +117,46 @@ export const Quiz: React.FC = () => {
             );
         case 3:
             return (
-                <div className="animate-reveal">
-                    <label className="font-mono text-xs uppercase tracking-widest text-accent mb-4 block">
-                        Query_04: Geolocation
-                    </label>
-                    <h2 className="font-serif text-3xl mb-8">Where are they located?</h2>
+                <div>
+                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block">INPUT_04</label>
+                    <h2 className="font-display font-bold text-4xl mb-4">Location Data.</h2>
                     <input 
                         autoFocus
                         type="text" 
                         value={answers.city}
                         onChange={e => updateAnswer('city', e.target.value)}
                         placeholder="City..."
-                        className="w-full bg-transparent border-b border-ink font-serif text-2xl py-2 outline-none placeholder-gray-300 focus:border-accent transition-colors"
+                        className="w-full bg-concrete border-b-4 border-black p-4 font-mono text-xl focus:border-acid-green focus:outline-none"
                         onKeyDown={e => e.key === 'Enter' && answers.city && handleNext()}
                     />
                 </div>
             );
         case 4:
             return (
-                <div className="animate-reveal">
-                    <label className="font-mono text-xs uppercase tracking-widest text-accent mb-4 block">
-                        Query_05: Psychographics
-                    </label>
-                    <h2 className="font-serif text-3xl mb-2">What defines them?</h2>
-                    <p className="font-mono text-xs text-gray-400 mb-6">Keywords: Hobbies, Obsessions, Jobs</p>
+                <div>
+                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block">INPUT_05</label>
+                    <h2 className="font-display font-bold text-4xl mb-2">Obsessions.</h2>
+                    <p className="font-mono text-xs mb-4">List their hobbies. Be specific.</p>
                     <textarea 
                         autoFocus
                         value={answers.interests}
                         onChange={e => updateAnswer('interests', e.target.value)}
-                        placeholder="e.g. Photography, Coffee, Silence..."
-                        className="w-full bg-transparent border border-ink/20 p-4 font-serif text-xl outline-none focus:border-accent h-32 resize-none"
+                        placeholder="e.g. Conspiracy theories, Cats, Silence..."
+                        className="w-full border-2 border-black p-4 font-mono text-lg outline-none focus:shadow-[4px_4px_0px_#000] h-32 resize-none"
                     />
                 </div>
             );
         case 5:
             return (
-                <div className="animate-reveal">
-                    <label className="font-mono text-xs uppercase tracking-widest text-accent mb-4 block">
-                        Query_06: Resource Allocation
-                    </label>
-                    <div className="space-y-4">
+                <div>
+                    <label className="bg-black text-white text-xs px-2 py-1 mb-2 inline-block">INPUT_06</label>
+                    <h2 className="font-display font-bold text-4xl mb-6">Monetary Sacrifice.</h2>
+                    <div className="space-y-2">
                         {BUDGETS.map(b => (
                             <button 
                                 key={b}
                                 onClick={() => { updateAnswer('budget', b); handleNext(); }}
-                                className="block w-full text-left font-mono text-sm py-4 border-b border-gray-200 hover:bg-ink hover:text-paper px-4 transition-colors"
+                                className="block w-full text-left font-mono font-bold py-3 border-2 border-black hover:bg-black hover:text-white px-4 transition-all"
                             >
                                 {b}
                             </button>
@@ -179,32 +168,32 @@ export const Quiz: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex flex-col justify-end pb-12">
-        <div className="mb-12">
+    <div className="min-h-[80vh] flex flex-col justify-end pb-12 px-2 max-w-xl mx-auto">
+        <div className="mb-12 border-l-4 border-gray-200 pl-4">
             {renderHistory()}
         </div>
         
-        <div className="min-h-[300px] flex flex-col justify-center">
+        <div className="min-h-[300px]">
             {renderCurrentStep()}
         </div>
 
-        <div className="mt-12 flex justify-between items-center border-t border-ink/10 pt-6">
-             <div className="font-mono text-xs text-gray-400">
-                 Step {step + 1} / 6
+        <div className="mt-12 flex justify-between items-center border-t-2 border-black pt-6">
+             <div className="font-mono text-xs">
+                 PROGRESS: {Math.round(((step)/6)*100)}%
              </div>
              
              {step > 0 && (
                 <button 
                     onClick={() => setStep(s => s - 1)}
-                    className="font-mono text-xs hover:text-accent"
+                    className="font-mono text-xs underline decoration-error"
                 >
-                    [ Undo ]
+                    &lt; REVERT
                 </button>
              )}
 
              {(step === 0 || step === 3 || step === 4) && (
                  <Button onClick={handleNext} disabled={step === 0 && !answers.name || step === 3 && !answers.city || step === 4 && !answers.interests}>
-                     Next
+                     CONFIRM
                  </Button>
              )}
         </div>
