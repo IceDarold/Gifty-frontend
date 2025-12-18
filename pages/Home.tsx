@@ -41,38 +41,9 @@ const ChristmasGarland: React.FC = () => (
 const DesktopDecor: React.FC = () => {
   return (
     <div className="hidden xl:block fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-red-500/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-green-500/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow" style={{animationDelay: '2s'}}></div>
-
-        <div className="absolute top-0 left-[12%] origin-top animate-swing">
-            <div className="h-32 w-[1px] bg-white/40 mx-auto"></div>
-            <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-800 rounded-full shadow-2xl flex items-center justify-center border-2 border-red-400/30 backdrop-blur-md relative z-10 group">
-                <div className="absolute top-3 left-3 w-6 h-4 bg-white/20 rounded-full blur-sm transform -rotate-45"></div>
-                <span className="text-3xl text-white/90 drop-shadow-md group-hover:scale-110 transition-transform duration-500">❄️</span>
-            </div>
-        </div>
-
-        <div className="absolute top-0 right-[15%] origin-top animate-swing" style={{animationDelay: '1.5s', animationDuration: '7s'}}>
-            <div className="h-48 w-[1px] bg-white/40 mx-auto"></div>
-            <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full shadow-2xl flex items-center justify-center border-2 border-yellow-300/30 backdrop-blur-md relative z-10 group">
-                 <div className="absolute top-4 left-4 w-8 h-5 bg-white/30 rounded-full blur-sm transform -rotate-45"></div>
-                 <span className="text-4xl text-white/90 drop-shadow-md group-hover:scale-110 transition-transform duration-500">★</span>
-            </div>
-        </div>
-        
-        <div className="absolute bottom-[-50px] left-[-50px] opacity-15 blur-[3px]">
-             <svg width="400" height="500" viewBox="0 0 400 500" className="fill-white">
-                 <path d="M200 50 L50 450 H350 Z" />
-             </svg>
-        </div>
-        <div className="absolute bottom-[-80px] right-[-80px] opacity-10 blur-[4px] transform scale-125 rotate-6">
-             <svg width="400" height="500" viewBox="0 0 400 500" className="fill-brand-blue/50">
-                 <path d="M200 50 L50 450 H350 Z" />
-             </svg>
-        </div>
-
-        <div className="absolute top-1/4 left-10 text-yellow-200/60 text-5xl animate-twinkle">✨</div>
-        <div className="absolute bottom-1/3 right-20 text-blue-200/60 text-6xl animate-twinkle" style={{animationDelay: '1.5s'}}>✨</div>
+        {/* Soft background glows for atmosphere without literal holiday shapes */}
+        <div className="absolute top-[-10%] left-[-10%] w-[45vw] h-[45vw] bg-blue-600/10 rounded-full blur-[140px] mix-blend-screen animate-pulse-slow"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[45vw] h-[45vw] bg-purple-600/10 rounded-full blur-[140px] mix-blend-screen animate-pulse-slow" style={{animationDelay: '2s'}}></div>
     </div>
   );
 };
