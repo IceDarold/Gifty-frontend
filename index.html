@@ -33,6 +33,7 @@
               'snow': 'snow 10s linear infinite',
               'twinkle': 'twinkle 2s ease-in-out infinite',
               'scroll': 'scroll 40s linear infinite',
+              'swing': 'swing 6s ease-in-out infinite',
             },
             keyframes: {
               float: {
@@ -55,9 +56,9 @@
                 '75%': { transform: 'rotate(10deg)' },
               },
               snow: {
-                '0%': { transform: 'translateY(-10px) translateX(0)', opacity: 0 },
+                '0%': { transform: 'translate3d(0, -10vh, 0)', opacity: 0 },
                 '10%': { opacity: 1 },
-                '100%': { transform: 'translateY(100vh) translateX(20px)', opacity: 0.3 },
+                '100%': { transform: 'translate3d(20px, 110vh, 0)', opacity: 0 },
               },
               twinkle: {
                 '0%, 100%': { opacity: 1, transform: 'scale(1)' },
@@ -66,6 +67,10 @@
               scroll: {
                 '0%': { transform: 'translateX(0)' },
                 '100%': { transform: 'translateX(-50%)' },
+              },
+              swing: {
+                '0%, 100%': { transform: 'rotate(-3deg)' },
+                '50%': { transform: 'rotate(3deg)' },
               }
             }
           }
@@ -76,15 +81,12 @@
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
-        /* Winter Holiday Gradient: Deep Blue Top -> Icy Blue -> Festive Purple */
         background: linear-gradient(180deg, #0f172a 0%, #1e40af 30%, #60a5fa 60%, #7c3aed 100%);
         background-attachment: fixed;
-        /* Font Smoothing for Premium Feel */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
       }
-      /* Hide scrollbar for clean UI */
       .no-scrollbar::-webkit-scrollbar {
         display: none;
       }
@@ -108,7 +110,6 @@
         mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
         -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
       }
-      /* Utility to pause animation on hover/touch */
       .hover-pause:hover, .hover-pause:active, .hover-pause:focus-within {
         animation-play-state: paused !important;
       }

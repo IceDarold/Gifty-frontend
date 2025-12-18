@@ -8,6 +8,7 @@ import { Wishlist } from './pages/Wishlist';
 import { Profile } from './pages/Profile';
 import { Blog } from './pages/Blog';
 import { BlogPost } from './pages/BlogPost';
+import { SnowProvider } from './components/SnowSystem';
 
 const AppRoutes = () => {
     const location = useLocation();
@@ -38,9 +39,11 @@ const AppRoutes = () => {
 
 const App: React.FC = () => {
   return (
-    <HashRouter>
-      <AppRoutes />
-    </HashRouter>
+    <SnowProvider>
+      <HashRouter>
+        <AppRoutes />
+      </HashRouter>
+    </SnowProvider>
   );
 };
 

@@ -8,38 +8,9 @@ import { Logo } from '../components/Logo';
 import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
+import { AmbientSnow } from '../components/SnowSystem';
 
 // --- Decorative Components ---
-
-const Snowfall: React.FC = () => {
-  // Generate static snowflakes to avoid hydration mismatch
-  const snowflakes = useMemo(() => Array.from({ length: 25 }).map((_, i) => ({
-    left: `${Math.random() * 100}%`,
-    animationDelay: `${Math.random() * 5}s`,
-    animationDuration: `${Math.random() * 5 + 5}s`,
-    opacity: Math.random() * 0.5 + 0.3,
-    size: Math.random() * 0.5 + 0.5 // rem
-  })), []);
-
-  return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-      {snowflakes.map((flake, i) => (
-        <div
-          key={i}
-          className="absolute top-[-20px] bg-white rounded-full animate-snow"
-          style={{
-            left: flake.left,
-            width: `${flake.size}rem`,
-            height: `${flake.size}rem`,
-            opacity: flake.opacity,
-            animationDelay: flake.animationDelay,
-            animationDuration: flake.animationDuration,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
 
 const ChristmasGarland: React.FC = () => (
   <div className="fixed top-0 left-0 right-0 h-12 z-40 pointer-events-none flex justify-around overflow-hidden">
@@ -67,7 +38,44 @@ const ChristmasGarland: React.FC = () => (
   </div>
 );
 
-// --- Components ---
+const DesktopDecor: React.FC = () => {
+  return (
+    <div className="hidden xl:block fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-red-500/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-green-500/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow" style={{animationDelay: '2s'}}></div>
+
+        <div className="absolute top-0 left-[12%] origin-top animate-swing">
+            <div className="h-32 w-[1px] bg-white/40 mx-auto"></div>
+            <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-800 rounded-full shadow-2xl flex items-center justify-center border-2 border-red-400/30 backdrop-blur-md relative z-10 group">
+                <div className="absolute top-3 left-3 w-6 h-4 bg-white/20 rounded-full blur-sm transform -rotate-45"></div>
+                <span className="text-3xl text-white/90 drop-shadow-md group-hover:scale-110 transition-transform duration-500">❄️</span>
+            </div>
+        </div>
+
+        <div className="absolute top-0 right-[15%] origin-top animate-swing" style={{animationDelay: '1.5s', animationDuration: '7s'}}>
+            <div className="h-48 w-[1px] bg-white/40 mx-auto"></div>
+            <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full shadow-2xl flex items-center justify-center border-2 border-yellow-300/30 backdrop-blur-md relative z-10 group">
+                 <div className="absolute top-4 left-4 w-8 h-5 bg-white/30 rounded-full blur-sm transform -rotate-45"></div>
+                 <span className="text-4xl text-white/90 drop-shadow-md group-hover:scale-110 transition-transform duration-500">★</span>
+            </div>
+        </div>
+        
+        <div className="absolute bottom-[-50px] left-[-50px] opacity-15 blur-[3px]">
+             <svg width="400" height="500" viewBox="0 0 400 500" className="fill-white">
+                 <path d="M200 50 L50 450 H350 Z" />
+             </svg>
+        </div>
+        <div className="absolute bottom-[-80px] right-[-80px] opacity-10 blur-[4px] transform scale-125 rotate-6">
+             <svg width="400" height="500" viewBox="0 0 400 500" className="fill-brand-blue/50">
+                 <path d="M200 50 L50 450 H350 Z" />
+             </svg>
+        </div>
+
+        <div className="absolute top-1/4 left-10 text-yellow-200/60 text-5xl animate-twinkle">✨</div>
+        <div className="absolute bottom-1/3 right-20 text-blue-200/60 text-6xl animate-twinkle" style={{animationDelay: '1.5s'}}>✨</div>
+    </div>
+  );
+};
 
 const TypewriterText: React.FC = () => {
   const phrases = [
@@ -95,11 +103,11 @@ const TypewriterText: React.FC = () => {
       setTypingSpeed(isDeleting ? 30 : 80);
 
       if (!isDeleting && text === fullText) {
-        setTimeout(() => setIsDeleting(true), 2000); // Pause at end
+        setTimeout(() => setIsDeleting(true), 2000);
       } else if (isDeleting && text === '') {
         setIsDeleting(false);
         setLoopNum(loopNum + 1);
-        setTypingSpeed(500); // Pause before new word
+        setTypingSpeed(500);
       }
     };
 
@@ -119,17 +127,16 @@ const SearchTrigger: React.FC<{ onClick: () => void }> = ({ onClick }) => (
     onClick={onClick}
     className="bg-white/10 backdrop-blur-2xl border border-white/30 rounded-[1.5rem] p-3 pr-4 flex items-center gap-4 shadow-2xl cursor-pointer group transition-all hover:bg-white/20 active:scale-[0.98] mx-4 mb-8 relative overflow-hidden ring-2 ring-white/10"
   >
-    {/* Shine effect */}
-    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out pointer-events-none"></div>
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out pointer-events-none rounded-[1.5rem] overflow-hidden"></div>
 
-    <div className="bg-white w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-2xl group-hover:rotate-12 transition-transform duration-300">
+    <div className="relative z-20 bg-white w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-2xl group-hover:rotate-12 transition-transform duration-300">
       🎅
     </div>
-    <div className="flex-grow text-left overflow-hidden">
+    <div className="relative z-20 flex-grow text-left overflow-hidden">
       <p className="text-brand-blue text-[10px] bg-white inline-block px-1.5 rounded-md font-bold uppercase tracking-widest mb-1 shadow-sm">AI-Санта</p>
       <TypewriterText />
     </div>
-    <div className="bg-brand-blue w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white group-hover:scale-110 transition-transform">
+    <div className="relative z-20 bg-brand-blue w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white group-hover:scale-110 transition-transform">
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
@@ -167,7 +174,6 @@ const HorizontalSection: React.FC<{
 }> = ({ title, subtitle, gifts, onGiftClick, id }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Initialize scroll position to the start of the second set
   useEffect(() => {
     if (gifts.length === 0 || !scrollRef.current) return;
 
@@ -204,7 +210,6 @@ const HorizontalSection: React.FC<{
          {subtitle && <p className="text-white/70 text-sm font-medium mt-1 tracking-tight">{subtitle}</p>}
       </div>
       
-      {/* Container with Mask */}
       <div className="relative w-full mask-gradient-x">
          <div 
             ref={scrollRef}
@@ -225,8 +230,6 @@ const HorizontalSection: React.FC<{
     </div>
   );
 };
-
-// --- Interactive Mascot Logic ---
 
 const useMascotBehavior = () => {
   const [eyes, setEyes] = useState({ x: 0, y: 0 });
@@ -269,7 +272,6 @@ const useMascotBehavior = () => {
       const isDocked = y > 220;
       setDocked(isDocked);
       setAccessory('santa-hat');
-      setEmotion(docked ? 'happy' : 'happy');
     };
 
     let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -288,9 +290,6 @@ const useMascotBehavior = () => {
 
   return { eyes, docked, accessory, emotion };
 };
-
-
-// --- Main Page ---
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -340,17 +339,15 @@ export const Home: React.FC = () => {
   return (
     <div className="min-h-screen relative overflow-x-hidden pb-12">
       
-      {/* Holiday Decor */}
-      <Snowfall />
+      <AmbientSnow />
       <ChristmasGarland />
+      <DesktopDecor />
 
-      {/* Dynamic Background Elements */}
       <div className="fixed inset-0 bg-transparent -z-20"></div>
       
       <div className="fixed -top-10 -right-10 w-96 h-96 bg-blue-500/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob -z-10" />
       <div className="fixed top-40 -left-10 w-80 h-80 bg-purple-500/30 rounded-full mix-blend-screen filter blur-[90px] animate-blob animation-delay-2000 -z-10" />
 
-      {/* --- FLOATING LOGO (Top Left) --- */}
       <div className="fixed top-6 left-6 z-50">
          <Logo 
             variant="white" 
@@ -358,7 +355,6 @@ export const Home: React.FC = () => {
          />
       </div>
 
-      {/* --- MASCOT HUB (Top Right) --- */}
       <div className="fixed top-6 right-4 z-50">
         <div className={`relative flex items-center gap-3 transition-all duration-500 ${docked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-20px] pointer-events-none'}`}>
             <div 
@@ -373,14 +369,11 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* --- CONTENT WRAPPER --- */}
       <div className="max-w-7xl mx-auto relative">
 
-        {/* Hero Section */}
         <div className="relative z-10 mb-6 mt-32 min-h-[16rem]">
             <div className="px-6 pb-4 flex flex-col items-center text-center">
                 
-                {/* HERO MASCOT */}
                 <div 
                     className={`relative transition-all duration-500 ease-out origin-bottom ${docked ? 'opacity-0 scale-75 translate-y-[-20px] pointer-events-none' : 'opacity-100 scale-100'}`}
                 >
@@ -406,12 +399,10 @@ export const Home: React.FC = () => {
                 </p>
             </div>
 
-            {/* Search */}
             <div className="max-w-2xl mx-auto">
                 <SearchTrigger onClick={startQuiz} />
             </div>
 
-            {/* Categories */}
             <div className="flex justify-center">
                 <div className="w-full max-w-4xl">
                     <CategoryPills onSelect={handleCategory} />
@@ -419,7 +410,6 @@ export const Home: React.FC = () => {
             </div>
         </div>
 
-        {/* Horizontal Sections */}
         <HorizontalSection 
             id="section-cozy"
             title="Зимний уют ❄️" 
@@ -436,7 +426,6 @@ export const Home: React.FC = () => {
             onGiftClick={openGift} 
         />
 
-        {/* Feed Section */}
         <div className="relative z-10 px-4 mt-6">
             <div className="flex items-center gap-2 mb-6 px-2">
             <span className="text-2xl animate-pulse">🎁</span>
@@ -444,14 +433,13 @@ export const Home: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {/* CTA Card */}
             <div 
                 onClick={startQuiz}
                 className="col-span-2 relative overflow-hidden rounded-[2rem] p-6 flex flex-col justify-between min-h-[180px] cursor-pointer group shadow-2xl transition-transform hover:scale-[1.02] bg-white"
             >
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 rounded-[2rem] overflow-hidden"></div>
                 
-                <div className="relative z-10">
+                <div className="relative z-20">
                     <span className="inline-block bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider mb-3 shadow-md">
                     🎄 Праздник к нам приходит
                     </span>
@@ -462,7 +450,7 @@ export const Home: React.FC = () => {
                     Спроси у AI-Санты
                     </p>
                 </div>
-                <div className="relative z-10 flex items-center gap-2 text-red-500 font-bold text-sm mt-4 group-hover:gap-3 transition-all">
+                <div className="relative z-20 flex items-center gap-2 text-red-500 font-bold text-sm mt-4 group-hover:gap-3 transition-all">
                     <div className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -472,7 +460,6 @@ export const Home: React.FC = () => {
                 </div>
             </div>
 
-            {/* Gifts Feed */}
             {feedGifts.map((gift) => (
                 <div key={gift.id} className="h-auto">
                     <GiftCard gift={gift} onClick={openGift} />
@@ -489,7 +476,6 @@ export const Home: React.FC = () => {
 
       </div>
 
-      {/* Modal */}
       {selectedGift && (
         <GiftDetailsModal 
           gift={selectedGift} 

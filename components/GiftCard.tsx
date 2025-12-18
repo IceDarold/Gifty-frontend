@@ -59,15 +59,13 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
       tabIndex={0}
       className={`group relative bg-white rounded-[20px] shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-full overflow-hidden border border-gray-100/50 outline-none focus:ring-4 focus:ring-brand-blue/20 ${featured ? 'ring-2 ring-brand-purple ring-offset-2' : ''}`}
     >
-      {/* Featured Badge */}
       {featured && (
         <div className="absolute top-0 left-0 z-20 bg-brand-purple text-white text-[10px] font-bold px-2 py-1 rounded-br-lg shadow-sm">
           Лидер
         </div>
       )}
 
-      {/* --- Image Section --- */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-50">
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-50 rounded-t-[20px]">
         <img 
           src={imgError ? 'https://placehold.co/400x500/f3f4f6/9ca3af?text=No+Image' : gift.image} 
           alt={gift.title} 
@@ -76,7 +74,6 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
           loading="lazy"
         />
         
-        {/* Wishlist Button */}
         <button 
           onClick={handleWishlist}
           aria-label={saved ? "Удалить из избранного" : "Добавить в избранное"}
@@ -87,9 +84,7 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
           </svg>
         </button>
 
-        {/* AI Match Badge (Subtle overlay at bottom) */}
         <div className="absolute bottom-2 left-2 right-2 flex justify-end items-end">
-             {/* AI Confidence (Optional visual cue) */}
              {gift.tags && (
                 <div className="bg-brand-blue/90 backdrop-blur-md text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[6px] shadow-sm flex items-center gap-1">
                     <span>✨</span>
@@ -99,26 +94,20 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
         </div>
       </div>
       
-      {/* --- Info Section --- */}
       <div className="p-3 flex flex-col flex-grow relative">
-        
-        {/* Price Row */}
         <div className="flex items-baseline gap-2 mb-1">
            <span className="text-lg font-extrabold text-gray-900 leading-none tracking-tight">
               {formatPrice(gift.price)}
            </span>
-           {/* Mock Discount Price for visual complexity */}
            <span className="text-xs text-gray-400 line-through decoration-gray-300 font-medium">
               {formatPrice(Math.round(gift.price * 1.2))}
            </span>
         </div>
 
-        {/* Title */}
         <h3 className="text-[13px] font-medium text-gray-700 leading-snug line-clamp-2 mb-2 h-[2.5em] tracking-tight">
             {gift.title}
         </h3>
 
-        {/* Rating & Reviews */}
         <div className="flex items-center gap-1.5 mt-auto">
             <div className="flex items-center gap-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-brand-blue fill-current" viewBox="0 0 20 20">
@@ -133,7 +122,6 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
             </span>
         </div>
         
-        {/* Cart/Action Button (Appears on Hover or always visible on mobile) */}
         <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 lg:block hidden">
             <div className="bg-brand-blue text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:bg-brand-blue/90">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
