@@ -207,6 +207,10 @@ export const Home: React.FC = () => {
   const [feedGifts, setFeedGifts] = useState<Gift[]>([]);
   const [cozyGifts, setCozyGifts] = useState<Gift[]>([]);
   const [techGifts, setTechGifts] = useState<Gift[]>([]);
+  
+  // Pagination State
+  const [visibleCount, setVisibleCount] = useState(8);
+  
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -232,7 +236,7 @@ export const Home: React.FC = () => {
     const fetchData = async () => {
       try {
         const [feed, cozy, tech] = await Promise.all([
-          api.gifts.list({ limit: 8 }),
+          api.gifts.list({ limit: 50 }), // Load 50 items for pagination
           api.gifts.list({ limit: 8, tag: 'уют' }),
           api.gifts.list({ limit: 8, tag: 'технологии' })
         ]);
@@ -254,6 +258,10 @@ export const Home: React.FC = () => {
       setFeedGifts(prev => prev.map(g => g.id === updatedGift.id ? updatedGift : g));
       setCozyGifts(prev => prev.map(g => g.id === updatedGift.id ? updatedGift : g));
       setTechGifts(prev => prev.map(g => g.id === updatedGift.id ? updatedGift : g));
+  };
+
+  const handleLoadMore = () => {
+      setVisibleCount(prev => prev + 12);
   };
 
   return (
@@ -299,8 +307,23 @@ export const Home: React.FC = () => {
                         <span className="text-xl">Начать подбор</span>
                     </div>
                 </div>
-                {feedGifts.map(g => <GiftCard key={g.id} gift={g} onClick={openGift} />)}
+                {feedGifts.slice(0, visibleCount).map(g => <GiftCard key={g.id} gift={g} onClick={openGift} />)}
             </div>
+            
+            {/* Load More Button */}
+            {visibleCount < feedGifts.length && (
+                <div className="flex justify-center mt-12 animate-fade-in-up">
+                    <button 
+                        onClick={handleLoadMore}
+                        className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-4 px-10 rounded-2xl transition-all active:scale-95 shadow-lg backdrop-blur-md flex items-center gap-2 group"
+                    >
+                        <span>Показать больше</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform group-hover:translate-y-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+            )}
         </div>
       </div>
 

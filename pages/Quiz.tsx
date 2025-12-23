@@ -126,10 +126,38 @@ const AgePicker: React.FC<{ value: string, onChange: (val: string) => void }> = 
 
   useEffect(() => {
     if (scrollRef.current) {
-        const initial = parseInt(value) || 25;
-        scrollRef.current.scrollLeft = (initial * 60) - (scrollRef.current.clientWidth / 2) + 30;
+        const parsed = parseInt(value);
+        const initial = isNaN(parsed) ? 25 : parsed;
+        const stride = 76; // 60px item + 16px gap
+        const offset = 30; // Half item width to center
+        scrollRef.current.scrollLeft = initial * stride + offset;
     }
   }, []);
+
+  const handleScroll = () => {
+      if (scrollRef.current) {
+          const stride = 76;
+          const offset = 30;
+          const index = Math.round((scrollRef.current.scrollLeft - offset) / stride);
+          
+          if (index >= 0 && index < ages.length) {
+              if (index.toString() !== value) {
+                  onChange(index.toString());
+              }
+          }
+      }
+  };
+
+  const handleClick = (age: number) => {
+      if (scrollRef.current) {
+          const stride = 76;
+          const offset = 30;
+          scrollRef.current.scrollTo({
+              left: age * stride + offset,
+              behavior: 'smooth'
+          });
+      }
+  };
 
   return (
     <div className="relative w-full h-32 flex items-center group">
@@ -141,12 +169,13 @@ const AgePicker: React.FC<{ value: string, onChange: (val: string) => void }> = 
 
         <div 
             ref={scrollRef}
+            onScroll={handleScroll}
             className="flex items-center gap-4 overflow-x-auto no-scrollbar px-[50%] snap-x snap-mandatory py-4 w-full"
         >
             {ages.map((age) => (
                 <button
                     key={age}
-                    onClick={() => onChange(age.toString())}
+                    onClick={() => handleClick(age)}
                     className={`snap-center shrink-0 w-[60px] h-[60px] rounded-xl flex items-center justify-center text-3xl font-black transition-all duration-300 ${
                         value === age.toString() 
                             ? 'text-white scale-125 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]' 

@@ -141,6 +141,9 @@ export const Results: React.FC = () => {
   const [showDebug, setShowDebug] = useState(false);
   const { isDevMode } = useDevMode();
   
+  // Pagination State
+  const [visibleCount, setVisibleCount] = useState(8);
+  
   // Dev Mode State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -190,6 +193,11 @@ export const Results: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setTimeout(() => setSelectedGift(null), 300);
+  };
+
+  const handleLoadMore = () => {
+      setVisibleCount(prev => prev + 12);
+      track('results_load_more');
   };
 
   // --- Dev Mode Actions ---
@@ -309,6 +317,7 @@ export const Results: React.FC = () => {
   const featured = response.featuredGift;
   // Make sure to filter out featured from 'others' only if featured exists
   const others = featured ? response.gifts.filter(g => g.id !== featured.id) : response.gifts;
+  const visibleOthers = others.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-brand-dark pt-24 pb-20 overflow-x-hidden relative">
@@ -423,7 +432,7 @@ export const Results: React.FC = () => {
             <div>
                 <h3 className="text-white/60 font-bold uppercase tracking-widest text-xs mb-6 pl-2">Другие отличные варианты</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                    {others.map((gift, idx) => (
+                    {visibleOthers.map((gift, idx) => (
                         <div 
                             key={gift.id} 
                             draggable={isDevMode}
@@ -431,7 +440,7 @@ export const Results: React.FC = () => {
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, gift.id)}
                             className={`relative animate-fade-in-up ${draggedId === gift.id ? 'opacity-50 scale-95' : ''}`} 
-                            style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
+                            style={{ animationDelay: `${0.2 + (idx % 12) * 0.05}s` }}
                         >
                             {/* Dev Delete Button for Grid Items */}
                             {isDevMode && (
@@ -453,6 +462,21 @@ export const Results: React.FC = () => {
                         </div>
                     ))}
                 </div>
+                
+                {/* Load More Button */}
+                {visibleCount < others.length && (
+                    <div className="flex justify-center mt-12 animate-fade-in-up">
+                        <button 
+                            onClick={handleLoadMore}
+                            className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-4 px-10 rounded-2xl transition-all active:scale-95 shadow-lg backdrop-blur-md flex items-center gap-2 group"
+                        >
+                            <span>Показать больше</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform group-hover:translate-y-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
         

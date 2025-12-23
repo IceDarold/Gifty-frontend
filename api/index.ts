@@ -170,7 +170,7 @@ export const api = {
         interests_description: answers.interests || '', // Pass original string for context
         budget: parseBudget(answers.budget),
         city: answers.city || 'Moscow',
-        top_n: 12,
+        top_n: 30, // OPTIMIZATION: Increased to 50
         debug: true
       };
 
