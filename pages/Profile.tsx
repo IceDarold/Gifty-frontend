@@ -6,9 +6,11 @@ import { api } from '../api';
 import { UserProfile, CalendarEvent } from '../domain/types';
 import { track } from '../utils/analytics';
 import { RELATIONSHIPS } from '../constants';
+import { useAuth } from '../components/AuthContext';
 
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [wishlistCount, setWishlistCount] = useState(0);
@@ -30,12 +32,12 @@ export const Profile: React.FC = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [user, wishlistIds] = await Promise.all([
+      const [userProfile, wishlistIds] = await Promise.all([
         api.user.get(),
         api.wishlist.getAll()
       ]);
-      setProfile(user);
-      setNewName(user.name);
+      setProfile(userProfile);
+      setNewName(user?.name || userProfile.name);
       setWishlistCount(wishlistIds.length);
     } catch (e) {
       console.error(e);
@@ -55,9 +57,8 @@ export const Profile: React.FC = () => {
     if (!newEvent.title || !newEvent.date) return;
     await api.user.addEvent(newEvent);
     setShowEventForm(false);
-    // Reset form
     setNewEvent({ title: '', date: '', personName: '', relationship: RELATIONSHIPS[0] });
-    loadData(); // Refresh list
+    loadData();
     track('add_calendar_event');
   };
 
@@ -70,7 +71,6 @@ export const Profile: React.FC = () => {
 
   const handleQuickSearch = (event: CalendarEvent) => {
     track('quick_search_from_profile', { event: event.title });
-    // Navigate to Quiz with pre-filled state
     navigate('/quiz', { 
         state: { 
             name: event.personName || event.title,
@@ -110,8 +110,12 @@ export const Profile: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-4 relative z-10">
-            <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center text-4xl shadow-inner border-4 border-white">
-                {profile.avatarEmoji}
+            <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center overflow-hidden shadow-inner border-4 border-white">
+                {user?.avatar_url ? (
+                    <img src={user.avatar_url} alt={user.name || ''} className="w-full h-full object-cover" />
+                ) : (
+                    <span className="text-4xl">{profile.avatarEmoji}</span>
+                )}
             </div>
             <div className="flex-1">
                 {isEditingName ? (
@@ -127,17 +131,24 @@ export const Profile: React.FC = () => {
                     </div>
                 ) : (
                     <div className="flex items-center gap-2" onClick={() => setIsEditingName(true)}>
-                        <h1 className="text-2xl font-black text-gray-900">{profile.name}</h1>
+                        <h1 className="text-2xl font-black text-gray-900">{user?.name || profile.name}</h1>
                         <svg className="w-4 h-4 text-gray-400 cursor-pointer hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                     </div>
                 )}
-                <div className="text-sm font-bold text-indigo-500 bg-indigo-50 inline-block px-2 py-0.5 rounded-md mt-1">
-                    {profile.level}
+                <div className="flex items-center gap-2 mt-1">
+                    <div className="text-sm font-bold text-indigo-500 bg-indigo-50 inline-block px-2 py-0.5 rounded-md">
+                        {profile.level}
+                    </div>
+                    <button 
+                        onClick={logout}
+                        className="text-xs font-bold text-red-400 hover:text-red-500 underline"
+                    >
+                        Выйти
+                    </button>
                 </div>
             </div>
         </div>
 
-        {/* Stats Row */}
         <div className="grid grid-cols-2 gap-4 mt-6">
             <div className="bg-indigo-50/50 rounded-xl p-3 text-center border border-indigo-100">
                 <div className="text-2xl font-black text-indigo-600">{wishlistCount}</div>
@@ -150,7 +161,6 @@ export const Profile: React.FC = () => {
         </div>
       </div>
 
-      {/* Calendar Section */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4 px-2">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -164,7 +174,6 @@ export const Profile: React.FC = () => {
             </button>
         </div>
 
-        {/* Add Event Form */}
         {showEventForm && (
             <div className="bg-white p-4 rounded-2xl shadow-lg mb-4 animate-pop">
                 <h3 className="font-bold text-gray-800 mb-3">Добавить важное событие</h3>
@@ -203,7 +212,6 @@ export const Profile: React.FC = () => {
             </div>
         )}
 
-        {/* Events List */}
         <div className="space-y-3">
             {profile.events.length === 0 && !showEventForm ? (
                 <div className="text-center py-8 bg-white/10 rounded-2xl border border-white/10">
@@ -243,7 +251,6 @@ export const Profile: React.FC = () => {
             )}
         </div>
       </div>
-
     </div>
   );
 };

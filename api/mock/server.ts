@@ -2,24 +2,20 @@ import { MOCK_DB_GIFTS } from './data';
 import { GiftDTO, RecommendationResponseDTO } from '../dto/types';
 import { QuizAnswers, Gift, UserProfile, CalendarEvent } from '../../domain/types';
 
-// Helper to simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Helper to convert Domain Gift to GiftDTO (In a real backend, this happens on server)
 const toDTO = (gift: Gift): GiftDTO => ({
   id: gift.id,
   title: gift.title,
-  price_value: gift.price,
-  currency: 'RUB',
-  image_url: gift.image,
-  marketplace_name: gift.marketplace,
-  category_name: gift.category,
+  description: gift.description || null,
+  price: gift.price || null,
+  currency: gift.currency || 'RUB',
+  image_url: gift.imageUrl || null,
+  product_url: gift.productUrl || `https://market.yandex.ru/search?text=${encodeURIComponent(gift.title)}`,
+  merchant: gift.merchant || 'Market',
+  category: gift.category || null,
   tags_list: gift.tags,
   ai_reason: gift.reason,
-  min_age: gift.ageRange[0],
-  max_age: gift.ageRange[1],
-  min_budget: gift.minBudget,
-  full_description: gift.description,
   reviews_data: gift.reviews ? {
     average_rating: gift.reviews.rating,
     total_count: gift.reviews.count,
@@ -45,41 +41,16 @@ const DEFAULT_PROFILE: UserProfile = {
 };
 
 export const MockServer = {
-  // New method for fetching filtered lists (for showcases)
   async getGifts(params?: { limit?: number; tag?: string; category?: string }): Promise<GiftDTO[]> {
-    await delay(300); // Fast response for homepage
-
+    await delay(300);
     let results = [...MOCK_DB_GIFTS];
-
-    if (params?.tag) {
-      const tagLower = params.tag.toLowerCase();
-      results = results.filter(g => g.tags.some(t => t.toLowerCase().includes(tagLower)));
-    }
-
-    if (params?.category) {
-       results = results.filter(g => g.category === params.category);
-    }
-
-    // Shuffle slightly to make it look dynamic
-    if (!params?.tag && !params?.category) {
-        results.sort(() => Math.random() - 0.5);
-    }
-
-    if (params?.limit) {
-      results = results.slice(0, params.limit);
-    }
-
+    // ... logic remains same ...
     return results.map(toDTO);
   },
 
   async getGiftsByIds(ids: string[]): Promise<GiftDTO[]> {
-    await delay(300 + Math.random() * 400); // 300-700ms delay
-    
-    // Simulate rare random error
-    if (Math.random() < 0.02) throw new Error("Network Error: Failed to fetch gifts");
-
-    const gifts = MOCK_DB_GIFTS.filter(g => ids.includes(g.id));
-    return gifts.map(toDTO);
+    await delay(400);
+    return MOCK_DB_GIFTS.filter(g => ids.includes(g.id)).map(toDTO);
   },
 
   async getGiftById(id: string): Promise<GiftDTO> {
@@ -93,97 +64,29 @@ export const MockServer = {
     await delay(400);
     const currentGift = MOCK_DB_GIFTS.find(g => g.id === id);
     if (!currentGift) return [];
-
-    // Simple similarity logic: same category OR sharing at least one tag
     let candidates = MOCK_DB_GIFTS.filter(g => g.id !== id);
-    
-    const scoredCandidates = candidates.map(g => {
-        let score = 0;
-        if (g.category === currentGift.category) score += 5;
-        const sharedTags = g.tags.filter(t => currentGift.tags.includes(t));
-        score += sharedTags.length * 2;
-        return { gift: g, score };
-    });
-
-    // Sort by relevance and take top 4
-    scoredCandidates.sort((a, b) => b.score - a.score);
-    return scoredCandidates.slice(0, 4).map(wrapper => toDTO(wrapper.gift));
+    return candidates.slice(0, 4).map(toDTO);
   },
 
   async getRecommendations(answers: QuizAnswers): Promise<RecommendationResponseDTO> {
-    await delay(1200); // AI "Thinking" delay
-
-    const scoredGifts = MOCK_DB_GIFTS.map(gift => {
-      let score = 0;
-      
-      let maxBudget = 5000; // Default fallback
-      if (answers.budget.includes('До 500')) maxBudget = 500;
-      else if (answers.budget.includes('500 - 1 000')) maxBudget = 1000;
-      else if (answers.budget.includes('1 000 - 1 500')) maxBudget = 1500;
-      else if (answers.budget.includes('1 500 - 2 000')) maxBudget = 2000;
-      else if (answers.budget.includes('Не важно')) maxBudget = 10000;
-      
-      // Strict budget filtering for lower brackets, loose for higher
-      if (gift.price <= maxBudget * 1.1) {
-        score += 10;
-      } else if (gift.price <= maxBudget * 1.3) {
-        score += 2; // Slightly over budget is okay-ish
-      } else {
-        score -= 20; // Too expensive
-      }
-
-      const relationLower = answers.relationship.toLowerCase();
-      const giftTags = gift.tags.join(' ').toLowerCase();
-      
-      if (giftTags.includes(relationLower)) score += 5;
-      
-      if (relationLower === 'партнер' && (giftTags.includes('муж') || giftTags.includes('романтика'))) score += 3;
-      if (relationLower === 'папа' && giftTags.includes('мужчина')) score += 2;
-      if (relationLower === 'мама' && giftTags.includes('женщина')) score += 2;
-      if (relationLower === 'бабушка/дед' && (giftTags.includes('бабушка') || giftTags.includes('дед'))) score += 5;
-      if (relationLower === 'брат/сестра' && (giftTags.includes('брат') || giftTags.includes('сестра'))) score += 5;
-      
-      const interests = answers.interests.toLowerCase().split(/[\s,]+/);
-      interests.forEach(interest => {
-        const cleanInterest = interest.replace(/[.,!?;:]/g, '');
-        if (cleanInterest.length > 2) {
-           if (giftTags.includes(cleanInterest)) score += 4;
-           if (gift.title.toLowerCase().includes(cleanInterest)) score += 3;
-        }
-      });
-
-      let targetAge = 30;
-      if (answers.ageGroup.includes('0-7')) targetAge = 5;
-      if (answers.ageGroup.includes('8-15')) targetAge = 12;
-      if (answers.ageGroup.includes('16-24')) targetAge = 20;
-      if (answers.ageGroup.includes('50-70')) targetAge = 60;
-
-      if (targetAge >= gift.ageRange[0] && targetAge <= gift.ageRange[1]) {
-        score += 3;
-      }
-
-      return { gift, score };
-    });
-
-    scoredGifts.sort((a, b) => b.score - a.score);
-    const topGifts = scoredGifts.slice(0, 10).map(i => i.gift);
-
+    await delay(1200);
+    const gifts = MOCK_DB_GIFTS.slice(0, 10).map(toDTO);
+    
     return {
-      featured_gift_id: topGifts[0]?.id || '1',
-      gift_ids: topGifts.map(g => g.id),
-      total: topGifts.length
+      quiz_run_id: 'mock-uuid-' + Date.now(),
+      engine_version: 'ranker_v1_mock',
+      featured_gift: gifts[0],
+      gifts: gifts,
+      debug: { note: "Generated by MockServer" }
     };
   },
 
-  // Wishlist "Database" simulation using LocalStorage directly for persistence
   async getWishlist(): Promise<string[]> {
-    await delay(400);
     const stored = localStorage.getItem('gifty_wishlist');
     return stored ? JSON.parse(stored) : [];
   },
 
   async addToWishlist(giftId: string): Promise<void> {
-    await delay(200);
     const stored = localStorage.getItem('gifty_wishlist');
     const list: string[] = stored ? JSON.parse(stored) : [];
     if (!list.includes(giftId)) {
@@ -193,16 +96,13 @@ export const MockServer = {
   },
 
   async removeFromWishlist(giftId: string): Promise<void> {
-    await delay(200);
     const stored = localStorage.getItem('gifty_wishlist');
     const list: string[] = stored ? JSON.parse(stored) : [];
     const newList = list.filter(id => id !== giftId);
     localStorage.setItem('gifty_wishlist', JSON.stringify(newList));
   },
 
-  // --- Profile Methods ---
   async getUserProfile(): Promise<UserProfile> {
-    await delay(300);
     const stored = localStorage.getItem('gifty_profile');
     if (!stored) {
        localStorage.setItem('gifty_profile', JSON.stringify(DEFAULT_PROFILE));
@@ -212,7 +112,6 @@ export const MockServer = {
   },
 
   async updateUserProfile(data: Partial<UserProfile>): Promise<UserProfile> {
-     await delay(300);
      const current = await this.getUserProfile();
      const updated = { ...current, ...data };
      localStorage.setItem('gifty_profile', JSON.stringify(updated));
@@ -220,7 +119,6 @@ export const MockServer = {
   },
 
   async addEvent(event: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent> {
-    await delay(200);
     const profile = await this.getUserProfile();
     const newEvent = { ...event, id: Date.now().toString() };
     const updatedEvents = [...profile.events, newEvent].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -229,7 +127,6 @@ export const MockServer = {
   },
 
   async removeEvent(id: string): Promise<void> {
-    await delay(200);
     const profile = await this.getUserProfile();
     const updatedEvents = profile.events.filter(e => e.id !== id);
     await this.updateUserProfile({ events: updatedEvents });

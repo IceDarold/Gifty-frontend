@@ -19,22 +19,23 @@ export interface GiftReviewsDTO {
 export interface GiftDTO {
   id: string;
   title: string;
-  price_value: number;
-  currency: string;
-  image_url: string;
-  marketplace_name: string;
-  category_name: string;
-  tags_list: string[];
-  ai_reason: string;
-  min_age: number;
-  max_age: number;
-  min_budget: number;
-  full_description?: string;
+  description: string | null;
+  price: number | null;
+  currency: string | null;
+  image_url: string | null;
+  product_url: string;
+  merchant: string | null;
+  category: string | null;
+  // Existing internal fields
+  tags_list?: string[];
+  ai_reason?: string;
   reviews_data?: GiftReviewsDTO;
 }
 
 export interface RecommendationResponseDTO {
-  featured_gift_id: string;
-  gift_ids: string[];
-  total: number;
+  quiz_run_id: string;
+  engine_version: string;
+  featured_gift: GiftDTO;
+  gifts: GiftDTO[];
+  debug?: any | null;
 }

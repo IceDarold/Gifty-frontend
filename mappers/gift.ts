@@ -1,5 +1,5 @@
-import { GiftDTO, GiftReviewsDTO, ReviewItemDTO } from '../api/dto/types';
-import { Gift, GiftReviews, ReviewItem } from '../domain/types';
+import { GiftDTO, GiftReviewsDTO, ReviewItemDTO, RecommendationResponseDTO } from '../api/dto/types';
+import { Gift, GiftReviews, ReviewItem, RecommendationsResponse } from '../domain/types';
 
 const mapReviewItem = (dto: ReviewItemDTO): ReviewItem => ({
   id: dto.id,
@@ -14,7 +14,7 @@ const mapReviewItem = (dto: ReviewItemDTO): ReviewItem => ({
 const mapReviews = (dto: GiftReviewsDTO): GiftReviews => ({
   rating: dto.average_rating,
   count: dto.total_count,
-  source: dto.source_platform as any, // In real app, validate enum
+  source: dto.source_platform,
   highlights: dto.top_highlights,
   items: dto.reviews_list.map(mapReviewItem),
 });
@@ -22,14 +22,22 @@ const mapReviews = (dto: GiftReviewsDTO): GiftReviews => ({
 export const mapGiftDTOToGift = (dto: GiftDTO): Gift => ({
   id: dto.id,
   title: dto.title,
-  price: dto.price_value,
-  image: dto.image_url,
-  marketplace: dto.marketplace_name as any, // In real app, validate enum
-  category: dto.category_name,
+  description: dto.description,
+  price: dto.price,
+  currency: dto.currency || 'RUB',
+  imageUrl: dto.image_url,
+  productUrl: dto.product_url,
+  merchant: dto.merchant,
+  category: dto.category,
   tags: dto.tags_list,
   reason: dto.ai_reason,
-  ageRange: [dto.min_age, dto.max_age],
-  minBudget: dto.min_budget,
-  description: dto.full_description,
   reviews: dto.reviews_data ? mapReviews(dto.reviews_data) : undefined,
+});
+
+export const mapRecommendationsResponse = (dto: RecommendationResponseDTO): RecommendationsResponse => ({
+  quizRunId: dto.quiz_run_id,
+  engineVersion: dto.engine_version,
+  featuredGift: mapGiftDTOToGift(dto.featured_gift),
+  gifts: dto.gifts.map(mapGiftDTOToGift),
+  debug: dto.debug,
 });

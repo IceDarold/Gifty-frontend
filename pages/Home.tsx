@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Mascot } from '../components/Mascot';
 import { GiftCard } from '../components/GiftCard';
@@ -9,19 +9,16 @@ import { api } from '../api';
 import { Gift } from '../domain/types';
 import { track } from '../utils/analytics';
 import { AmbientSnow } from '../components/SnowSystem';
+import { useAuth } from '../components/AuthContext';
 
 // --- Decorative Components ---
 
 const ChristmasGarland: React.FC = () => (
   <div className="fixed top-0 left-0 right-0 h-12 z-40 pointer-events-none flex justify-around overflow-hidden">
-     {/* Wire */}
      <div className="absolute top-[-5px] left-[-10%] right-[-10%] h-8 border-b-2 border-gray-400/30 rounded-[100%]"></div>
-     
-     {/* Lights */}
      {Array.from({ length: 12 }).map((_, i) => {
          const colors = ['bg-red-500', 'bg-yellow-400', 'bg-green-500', 'bg-blue-500'];
          const color = colors[i % colors.length];
-         
          return (
              <div 
                key={i} 
@@ -41,7 +38,6 @@ const ChristmasGarland: React.FC = () => (
 const DesktopDecor: React.FC = () => {
   return (
     <div className="hidden xl:block fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
-        {/* Soft background glows for atmosphere without literal holiday shapes */}
         <div className="absolute top-[-10%] left-[-10%] w-[45vw] h-[45vw] bg-blue-600/10 rounded-full blur-[140px] mix-blend-screen animate-pulse-slow"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[45vw] h-[45vw] bg-purple-600/10 rounded-full blur-[140px] mix-blend-screen animate-pulse-slow" style={{animationDelay: '2s'}}></div>
     </div>
@@ -65,14 +61,11 @@ const TypewriterText: React.FC = () => {
     const handleType = () => {
       const i = loopNum % phrases.length;
       const fullText = phrases[i];
-
       setText(isDeleting 
         ? fullText.substring(0, text.length - 1) 
         : fullText.substring(0, text.length + 1)
       );
-
       setTypingSpeed(isDeleting ? 30 : 80);
-
       if (!isDeleting && text === fullText) {
         setTimeout(() => setIsDeleting(true), 2000);
       } else if (isDeleting && text === '') {
@@ -81,7 +74,6 @@ const TypewriterText: React.FC = () => {
         setTypingSpeed(500);
       }
     };
-
     const timer = setTimeout(handleType, typingSpeed);
     return () => clearTimeout(timer);
   }, [text, isDeleting, loopNum, phrases, typingSpeed]);
@@ -96,18 +88,17 @@ const TypewriterText: React.FC = () => {
 const SearchTrigger: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <div 
     onClick={onClick}
-    className="bg-white/10 backdrop-blur-2xl border border-white/30 rounded-[1.5rem] p-3 pr-4 flex items-center gap-4 shadow-2xl cursor-pointer group transition-all hover:bg-white/20 active:scale-[0.98] mx-4 mb-8 relative overflow-hidden ring-2 ring-white/10"
+    className="bg-white/10 backdrop-blur-3xl border border-white/30 rounded-[2rem] p-3 pr-4 flex items-center gap-4 shadow-2xl cursor-pointer group transition-all hover:bg-white/20 active:scale-[0.98] mx-4 mb-8 relative overflow-hidden ring-2 ring-white/10"
   >
     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out pointer-events-none rounded-[1.5rem] overflow-hidden"></div>
-
-    <div className="relative z-20 bg-white w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-2xl group-hover:rotate-12 transition-transform duration-300">
-      🎅
+    <div className="relative z-20 bg-white w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg group-hover:rotate-6 transition-transform duration-300">
+       <Mascot className="w-16 h-16 mt-2" emotion="happy" accessory="santa-hat" />
     </div>
     <div className="relative z-20 flex-grow text-left overflow-hidden">
-      <p className="text-brand-blue text-[10px] bg-white inline-block px-1.5 rounded-md font-bold uppercase tracking-widest mb-1 shadow-sm">AI-Санта</p>
+      <p className="text-red-500 text-[10px] bg-white inline-block px-2 rounded-md font-black uppercase tracking-[0.1em] mb-1 shadow-sm">AI-Санта</p>
       <TypewriterText />
     </div>
-    <div className="relative z-20 bg-brand-blue w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white group-hover:scale-110 transition-transform">
+    <div className="relative z-20 bg-red-500 w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white group-hover:scale-110 transition-transform">
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
@@ -117,9 +108,8 @@ const SearchTrigger: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 
 const CategoryPills: React.FC<{ onSelect: (tag: string) => void }> = ({ onSelect }) => {
   const categories = [
-    '🎄 Новый год', '🔥 Тренды', '👩 Для неё', '👨 Для него', '🏠 Дом', '💻 Гаджеты', '🎨 Хобби'
+    'Новый год', 'Тренды', 'Для неё', 'Для него', 'Для дома', 'Гаджеты', 'Хобби'
   ];
-
   return (
     <div className="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar -mx-2 mb-4 mask-gradient-right">
       {categories.map((cat, i) => (
@@ -142,58 +132,64 @@ const HorizontalSection: React.FC<{
   gifts: Gift[]; 
   onGiftClick: (g: Gift) => void;
   id?: string;
-}> = ({ title, subtitle, gifts, onGiftClick, id }) => {
+  gradient?: string;
+}> = ({ title, subtitle, gifts, onGiftClick, id, gradient }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     if (gifts.length === 0 || !scrollRef.current) return;
-
     const el = scrollRef.current;
-    setTimeout(() => {
-        const singleSetWidth = el.scrollWidth / 4;
-        el.scrollLeft = singleSetWidth;
-    }, 0);
+    const singleSetWidth = el.scrollWidth / 4;
+    el.scrollLeft = singleSetWidth;
   }, [gifts]);
 
-  if (gifts.length === 0) return null;
-
   const loopedGifts = [...gifts, ...gifts, ...gifts, ...gifts];
-
   const handleScroll = () => {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
     const singleSetWidth = el.scrollWidth / 4;
-
-    if (el.scrollLeft >= singleSetWidth * 3) {
-        el.scrollLeft = el.scrollLeft - singleSetWidth;
-    }
-    else if (el.scrollLeft <= 50) {
-        el.scrollLeft = el.scrollLeft + singleSetWidth;
-    }
+    if (el.scrollLeft >= singleSetWidth * 3) el.scrollLeft = el.scrollLeft - singleSetWidth;
+    else if (el.scrollLeft <= 10) el.scrollLeft = el.scrollLeft + singleSetWidth;
   };
 
+  if (gifts.length === 0) return null;
+
   return (
-    <div id={id} className="mb-10 relative z-10 scroll-mt-32">
-      <div className="px-6 mb-4">
-         <h2 className="text-xl font-bold text-white leading-tight flex items-center gap-2 tracking-tight">
-            {title}
-         </h2>
-         {subtitle && <p className="text-white/70 text-sm font-medium mt-1 tracking-tight">{subtitle}</p>}
+    <div id={id} className="mb-24 relative z-10 scroll-mt-32 group/section">
+      <div className="px-6 mb-10 flex items-end justify-between">
+         <div className="flex flex-col">
+            <h2 className="text-4xl md:text-5xl font-black text-white leading-[0.9] tracking-[-0.06em] mb-4">
+                <span className={gradient ? `text-transparent bg-clip-text bg-gradient-to-r ${gradient}` : ''}>
+                    {title}
+                </span>
+            </h2>
+            {subtitle && (
+                <div className="flex items-center gap-4">
+                    <div className="h-px w-8 bg-white/30"></div>
+                    <p className="text-white/50 text-[11px] font-black uppercase tracking-[0.4em] leading-none">{subtitle}</p>
+                </div>
+            )}
+         </div>
+         <button className="hidden sm:block text-[11px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all group pb-1">
+            Коллекция <span className="inline-block transition-transform group-hover:translate-x-1 ml-1">→</span>
+         </button>
       </div>
-      
-      <div className="relative w-full mask-gradient-x">
+      <div className="relative w-full mask-gradient-x overflow-visible">
          <div 
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-6 cursor-grab active:cursor-grabbing"
+            className="flex gap-6 overflow-x-auto no-scrollbar pb-10 px-6 cursor-grab active:cursor-grabbing snap-proximity"
             style={{ scrollBehavior: 'auto' }}
          >
             {loopedGifts.map((gift, index) => (
               <div 
                 key={`${gift.id}-${index}`} 
-                className="w-[160px] md:w-[180px] shrink-0"
+                className="w-[190px] md:w-[240px] shrink-0 transform-gpu transition-all duration-700 ease-out hover:scale-[1.04] hover:-translate-y-2 active:scale-[0.98]"
               >
-                 <GiftCard gift={gift} onClick={onGiftClick} />
+                 <div className="relative group/card">
+                    <div className="absolute -inset-4 bg-gradient-to-br from-white/15 to-transparent blur-2xl opacity-0 group-hover/card:opacity-100 transition-opacity pointer-events-none rounded-[3rem]"></div>
+                    <GiftCard gift={gift} onClick={onGiftClick} />
+                 </div>
               </div>
             ))}
          </div>
@@ -202,260 +198,106 @@ const HorizontalSection: React.FC<{
   );
 };
 
-const useMascotBehavior = () => {
-  const [eyes, setEyes] = useState({ x: 0, y: 0 });
-  const [docked, setDocked] = useState(false);
-  const [accessory, setAccessory] = useState<'none' | 'glasses' | 'scarf' | 'santa-hat'>('santa-hat');
-  const [emotion, setEmotion] = useState<'happy' | 'cool' | 'excited' | 'thinking'>('happy');
-  
-  const requestRef = useRef<number>(0);
-  
-  useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      if (docked) return;
-      if (requestRef.current) return;
-
-      requestRef.current = requestAnimationFrame(() => {
-          const clientX = e.clientX;
-          const clientY = e.clientY;
-          const centerX = window.innerWidth / 2;
-          const centerY = 150; 
-    
-          const maxDist = 300;
-          const dx = Math.max(-maxDist, Math.min(maxDist, clientX - centerX)) / maxDist;
-          const dy = Math.max(-maxDist, Math.min(maxDist, clientY - centerY)) / maxDist;
-    
-          setEyes({ x: dx, y: dy });
-          requestRef.current = 0;
-      });
-    };
-
-    window.addEventListener('mousemove', handleMove);
-    return () => {
-        window.removeEventListener('mousemove', handleMove);
-        if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
-  }, [docked]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const y = window.scrollY;
-      const isDocked = y > 220;
-      setDocked(isDocked);
-      setAccessory('santa-hat');
-    };
-
-    let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
-    const throttledScroll = () => {
-        if (!scrollTimeout) {
-            scrollTimeout = setTimeout(() => {
-                handleScroll();
-                scrollTimeout = null;
-            }, 50);
-        }
-    };
-
-    window.addEventListener('scroll', throttledScroll, { passive: true });
-    return () => window.removeEventListener('scroll', throttledScroll);
-  }, [docked]);
-
-  return { eyes, docked, accessory, emotion };
-};
-
 export const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { eyes, docked, accessory, emotion } = useMascotBehavior();
-  
+  const { user } = useAuth();
+  const [eyes, setEyes] = useState({ x: 0, y: 0 });
+  const [docked, setDocked] = useState(false);
+
   const [feedGifts, setFeedGifts] = useState<Gift[]>([]);
   const [cozyGifts, setCozyGifts] = useState<Gift[]>([]);
   const [techGifts, setTechGifts] = useState<Gift[]>([]);
-  
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      const centerX = window.innerWidth / 2;
+      const centerY = 150;
+      setEyes({ 
+        x: (e.clientX - centerX) / 300, 
+        y: (e.clientY - centerY) / 300 
+      });
+    };
+    window.addEventListener('mousemove', handleMove);
+    const handleScroll = () => setDocked(window.scrollY > 200);
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [feed, cozy, tech] = await Promise.all([
           api.gifts.list({ limit: 8 }),
-          api.gifts.list({ limit: 6, tag: 'уют' }), 
-          api.gifts.list({ limit: 6, tag: 'технологии' }) 
+          api.gifts.list({ limit: 8, tag: 'уют' }),
+          api.gifts.list({ limit: 8, tag: 'технологии' })
         ]);
         setFeedGifts(feed);
         setCozyGifts(cozy);
         setTechGifts(tech);
-      } catch (e) {
-        console.error("Failed to fetch home data", e);
-      }
+      } catch (e) { console.error(e); }
     };
     fetchData();
   }, []);
 
-  const startQuiz = () => {
-    track('start_quiz', { source: 'concierge_search' });
-    navigate('/quiz');
-  };
-
-  const handleCategory = (cat: string) => {
-    track('category_click', { cat });
-    navigate('/quiz');
-  };
-
   const openGift = (gift: Gift) => {
-    track('home_gift_click', { id: gift.id });
     setSelectedGift(gift);
     setIsModalOpen(true);
   };
 
   return (
     <div className="min-h-screen relative overflow-x-hidden pb-12">
-      
       <AmbientSnow />
       <ChristmasGarland />
       <DesktopDecor />
-
-      <div className="fixed inset-0 bg-transparent -z-20"></div>
       
-      <div className="fixed -top-10 -right-10 w-96 h-96 bg-blue-500/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob -z-10" />
-      <div className="fixed top-40 -left-10 w-80 h-80 bg-purple-500/30 rounded-full mix-blend-screen filter blur-[90px] animate-blob animation-delay-2000 -z-10" />
-
-      <div className="fixed top-6 left-6 z-50">
-         <Logo 
-            variant="white" 
-            onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} 
-         />
+      {/* Header */}
+      <div className="fixed top-6 left-6 z-50"><Logo variant="white" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} /></div>
+      <div className="fixed top-6 right-6 z-50">
+         {user ? (
+             <Link to="/profile" className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-2 rounded-2xl text-white font-bold text-sm">Профиль</Link>
+         ) : (
+             <Link to="/login" className="bg-white text-brand-blue px-5 py-2.5 rounded-2xl font-bold text-sm shadow-lg">Войти</Link>
+         )}
       </div>
 
-      <div className="fixed top-6 right-4 z-50">
-        <div className={`relative flex items-center gap-3 transition-all duration-500 ${docked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-20px] pointer-events-none'}`}>
-            <div 
-                onClick={startQuiz}
-                className="relative w-16 h-16 transition-transform duration-300 z-20 cursor-pointer hover:scale-105 active:scale-95"
-            >
-                <div className="absolute inset-0 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md shadow-sm"></div>
-                <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full">
-                   <Mascot className="w-20 h-20 mt-4" emotion={emotion} accessory={accessory} />
-                </div>
+      <div className="max-w-7xl mx-auto relative pt-32">
+        <div className="text-center mb-16 px-6">
+            <div className={`transition-all duration-700 ${docked ? 'opacity-0 scale-75' : 'opacity-100'}`}>
+                <Mascot className="w-32 h-32 mx-auto mb-6 drop-shadow-2xl" eyesX={eyes.x} eyesY={eyes.y} />
             </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto relative">
-
-        <div className="relative z-10 mb-6 mt-32 min-h-[16rem]">
-            <div className="px-6 pb-4 flex flex-col items-center text-center">
-                
-                <div 
-                    className={`relative transition-all duration-500 ease-out origin-bottom ${docked ? 'opacity-0 scale-75 translate-y-[-20px] pointer-events-none' : 'opacity-100 scale-100'}`}
-                >
-                <div className="absolute inset-0 bg-white blur-[50px] opacity-20 rounded-full animate-pulse-slow"></div>
-                <Mascot 
-                        className="w-32 h-32 mb-5 drop-shadow-2xl hover:scale-105 transition-transform cursor-pointer animate-float" 
-                        emotion="happy"
-                        accessory="santa-hat"
-                        eyesX={eyes.x}
-                        eyesY={eyes.y}
-                />
-                </div>
-                
-                <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-[1.1] drop-shadow-lg tracking-tighter">
-                Дарите <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">
-                    волшебство
-                </span>
-                </h1>
-                
-                <p className="text-white/80 text-sm max-w-xs mx-auto mb-8 font-medium leading-relaxed tracking-tight">
-                Твой персональный AI-Санта.<br/> Подберет подарок за 30 секунд.
-                </p>
-            </div>
-
-            <div className="max-w-2xl mx-auto">
-                <SearchTrigger onClick={startQuiz} />
-            </div>
-
-            <div className="flex justify-center">
-                <div className="w-full max-w-4xl">
-                    <CategoryPills onSelect={handleCategory} />
-                </div>
-            </div>
+            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-[0.9] tracking-[-0.07em]">Дарите <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">волшебство</span></h1>
+            <p className="text-white/70 text-lg max-w-sm mx-auto mb-12 font-medium leading-relaxed tracking-tight">Твой персональный AI-Санта. Подберет подарок за 30 секунд.</p>
+            <div className="max-w-2xl mx-auto"><SearchTrigger onClick={() => navigate('/quiz')} /></div>
+            <CategoryPills onSelect={() => navigate('/quiz')} />
         </div>
 
-        <HorizontalSection 
-            id="section-cozy"
-            title="Зимний уют ❄️" 
-            subtitle="Согревающие подарки для души и тела"
-            gifts={cozyGifts} 
-            onGiftClick={openGift} 
-        />
+        <HorizontalSection title="Магия уюта" subtitle="Согревающие подарки для дома" gifts={cozyGifts} onGiftClick={openGift} gradient="from-orange-200 to-rose-300" />
+        <HorizontalSection title="Мир технологий" subtitle="Гаджеты, о которых мечтают" gifts={techGifts} onGiftClick={openGift} gradient="from-blue-200 to-indigo-400" />
 
-        <HorizontalSection 
-            id="section-tech"
-            title="Магия технологий ⚡️" 
-            subtitle="Гаджеты, о которых все мечтают"
-            gifts={techGifts} 
-            onGiftClick={openGift} 
-        />
-
-        <div className="relative z-10 px-4 mt-6">
-            <div className="flex items-center gap-2 mb-6 px-2">
-            <span className="text-2xl animate-pulse">🎁</span>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Вдохновение дня</h2>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            <div 
-                onClick={startQuiz}
-                className="col-span-2 relative overflow-hidden rounded-[2rem] p-6 flex flex-col justify-between min-h-[180px] cursor-pointer group shadow-2xl transition-transform hover:scale-[1.02] bg-white"
-            >
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 rounded-[2rem] overflow-hidden"></div>
-                
-                <div className="relative z-20">
-                    <span className="inline-block bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider mb-3 shadow-md">
-                    🎄 Праздник к нам приходит
-                    </span>
-                    <h3 className="text-brand-dark font-black text-2xl leading-tight tracking-tight">
-                    Не знаешь что дарить?
-                    </h3>
-                    <p className="text-gray-500 text-sm mt-1 font-medium">
-                    Спроси у AI-Санты
-                    </p>
-                </div>
-                <div className="relative z-20 flex items-center gap-2 text-red-500 font-bold text-sm mt-4 group-hover:gap-3 transition-all">
-                    <div className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
+        <div className="px-6 mt-28">
+            <h2 className="text-4xl font-black text-white tracking-[-0.06em] mb-12">Вдохновение дня</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
+                <div onClick={() => navigate('/quiz')} className="col-span-2 relative overflow-hidden rounded-[3.5rem] p-8 md:p-14 min-h-[320px] bg-white cursor-pointer group shadow-2xl">
+                    <div className="relative z-20">
+                        <span className="inline-block bg-red-500 text-white text-[11px] font-black px-5 py-2 rounded-xl uppercase tracking-widest mb-8">AI Magic</span>
+                        <h3 className="text-brand-dark font-black text-5xl leading-[0.95] tracking-[-0.06em]">Не знаешь что дарить? <br/> Спроси у Санты</h3>
                     </div>
-                    <span>Начать подбор</span>
+                    <div className="absolute bottom-8 left-8 flex items-center gap-5 text-red-500 font-black group-hover:gap-8 transition-all">
+                        <div className="w-14 h-14 rounded-full bg-red-500 text-white flex items-center justify-center shadow-2xl">→</div>
+                        <span className="text-xl">Начать подбор</span>
+                    </div>
                 </div>
-            </div>
-
-            {feedGifts.map((gift) => (
-                <div key={gift.id} className="h-auto">
-                    <GiftCard gift={gift} onClick={openGift} />
-                </div>
-            ))}
-            </div>
-            
-            <div className="mt-12 text-center pb-8">
-                <Button variant="secondary" onClick={startQuiz}>
-                Загрузить больше через квиз
-                </Button>
+                {feedGifts.map(g => <GiftCard key={g.id} gift={g} onClick={openGift} />)}
             </div>
         </div>
-
       </div>
 
-      {selectedGift && (
-        <GiftDetailsModal 
-          gift={selectedGift} 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)}
-          answers={null}
-          onWishlistChange={() => {}} 
-        />
-      )}
+      {selectedGift && <GiftDetailsModal gift={selectedGift} answers={null} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onWishlistChange={() => {}} />}
     </div>
   );
 };

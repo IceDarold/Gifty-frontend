@@ -42,14 +42,17 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
       }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU', { style: 'decimal', maximumFractionDigits: 0 }).format(price) + ' ₽';
+  const formatPrice = (price: number | null) => {
+    if (!price) return '---';
+    return new Intl.NumberFormat('ru-RU', { style: 'decimal', maximumFractionDigits: 0 }).format(price) + ' ' + (gift.currency || '₽');
   };
 
   const formatCompactReview = (count: number) => {
       if (count >= 1000) return (count / 1000).toFixed(1) + 'k';
       return count;
   }
+
+  const giftImage = gift.imageUrl;
 
   return (
     <div 
@@ -67,7 +70,7 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
 
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-50 rounded-t-[20px]">
         <img 
-          src={imgError ? 'https://placehold.co/400x500/f3f4f6/9ca3af?text=No+Image' : gift.image} 
+          src={imgError || !giftImage ? 'https://placehold.co/400x500/f3f4f6/9ca3af?text=No+Image' : giftImage} 
           alt={gift.title} 
           onError={() => setImgError(true)}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -84,14 +87,14 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
           </svg>
         </button>
 
-        <div className="absolute bottom-2 left-2 right-2 flex justify-end items-end">
-             {gift.tags && (
+        {gift.merchant && (
+          <div className="absolute bottom-2 right-2 flex justify-end items-end">
                 <div className="bg-brand-blue/90 backdrop-blur-md text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[6px] shadow-sm flex items-center gap-1">
                     <span>✨</span>
-                    {gift.tags[0]}
+                    {gift.merchant}
                 </div>
-             )}
-        </div>
+          </div>
+        )}
       </div>
       
       <div className="p-3 flex flex-col flex-grow relative">
@@ -99,9 +102,11 @@ export const GiftCard: React.FC<Props> = ({ gift, featured = false, onToggleWish
            <span className="text-lg font-extrabold text-gray-900 leading-none tracking-tight">
               {formatPrice(gift.price)}
            </span>
-           <span className="text-xs text-gray-400 line-through decoration-gray-300 font-medium">
-              {formatPrice(Math.round(gift.price * 1.2))}
-           </span>
+           {gift.price && (
+             <span className="text-xs text-gray-400 line-through decoration-gray-300 font-medium">
+                {formatPrice(Math.round(gift.price * 1.2))}
+             </span>
+           )}
         </div>
 
         <h3 className="text-[13px] font-medium text-gray-700 leading-snug line-clamp-2 mb-2 h-[2.5em] tracking-tight">

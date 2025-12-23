@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Footer } from './Footer';
 
 interface LayoutProps {
@@ -9,6 +9,9 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFooter = true }) => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
   const linkClass = ({ isActive }: { isActive: boolean }) => 
     `flex flex-col items-center justify-end gap-1 h-full pb-3 w-full transition-all duration-300 group ${isActive ? 'text-brand-blue' : 'text-slate-400 hover:text-slate-600'}`;
 
@@ -16,7 +19,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
     `h-6 w-6 mb-0.5 transition-transform duration-300 group-active:scale-90 ${isActive ? 'scale-110' : ''}`;
 
   return (
-    <div className="min-h-screen flex flex-col w-full relative bg-transparent overflow-x-hidden">
+    <div className={`min-h-screen flex flex-col w-full relative overflow-x-hidden ${isLoginPage ? 'bg-brand-dark' : 'bg-transparent'}`}>
       
       <main className={`flex-grow relative z-10 flex flex-col ${showNav ? 'pb-28' : 'pb-8'}`}>
         <div className="flex-grow w-full">
@@ -31,13 +34,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
 
       {showNav && (
         <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
-          {/* Stable Bottom Panel - Acts as a Floating Dock on Desktop */}
           <nav className="w-full max-w-lg bg-white/95 backdrop-blur-2xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] border-t border-white/50 pointer-events-auto rounded-t-[2.5rem] relative pb-safe">
              
-             {/* 5-Column Grid Layout for Perfect Symmetry */}
              <div className="grid grid-cols-5 h-[5.5rem] px-2 items-end pb-2">
                  
-                 {/* 1. Home */}
                  <NavLink to="/" className={linkClass}>
                     {({ isActive }) => (
                       <>
@@ -49,7 +49,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
                     )}
                  </NavLink>
 
-                 {/* 2. Wishlist */}
                  <NavLink to="/wishlist" className={linkClass}>
                     {({ isActive }) => (
                       <>
@@ -61,7 +60,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
                     )}
                  </NavLink>
                  
-                 {/* 3. Center Button: Magic Quiz */}
                  <div className="relative flex justify-center items-end h-full pointer-events-none">
                      <div className="absolute bottom-6 pointer-events-auto">
                          <NavLink 
@@ -75,7 +73,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
                      </div>
                  </div>
 
-                 {/* 4. History (Balances the layout) */}
                  <NavLink to="/results" className={linkClass}>
                     {({ isActive }) => (
                       <>
@@ -87,7 +84,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
                     )}
                  </NavLink>
 
-                 {/* 5. Profile */}
                  <NavLink to="/profile" className={linkClass}>
                     {({ isActive }) => (
                       <>

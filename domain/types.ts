@@ -1,3 +1,10 @@
+export interface User {
+  id: string;
+  name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+}
+
 export interface ReviewItem {
   id: string;
   author: string;
@@ -11,7 +18,7 @@ export interface ReviewItem {
 export interface GiftReviews {
   rating: number;
   count: number;
-  source?: "Ozon" | "WB" | "Partner" | "Amazon" | "Other" | "AliExpress";
+  source?: string;
   highlights?: string[];
   items: ReviewItem[];
 }
@@ -19,30 +26,42 @@ export interface GiftReviews {
 export interface Gift {
   id: string;
   title: string;
-  price: number;
-  image: string;
-  marketplace: 'Ozon' | 'WB' | 'Amazon' | 'AliExpress' | 'Local' | 'Other';
-  category: string;
-  tags: string[];
-  reason: string;
-  ageRange: [number, number];
-  minBudget: number;
-  description?: string;
+  description: string | null;
+  price: number | null;
+  currency: string | null;
+  imageUrl: string | null;
+  productUrl: string;
+  merchant: string | null;
+  category: string | null;
+  // Legacy support or internal UI scoring
+  tags?: string[];
+  reason?: string;
   reviews?: GiftReviews;
-  // Internal scoring field used during recommendation logic, optional in domain
-  _score?: number; 
 }
+
+export interface RecommendationsResponse {
+  quizRunId: string;
+  engineVersion: string;
+  featuredGift: Gift;
+  gifts: Gift[];
+  debug?: any | null;
+}
+
+export type RecipientGender = 'male' | 'female' | 'unisex';
 
 export interface QuizAnswers {
   name: string;
   ageGroup: string;
+  recipientGender: RecipientGender | null;
+  occasion: string;
   relationship: string;
+  vibe: string;
   city: string;
   interests: string;
   budget: string;
 }
 
-export type StepId = 'name' | 'age' | 'relationship' | 'city' | 'interests' | 'budget';
+export type StepId = 'name' | 'age' | 'gender' | 'occasion' | 'relationship' | 'vibe' | 'city' | 'interests' | 'budget';
 
 export interface FilterState {
   budget: string;
@@ -52,16 +71,16 @@ export interface FilterState {
 
 export interface CalendarEvent {
   id: string;
-  title: string; // e.g. "Мамин ДР"
-  date: string; // ISO date string YYYY-MM-DD
-  personName: string; // "Мама"
-  relationship: string; // For quiz pre-fill
+  title: string;
+  date: string;
+  personName: string;
+  relationship: string;
 }
 
 export interface UserProfile {
   name: string;
   avatarEmoji: string;
-  level: string; // "Novice", "Expert", etc.
+  level: string;
   events: CalendarEvent[];
 }
 
@@ -74,8 +93,8 @@ export interface BlogContentBlock {
 export interface BlogPost {
   id: string;
   title: string;
-  metaTitle?: string; // SEO Title: "Main Keyword - Benefit"
-  metaDescription?: string; // SEO Desc: Pain point + Value (160 chars)
+  metaTitle?: string;
+  metaDescription?: string;
   excerpt: string;
   image: string;
   category: string;
