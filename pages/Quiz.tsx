@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Mascot } from '../components/Mascot';
@@ -123,37 +123,50 @@ const SelectionCard: React.FC<{
 const AgePicker: React.FC<{ value: string, onChange: (val: string) => void }> = ({ value, onChange }) => {
   const ages = Array.from({ length: 100 }, (_, i) => i);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const ITEM_WIDTH = 60;
+  const GAP = 16; 
+  const STRIDE = ITEM_WIDTH + GAP;
 
   useEffect(() => {
     if (scrollRef.current) {
         const parsed = parseInt(value);
         const initial = isNaN(parsed) ? 25 : parsed;
-        const stride = 76; // 60px item + 16px gap
-        const offset = 30; // Half item width to center
-        scrollRef.current.scrollLeft = initial * stride + offset;
+        scrollRef.current.scrollLeft = initial * STRIDE;
     }
   }, []);
 
   const handleScroll = () => {
       if (scrollRef.current) {
-          const stride = 76;
-          const offset = 30;
-          const index = Math.round((scrollRef.current.scrollLeft - offset) / stride);
+          const container = scrollRef.current;
+          const containerCenter = container.getBoundingClientRect().left + container.clientWidth / 2;
           
-          if (index >= 0 && index < ages.length) {
-              if (index.toString() !== value) {
-                  onChange(index.toString());
+          let closestIndex = 0;
+          let minDistance = Infinity;
+
+          const buttons = container.children;
+          // Loop through buttons to find which one is geometrically closest to center
+          for (let i = 0; i < buttons.length; i++) {
+              const button = buttons[i] as HTMLElement;
+              const rect = button.getBoundingClientRect();
+              const buttonCenter = rect.left + rect.width / 2;
+              const distance = Math.abs(containerCenter - buttonCenter);
+              
+              if (distance < minDistance) {
+                  minDistance = distance;
+                  closestIndex = i;
               }
+          }
+          
+          if (closestIndex.toString() !== value) {
+              onChange(closestIndex.toString());
           }
       }
   };
 
   const handleClick = (age: number) => {
       if (scrollRef.current) {
-          const stride = 76;
-          const offset = 30;
           scrollRef.current.scrollTo({
-              left: age * stride + offset,
+              left: age * STRIDE,
               behavior: 'smooth'
           });
       }
@@ -170,7 +183,7 @@ const AgePicker: React.FC<{ value: string, onChange: (val: string) => void }> = 
         <div 
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex items-center gap-4 overflow-x-auto no-scrollbar px-[50%] snap-x snap-mandatory py-4 w-full"
+            className="flex items-center gap-4 overflow-x-auto no-scrollbar pl-[calc(50%-30px)] pr-[calc(50%-30px)] snap-x snap-mandatory py-4 w-full"
         >
             {ages.map((age) => (
                 <button
@@ -213,6 +226,20 @@ export const Quiz: React.FC = () => {
         return INITIAL_ANSWERS;
     }
   });
+
+  // Force dark background on body to prevent white/purple leaks on overscroll
+  useLayoutEffect(() => {
+    const originalBackground = document.body.style.background;
+    const originalBackgroundColor = document.body.style.backgroundColor;
+    
+    document.body.style.background = 'none';
+    document.body.style.backgroundColor = '#0B0033'; // brand-dark
+
+    return () => {
+      document.body.style.background = originalBackground;
+      document.body.style.backgroundColor = originalBackgroundColor;
+    };
+  }, []);
 
   // Custom inputs state
   const [customOccasion, setCustomOccasion] = useState('');

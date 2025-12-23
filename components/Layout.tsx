@@ -11,6 +11,7 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFooter = true }) => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
+  const isQuizPage = location.pathname === '/quiz';
 
   const linkClass = ({ isActive }: { isActive: boolean }) => 
     `flex flex-col items-center justify-end gap-1 h-full pb-3 w-full transition-all duration-300 group ${isActive ? 'text-brand-blue' : 'text-slate-400 hover:text-slate-600'}`;
@@ -18,10 +19,16 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, showFo
   const iconClass = (isActive: boolean) => 
     `h-6 w-6 mb-0.5 transition-transform duration-300 group-active:scale-90 ${isActive ? 'scale-110' : ''}`;
 
+  // Define bottom padding based on context:
+  // 1. Nav visible -> pb-28 (space for navbar)
+  // 2. Quiz page -> pb-0 (immersive full screen, no leaks)
+  // 3. Default (e.g. Login, Blog) -> pb-8 (standard spacing)
+  const bottomPadding = showNav ? 'pb-28' : (isQuizPage ? 'pb-0' : 'pb-8');
+
   return (
     <div className={`min-h-screen flex flex-col w-full relative overflow-x-hidden ${isLoginPage ? 'bg-brand-dark' : 'bg-transparent'}`}>
       
-      <main className={`flex-grow relative z-10 flex flex-col ${showNav ? 'pb-28' : 'pb-8'}`}>
+      <main className={`flex-grow relative z-10 flex flex-col ${bottomPadding}`}>
         <div className="flex-grow w-full">
           {children}
         </div>

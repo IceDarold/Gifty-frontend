@@ -11,25 +11,48 @@ import { useDevMode } from '../components/DevModeContext';
 import { inclineName } from '../utils/stringUtils';
 import { createPortal } from 'react-dom';
 import { isInWishlist, addToWishlist, removeFromWishlist } from '../utils/storage';
+import { AmbientSnow } from '../components/SnowSystem';
 
-const LoadingScreen: React.FC = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center text-white bg-brand-dark overflow-hidden relative">
-    <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-blue/20 rounded-full blur-[100px] animate-pulse-slow"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-purple/20 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+const LOADING_MESSAGES = [
+    "Анализирую магию...",
+    "Ищу идеальные совпадения...",
+    "Проверяю наличие на складах...",
+    "Советуюсь с эльфами...",
+    "Подбираю лучшую цену...",
+    "Почти готово..."
+];
+
+const LoadingScreen: React.FC = () => {
+  const [msgIndex, setMsgIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+        setMsgIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center p-6 text-center bg-brand-dark overflow-hidden touch-none text-white">
+        <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-blue/20 rounded-full blur-[100px] animate-pulse-slow"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-purple/20 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+        </div>
+        <div className="relative z-10 animate-float">
+            <Mascot className="w-32 h-32 mb-8 drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]" emotion="thinking" accessory="glasses" />
+        </div>
+        <h2 className="text-2xl font-black mb-3 animate-pulse text-white transition-all duration-500 min-h-[2rem]">
+            {LOADING_MESSAGES[msgIndex]}
+        </h2>
+        <div className="flex gap-2 justify-center mb-8">
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+        </div>
+        <p className="text-white/50 text-sm max-w-xs font-medium">Ищу идеальные варианты среди тысяч товаров</p>
     </div>
-    <div className="relative z-10 animate-float">
-        <Mascot className="w-32 h-32 mb-8 drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]" emotion="thinking" accessory="glasses" />
-    </div>
-    <h2 className="text-2xl font-black mb-3 animate-pulse">Анализирую магию...</h2>
-    <div className="flex gap-2 justify-center mb-8">
-        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-    </div>
-    <p className="text-white/50 text-sm max-w-xs font-medium">Ищу идеальные совпадения среди тысяч вариантов</p>
-  </div>
-);
+  );
+};
 
 // --- Featured Hero Card Component ---
 
@@ -62,7 +85,7 @@ const FeaturedCard: React.FC<{
   return (
     <div 
         onClick={() => onClick(gift)}
-        className="group relative w-full bg-white rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-[0_0_50px_rgba(124,58,237,0.25)] transition-all duration-500 cursor-pointer border border-white/20 transform hover:-translate-y-1"
+        className="group relative w-full bg-white rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-[0_0_50px_rgba(124,58,237,0.3)] transition-all duration-500 cursor-pointer border border-white/20 transform hover:-translate-y-1"
     >
         <div className="flex flex-col md:flex-row h-auto md:min-h-[28rem]">
             {/* Image Side */}
@@ -88,7 +111,7 @@ const FeaturedCard: React.FC<{
                 />
                 
                 {/* Mobile Gradient & Text Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent md:hidden" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent md:hidden" />
                 <div className="absolute bottom-4 left-4 right-4 md:hidden text-white pb-2">
                      <h2 className="text-xl font-bold leading-tight mb-1 line-clamp-2 drop-shadow-md">{gift.title}</h2>
                      <p className="font-black text-2xl drop-shadow-md">{formattedPrice}</p>
@@ -429,23 +452,23 @@ export const Results: React.FC = () => {
           <Mascot emotion="surprised" className="w-32 h-32 mb-6" />
           <p className="text-xl font-bold mb-6">{error || 'Что-то пошло не так'}</p>
           <Button onClick={() => window.location.reload()}>Попробовать снова</Button>
-          <button onClick={() => navigate('/')} className="mt-4 text-white/50 hover:text-white text-sm font-bold">На главную</button>
+          <button onClick={() => navigate('/')} className="mt-4 text-white/50 hover:text-brand-blue text-sm font-bold">На главную</button>
        </div>
     );
   }
 
   const featured = response.featuredGift;
-  // Make sure to filter out featured from 'others' only if featured exists
   const others = featured ? response.gifts.filter(g => g.id !== featured.id) : response.gifts;
   const visibleOthers = others.slice(0, visibleCount);
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-24 pb-20 overflow-x-hidden relative">
+    <div className="min-h-screen pt-24 pb-20 overflow-x-hidden relative">
       
-      {/* Background Ambience */}
+      {/* Background Ambience & Snow */}
+      <AmbientSnow />
       <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-[-10%] right-[-20%] w-[600px] h-[600px] bg-brand-blue/20 rounded-full blur-[120px] opacity-60"></div>
-          <div className="absolute top-[20%] left-[-20%] w-[500px] h-[500px] bg-brand-purple/20 rounded-full blur-[120px] opacity-60"></div>
+          <div className="absolute top-[-20%] right-[-20%] w-[800px] h-[800px] bg-brand-blue/20 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -454,11 +477,11 @@ export const Results: React.FC = () => {
         <div className="flex justify-between items-end mb-10 animate-fade-in-up">
             <div>
                 <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-white/10 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold text-white/80 uppercase tracking-widest">
+                    <span className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-widest">
                         AI Подборка
                     </span>
                     {answers?.name && (
-                        <span className="text-white/40 text-sm font-bold">для {inclineName(answers.name, 'genitive')}</span>
+                        <span className="text-white/60 text-sm font-bold">для {inclineName(answers.name, 'genitive')}</span>
                     )}
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
@@ -482,8 +505,8 @@ export const Results: React.FC = () => {
         </div>
 
         {isDevMode && showDebug && (
-            <div className="bg-black/80 backdrop-blur-xl rounded-2xl p-6 mb-8 text-[10px] font-mono text-green-400 border border-white/10 overflow-hidden shadow-2xl animate-pop w-full">
-                <div className="flex justify-between items-start mb-4 border-b border-white/10 pb-4">
+            <div className="bg-gray-900 rounded-2xl p-6 mb-8 text-[10px] font-mono text-green-400 border border-gray-800 overflow-hidden shadow-2xl animate-pop w-full">
+                <div className="flex justify-between items-start mb-4 border-b border-gray-700 pb-4">
                     <div>
                         <p className="font-bold text-lg mb-2">🛠 Debug Console</p>
                         <p>Engine: {response.engineVersion}</p>
@@ -562,9 +585,9 @@ export const Results: React.FC = () => {
             <div>
                 {/* Separator */}
                 <div className="flex items-center gap-4 mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                    <div className="h-px bg-white/10 flex-grow rounded-full"></div>
-                    <h3 className="text-white/50 font-bold uppercase tracking-[0.2em] text-xs">Другие варианты</h3>
-                    <div className="h-px bg-white/10 flex-grow rounded-full"></div>
+                    <div className="h-px bg-white/20 flex-grow rounded-full"></div>
+                    <h3 className="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">Другие варианты</h3>
+                    <div className="h-px bg-white/20 flex-grow rounded-full"></div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -604,10 +627,10 @@ export const Results: React.FC = () => {
                     <div className="flex justify-center mt-12 animate-fade-in-up">
                         <button 
                             onClick={handleLoadMore}
-                            className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-4 px-10 rounded-2xl transition-all active:scale-95 shadow-lg backdrop-blur-md flex items-center gap-2 group"
+                            className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-4 px-10 rounded-2xl transition-all active:scale-95 shadow-lg flex items-center gap-2 group text-sm"
                         >
                             <span>Показать больше</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform group-hover:translate-y-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform group-hover:translate-y-1 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
@@ -618,20 +641,23 @@ export const Results: React.FC = () => {
         
         {/* Footer Action */}
         <div className="mt-16 text-center pb-8 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-            <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white/5 inline-block w-full max-w-2xl">
-                <Mascot emotion="happy" className="w-24 h-24 mx-auto mb-4" />
-                <h3 className="text-2xl font-black text-white mb-2">Не нашли то самое?</h3>
-                <p className="text-white/60 mb-8 max-w-md mx-auto">Попробуйте уточнить запрос или изменить параметры поиска.</p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button variant="secondary" onClick={() => navigate('/quiz')}>
-                        Попробовать еще раз
-                    </Button>
-                    <button 
-                        onClick={() => navigate('/')}
-                        className="px-8 py-3.5 rounded-2xl font-bold text-white/70 hover:text-white hover:bg-white/10 transition-all border border-white/10"
-                    >
-                        На главную
-                    </button>
+            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-gray-100 shadow-xl inline-block w-full max-w-2xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50"></div>
+                <div className="relative z-10">
+                    <Mascot emotion="happy" className="w-24 h-24 mx-auto mb-4" />
+                    <h3 className="text-2xl font-black text-brand-dark mb-2">Не нашли то самое?</h3>
+                    <p className="text-gray-500 mb-8 max-w-md mx-auto font-medium">Попробуйте уточнить запрос или изменить параметры поиска.</p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Button variant="secondary" onClick={() => navigate('/quiz')}>
+                            Попробовать еще раз
+                        </Button>
+                        <button 
+                            onClick={() => navigate('/')}
+                            className="px-8 py-3.5 rounded-2xl font-bold text-gray-500 hover:text-brand-dark hover:bg-gray-100 transition-all border border-gray-200 bg-white"
+                        >
+                            На главную
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

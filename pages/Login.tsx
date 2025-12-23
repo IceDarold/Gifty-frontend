@@ -35,7 +35,19 @@ export const Login: React.FC = () => {
       <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-brand-blue/30 rounded-full blur-[100px] animate-blob"></div>
       <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-brand-purple/30 rounded-full blur-[100px] animate-blob animation-delay-2000"></div>
 
-      <div className="w-full max-w-md bg-white/95 backdrop-blur-2xl rounded-[3rem] p-8 md:p-12 shadow-2xl animate-pop border border-white/20 text-center">
+      <div className="w-full max-w-md bg-white/95 backdrop-blur-2xl rounded-[3rem] p-8 md:p-12 shadow-2xl animate-pop border border-white/20 text-center relative">
+        
+        {/* Exit Button */}
+        <button 
+            onClick={() => navigate('/')}
+            className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full transition-all active:scale-90"
+            title="На главную"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+        </button>
+
         <div className="mb-8">
             <Logo className="justify-center scale-125" />
         </div>
