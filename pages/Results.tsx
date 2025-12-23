@@ -15,25 +15,52 @@ import { AmbientSnow } from '../components/SnowSystem';
 
 const LOADING_MESSAGES = [
     "Анализирую магию...",
-    "Ищу идеальные совпадения...",
-    "Проверяю наличие на складах...",
     "Советуюсь с эльфами...",
+    "Ищу идеальные совпадения...",
+    "Спрашиваю у Санты...",
+    "Проверяю списки желаний...",
+    "Калибрую нейросеть...",
+    "Шуршу подарочной бумагой...",
+    "Добавляю щепотку волшебства...",
+    "Сканирую тренды...",
+    "Отсеиваю скучные носки...",
+    "Ищу то, что вызовет восторг...",
+    "Завариваю какао для вдохновения...",
+    "Распутываю гирлянду идей...",
+    "Договариваюсь с жабой (про бюджет)...",
+    "Изучаю совместимость...",
+    "Почти готово, честно...",
+    "Генерирую радость...",
+    "Смотрю, что дарят звезды...",
     "Подбираю лучшую цену...",
-    "Почти готово..."
+    "Ищу редкие артефакты...",
+    "Включаю новогоднее настроение...",
+    "Проверяю наличие на Северном полюсе...",
+    "Составляю секретный список...",
+    "Думаю, как удивить...",
+    "Еще одна секундочка...",
+    "Связываюсь с базой данных чудес...",
+    "Выбираю самое лучшее..."
 ];
 
 const LoadingScreen: React.FC = () => {
-  const [msgIndex, setMsgIndex] = useState(0);
+  const [msg, setMsg] = useState(LOADING_MESSAGES[0]);
 
   useEffect(() => {
+    // Set initial random message
+    setMsg(LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]);
+
     const interval = setInterval(() => {
-        setMsgIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
+        setMsg(prev => {
+            const available = LOADING_MESSAGES.filter(m => m !== prev);
+            return available[Math.floor(Math.random() * available.length)];
+        });
     }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center p-6 text-center bg-brand-dark overflow-hidden touch-none text-white">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-6 text-center bg-brand-dark overflow-hidden touch-none text-white">
         <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-blue/20 rounded-full blur-[100px] animate-pulse-slow"></div>
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-purple/20 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
@@ -41,8 +68,8 @@ const LoadingScreen: React.FC = () => {
         <div className="relative z-10 animate-float">
             <Mascot className="w-32 h-32 mb-8 drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]" emotion="thinking" accessory="glasses" />
         </div>
-        <h2 className="text-2xl font-black mb-3 animate-pulse text-white transition-all duration-500 min-h-[2rem]">
-            {LOADING_MESSAGES[msgIndex]}
+        <h2 className="text-2xl font-black mb-3 animate-pulse text-white transition-all duration-500 min-h-[4rem] flex items-center justify-center">
+            {msg}
         </h2>
         <div className="flex gap-2 justify-center mb-8">
             <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
@@ -50,7 +77,8 @@ const LoadingScreen: React.FC = () => {
             <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
         </div>
         <p className="text-white/50 text-sm max-w-xs font-medium">Ищу идеальные варианты среди тысяч товаров</p>
-    </div>
+    </div>,
+    document.body
   );
 };
 
