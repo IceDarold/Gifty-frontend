@@ -205,8 +205,13 @@ export const Quiz: React.FC = () => {
         const { name, relationship } = location.state as { name: string, relationship: string };
         return { ...INITIAL_ANSWERS, name: name || '', relationship: relationship || '' };
     }
-    const saved = localStorage.getItem('gifty_draft');
-    return saved ? JSON.parse(saved) : INITIAL_ANSWERS;
+    try {
+        const saved = localStorage.getItem('gifty_draft');
+        // Merge with INITIAL_ANSWERS to ensure no keys are missing
+        return saved ? { ...INITIAL_ANSWERS, ...JSON.parse(saved) } : INITIAL_ANSWERS;
+    } catch (e) {
+        return INITIAL_ANSWERS;
+    }
   });
 
   // Custom inputs state
@@ -249,7 +254,7 @@ export const Quiz: React.FC = () => {
       if (isCustomVibe) finalAnswers.vibe = customVibe;
       
       // Ensure budget is clean number
-      finalAnswers.budget = finalAnswers.budget.replace(/\D/g, '');
+      finalAnswers.budget = (finalAnswers.budget || '').replace(/\D/g, '');
       
       localStorage.setItem('gifty_answers', JSON.stringify(finalAnswers));
       navigate('/results');
@@ -274,15 +279,15 @@ export const Quiz: React.FC = () => {
 
   const isCurrentStepValid = () => {
     switch (step) {
-      case 0: return answers.name.trim().length > 0;
+      case 0: return (answers.name || '').trim().length > 0;
       case 1: return true; 
       case 2: return !!answers.recipientGender;
-      case 3: return isCustomOccasion ? customOccasion.trim().length > 0 : answers.occasion.length > 0;
-      case 4: return isCustomRelationship ? customRelationship.trim().length > 0 : answers.relationship.length > 0;
-      case 5: return isCustomVibe ? customVibe.trim().length > 0 : answers.vibe.length > 0;
-      case 6: return answers.city.trim().length > 0;
-      case 7: return (answers.interests.trim().length > 0 || selectedTags.length > 0);
-      case 8: return answers.budget.length > 0 && parseInt(answers.budget) > 0;
+      case 3: return isCustomOccasion ? customOccasion.trim().length > 0 : (answers.occasion || '').length > 0;
+      case 4: return isCustomRelationship ? customRelationship.trim().length > 0 : (answers.relationship || '').length > 0;
+      case 5: return isCustomVibe ? customVibe.trim().length > 0 : (answers.vibe || '').length > 0;
+      case 6: return (answers.city || '').trim().length > 0;
+      case 7: return ((answers.interests || '').trim().length > 0 || selectedTags.length > 0);
+      case 8: return (answers.budget || '').length > 0 && parseInt(answers.budget) > 0;
       default: return false;
     }
   };
@@ -322,7 +327,7 @@ export const Quiz: React.FC = () => {
 
             {step === 1 && (
                 <>
-                    <StepHeader title={`Сколько лет ${inclineName(answers.name, 'dative')}?`} subtitle="Чтобы попасть в точку" />
+                    <StepHeader title={`Сколько лет ${inclineName(answers.name || '', 'dative')}?`} subtitle="Чтобы попасть в точку" />
                     <div className="py-10">
                         <AgePicker value={answers.ageGroup} onChange={(val) => updateAnswer('ageGroup', val)} />
                     </div>
@@ -522,7 +527,7 @@ export const Quiz: React.FC = () => {
                             type="text"
                             inputMode="numeric"
                             placeholder="0"
-                            value={answers.budget.replace(/\D/g, '')}
+                            value={(answers.budget || '').replace(/\D/g, '')}
                             onChange={(e) => updateAnswer('budget', e.target.value.replace(/\D/g, ''))}
                             onKeyDown={handleKeyDown}
                             className="w-full bg-transparent text-center text-6xl font-black text-white placeholder-white/10 outline-none border-b-2 border-white/20 focus:border-brand-blue transition-all pb-4"
