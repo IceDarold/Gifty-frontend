@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { track } from '../utils/analytics';
 import { Mascot } from '../components/Mascot';
 import { useDevMode } from '../components/DevModeContext';
+import { inclineName } from '../utils/stringUtils';
+import { createPortal } from 'react-dom';
 
 const LoadingScreen: React.FC = () => (
   <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center text-white bg-brand-dark overflow-hidden relative">
@@ -28,6 +30,109 @@ const LoadingScreen: React.FC = () => (
   </div>
 );
 
+// --- Dev Mode Components ---
+
+const DevAddGiftModal: React.FC<{ isOpen: boolean; onClose: () => void; onAdd: (g: Partial<Gift>) => void }> = ({ isOpen, onClose, onAdd }) => {
+    const [form, setForm] = useState({
+        title: '',
+        price: '',
+        description: '',
+        imageUrl: '',
+        reason: ''
+    });
+
+    if (!isOpen) return null;
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setForm(prev => ({ ...prev, imageUrl: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onAdd({
+            title: form.title || 'Новый товар',
+            price: parseInt(form.price) || 0,
+            description: form.description,
+            imageUrl: form.imageUrl || 'https://placehold.co/400x500/png?text=Mock+Gift',
+            reason: form.reason || 'Добавлено вручную разработчиком',
+            currency: 'RUB',
+            merchant: 'DevMock'
+        });
+        onClose();
+        setForm({ title: '', price: '', description: '', imageUrl: '', reason: '' });
+    };
+
+    return createPortal(
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
+            <div className="bg-[#1e1e1e] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl text-white" onClick={e => e.stopPropagation()}>
+                <h3 className="text-xl font-bold mb-4 text-green-400">🛠 Add Mock Gift</h3>
+                <form onSubmit={handleSubmit} className="space-y-3">
+                    <input 
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-500"
+                        placeholder="Title"
+                        value={form.title}
+                        onChange={e => setForm({...form, title: e.target.value})}
+                        autoFocus
+                    />
+                    <input 
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-500"
+                        placeholder="Price (RUB)"
+                        type="number"
+                        value={form.price}
+                        onChange={e => setForm({...form, price: e.target.value})}
+                    />
+                    
+                    {/* Image URL + File Upload */}
+                    <div className="flex gap-2">
+                        <input 
+                            className="flex-grow bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-500"
+                            placeholder="Image URL"
+                            value={form.imageUrl}
+                            onChange={e => setForm({...form, imageUrl: e.target.value})}
+                        />
+                        <label className="flex-shrink-0 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg px-3 py-2 cursor-pointer flex items-center justify-center">
+                            <span className="text-xs font-bold">📂</span>
+                            <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                        </label>
+                    </div>
+                    {form.imageUrl && (
+                        <div className="w-full h-20 bg-black/50 rounded-lg overflow-hidden border border-white/5">
+                            <img src={form.imageUrl} alt="Preview" className="w-full h-full object-contain" />
+                        </div>
+                    )}
+
+                    <input 
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-500"
+                        placeholder="AI Reason (Short)"
+                        value={form.reason}
+                        onChange={e => setForm({...form, reason: e.target.value})}
+                    />
+                    <textarea 
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-500 h-20 resize-none"
+                        placeholder="Description"
+                        value={form.description}
+                        onChange={e => setForm({...form, description: e.target.value})}
+                    />
+                    <div className="flex gap-2 pt-2">
+                        <button type="button" onClick={onClose} className="flex-1 bg-white/10 hover:bg-white/20 py-2 rounded-lg text-sm font-bold">Cancel</button>
+                        <button type="submit" className="flex-1 bg-green-600 hover:bg-green-500 py-2 rounded-lg text-sm font-bold text-white">Add Gift</button>
+                    </div>
+                </form>
+            </div>
+        </div>,
+        document.body
+    );
+};
+
+// --- Main Component ---
+
 export const Results: React.FC = () => {
   const [response, setResponse] = useState<RecommendationsResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,6 +140,10 @@ export const Results: React.FC = () => {
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [showDebug, setShowDebug] = useState(false);
   const { isDevMode } = useDevMode();
+  
+  // Dev Mode State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
   
   // Modal State
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
@@ -83,6 +192,107 @@ export const Results: React.FC = () => {
     setTimeout(() => setSelectedGift(null), 300);
   };
 
+  // --- Dev Mode Actions ---
+
+  const handleDevDelete = (e: React.MouseEvent, id: string) => {
+      e.stopPropagation();
+      if (!response) return;
+      
+      const newGifts = response.gifts.filter(g => g.id !== id);
+      let newFeatured = response.featuredGift;
+      
+      // If we deleted the featured gift, promote the first from the remaining list
+      if (response.featuredGift.id === id) {
+          newFeatured = newGifts.length > 0 ? newGifts[0] : null as any;
+      }
+
+      setResponse({
+          ...response,
+          gifts: newGifts,
+          featuredGift: newFeatured
+      });
+  };
+
+  const handleDevAdd = (data: Partial<Gift>) => {
+      if (!response) return;
+      const newGift: Gift = {
+          id: `mock-${Date.now()}`,
+          title: data.title || 'No Title',
+          description: data.description || null,
+          price: data.price || 0,
+          currency: 'RUB',
+          imageUrl: data.imageUrl || null,
+          productUrl: '#',
+          merchant: 'Dev',
+          category: 'Mock',
+          reason: data.reason,
+          ...data
+      } as Gift;
+
+      setResponse({
+          ...response,
+          gifts: [newGift, ...response.gifts]
+      });
+  };
+
+  const handleGiftUpdate = (updatedGift: Gift) => {
+      if (!response) return;
+      
+      setResponse({
+          ...response,
+          featuredGift: response.featuredGift.id === updatedGift.id ? updatedGift : response.featuredGift,
+          gifts: response.gifts.map(g => g.id === updatedGift.id ? updatedGift : g)
+      });
+  };
+
+  // --- Drag & Drop Handlers ---
+
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+      if (!isDevMode) return;
+      setDraggedId(id);
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', id); // Firefox hack
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+      if (!isDevMode) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetId: string) => {
+      e.preventDefault();
+      if (!isDevMode || !response || !draggedId || draggedId === targetId) return;
+
+      const currentFeaturedId = response.featuredGift?.id;
+      const isSourceFeatured = draggedId === currentFeaturedId;
+      const isTargetFeatured = targetId === currentFeaturedId;
+
+      let newGifts = [...response.gifts];
+      let newFeatured = response.featuredGift;
+
+      if (isSourceFeatured && !isTargetFeatured) {
+          // Featured -> Grid: Swap
+          const targetGift = newGifts.find(g => g.id === targetId);
+          if (targetGift) newFeatured = targetGift;
+      } else if (!isSourceFeatured && isTargetFeatured) {
+          // Grid -> Featured: Swap
+          const sourceGift = newGifts.find(g => g.id === draggedId);
+          if (sourceGift) newFeatured = sourceGift;
+      } else {
+          // Grid -> Grid: Reorder
+          const fromIndex = newGifts.findIndex(g => g.id === draggedId);
+          const toIndex = newGifts.findIndex(g => g.id === targetId);
+          if (fromIndex !== -1 && toIndex !== -1) {
+              const [item] = newGifts.splice(fromIndex, 1);
+              newGifts.splice(toIndex, 0, item);
+          }
+      }
+
+      setResponse({ ...response, gifts: newGifts, featuredGift: newFeatured });
+      setDraggedId(null);
+  };
+
   if (loading) return <LoadingScreen />;
 
   if (error || !response) {
@@ -97,7 +307,8 @@ export const Results: React.FC = () => {
   }
 
   const featured = response.featuredGift;
-  const others = response.gifts.filter(g => g.id !== featured.id);
+  // Make sure to filter out featured from 'others' only if featured exists
+  const others = featured ? response.gifts.filter(g => g.id !== featured.id) : response.gifts;
 
   return (
     <div className="min-h-screen bg-brand-dark pt-24 pb-20 overflow-x-hidden relative">
@@ -118,7 +329,7 @@ export const Results: React.FC = () => {
                         AI Подборка
                     </span>
                     {answers?.name && (
-                        <span className="text-white/40 text-sm font-bold">для {answers.name}</span>
+                        <span className="text-white/40 text-sm font-bold">для {inclineName(answers.name, 'genitive')}</span>
                     )}
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
@@ -169,7 +380,14 @@ export const Results: React.FC = () => {
         <div className="space-y-8">
             {/* Featured Section */}
             {featured && (
-                <div className="relative group perspective-1000 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                <div 
+                    draggable={isDevMode}
+                    onDragStart={(e) => handleDragStart(e, featured.id)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, featured.id)}
+                    className={`relative group perspective-1000 animate-fade-in-up ${draggedId === featured.id ? 'opacity-50 scale-95' : ''}`} 
+                    style={{ animationDelay: '0.1s' }}
+                >
                     <div className="absolute inset-0 bg-gradient-to-r from-brand-blue to-brand-purple blur-3xl opacity-20 rounded-[3rem] group-hover:opacity-30 transition-opacity duration-700"></div>
                     <div className="relative">
                         <div className="absolute -top-6 -right-6 z-20 hidden md:block animate-float">
@@ -177,6 +395,20 @@ export const Results: React.FC = () => {
                                 №1 Выбор AI 🏆
                             </div>
                         </div>
+                        
+                        {/* Dev Delete Button for Featured */}
+                        {isDevMode && (
+                            <button 
+                                onClick={(e) => handleDevDelete(e, featured.id)}
+                                className="absolute top-4 left-4 z-50 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20 transition-transform hover:scale-110"
+                                title="Remove item (Dev Mode)"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        )}
+
                         <GiftCard 
                             gift={featured} 
                             featured 
@@ -192,7 +424,27 @@ export const Results: React.FC = () => {
                 <h3 className="text-white/60 font-bold uppercase tracking-widest text-xs mb-6 pl-2">Другие отличные варианты</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                     {others.map((gift, idx) => (
-                        <div key={gift.id} className="animate-fade-in-up" style={{ animationDelay: `${0.2 + idx * 0.05}s` }}>
+                        <div 
+                            key={gift.id} 
+                            draggable={isDevMode}
+                            onDragStart={(e) => handleDragStart(e, gift.id)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, gift.id)}
+                            className={`relative animate-fade-in-up ${draggedId === gift.id ? 'opacity-50 scale-95' : ''}`} 
+                            style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
+                        >
+                            {/* Dev Delete Button for Grid Items */}
+                            {isDevMode && (
+                                <button 
+                                    onClick={(e) => handleDevDelete(e, gift.id)}
+                                    className="absolute top-2 left-2 z-50 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg border border-white/20 transition-transform hover:scale-110"
+                                    title="Remove item"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
                             <GiftCard 
                                 gift={gift} 
                                 onClick={handleGiftClick}
@@ -231,8 +483,32 @@ export const Results: React.FC = () => {
             onClose={handleCloseModal}
             answers={answers}
             onWishlistChange={() => setWishlistVersion(v => v + 1)}
+            onUpdate={handleGiftUpdate}
             />
         )}
+
+        {/* Dev Mode Add Button */}
+        {isDevMode && (
+            <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="fixed bottom-24 right-6 z-[60] bg-green-500 hover:bg-green-400 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-110 border-4 border-white/20 animate-pop"
+                title="Add Mock Gift"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+        )}
+
+        {/* Dev Mode Modal */}
+        {isDevMode && (
+            <DevAddGiftModal 
+                isOpen={isAddModalOpen} 
+                onClose={() => setIsAddModalOpen(false)} 
+                onAdd={handleDevAdd} 
+            />
+        )}
+
       </div>
       
       <style>{`

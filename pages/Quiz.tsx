@@ -5,6 +5,7 @@ import { Mascot } from '../components/Mascot';
 import { RELATIONSHIPS } from '../constants';
 import { QuizAnswers } from '../types';
 import { track } from '../utils/analytics';
+import { inclineName } from '../utils/stringUtils';
 
 // --- Icons ---
 const Icons = {
@@ -261,7 +262,16 @@ export const Quiz: React.FC = () => {
       setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
   };
 
+  const getGenderLabels = () => {
+      const age = parseInt(answers.ageGroup) || 25;
+      if (age <= 12) return { female: 'Девочка', male: 'Мальчик' };
+      if (age <= 20) return { female: 'Девушка', male: 'Парень' };
+      return { female: 'Женщина', male: 'Мужчина' };
+  };
+
   const renderContent = () => {
+    const genderLabels = getGenderLabels();
+
     return (
         <div key={step} className={`w-full max-w-lg mx-auto animate-fade-in`}>
             {step === 0 && (
@@ -283,7 +293,7 @@ export const Quiz: React.FC = () => {
 
             {step === 1 && (
                 <>
-                    <StepHeader title={`Сколько лет ${answers.name}?`} subtitle="Чтобы попасть в точку" />
+                    <StepHeader title={`Сколько лет ${inclineName(answers.name, 'dative')}?`} subtitle="Чтобы попасть в точку" />
                     <div className="py-10">
                         <AgePicker value={answers.ageGroup} onChange={(val) => updateAnswer('ageGroup', val)} />
                     </div>
@@ -295,8 +305,8 @@ export const Quiz: React.FC = () => {
                     <StepHeader title="Пол получателя" subtitle="Для уточнения интересов" />
                     <div className="grid grid-cols-1 gap-4">
                         {[
-                            { id: 'female', label: 'Женщина', Icon: Icons.Female },
-                            { id: 'male', label: 'Мужчина', Icon: Icons.Male },
+                            { id: 'female', label: genderLabels.female, Icon: Icons.Female },
+                            { id: 'male', label: genderLabels.male, Icon: Icons.Male },
                             { id: 'unisex', label: 'Не важно', Icon: Icons.Unisex }
                         ].map((g) => (
                             <SelectionCard
@@ -549,7 +559,7 @@ export const Quiz: React.FC = () => {
              <Mascot 
                 className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl" 
                 emotion={step === 0 ? 'happy' : step === 7 ? 'thinking' : step === 8 ? 'cool' : 'excited'}
-                accessory={step === 3 ? 'santa-hat' : 'none'}
+                accessory="santa-hat"
              />
           </div>
 

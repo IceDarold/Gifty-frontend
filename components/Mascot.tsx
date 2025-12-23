@@ -6,6 +6,7 @@ interface MascotProps {
   eyesX?: number; // -1 to 1
   eyesY?: number; // -1 to 1
   accessory?: 'none' | 'glasses' | 'scarf' | 'santa-hat';
+  floating?: boolean;
 }
 
 export const Mascot: React.FC<MascotProps> = ({ 
@@ -13,7 +14,8 @@ export const Mascot: React.FC<MascotProps> = ({
   emotion = 'happy',
   eyesX = 0,
   eyesY = 0,
-  accessory = 'santa-hat'
+  accessory = 'santa-hat',
+  floating = true
 }) => {
   // Eye tracking movement calculation (clamped for the SVG coordinate system)
   // Eye center is approx at x=0, y=0 relative to their group
@@ -39,7 +41,7 @@ export const Mascot: React.FC<MascotProps> = ({
 
   return (
     <div className={`${className} relative select-none pointer-events-none`}>
-      <div className="w-full h-full animate-[float_6s_ease-in-out_infinite]">
+      <div className={`w-full h-full ${floating ? 'animate-[float_6s_ease-in-out_infinite]' : ''}`}>
         
         <svg viewBox="0 0 200 220" className="w-full h-full drop-shadow-2xl overflow-visible">
             <defs>

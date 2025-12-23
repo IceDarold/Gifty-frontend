@@ -92,7 +92,7 @@ const SearchTrigger: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   >
     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out pointer-events-none rounded-[1.5rem] overflow-hidden"></div>
     <div className="relative z-20 bg-white w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg group-hover:rotate-6 transition-transform duration-300">
-       <Mascot className="w-16 h-16 mt-2" emotion="happy" accessory="santa-hat" />
+       <Mascot className="w-16 h-16 mt-2" emotion="happy" accessory="santa-hat" floating={false} />
     </div>
     <div className="relative z-20 flex-grow text-left overflow-hidden">
       <p className="text-red-500 text-[10px] bg-white inline-block px-2 rounded-md font-black uppercase tracking-[0.1em] mb-1 shadow-sm">AI-Санта</p>
@@ -249,6 +249,13 @@ export const Home: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const handleGiftUpdate = (updatedGift: Gift) => {
+      // Update all local lists to ensure the edit is reflected everywhere
+      setFeedGifts(prev => prev.map(g => g.id === updatedGift.id ? updatedGift : g));
+      setCozyGifts(prev => prev.map(g => g.id === updatedGift.id ? updatedGift : g));
+      setTechGifts(prev => prev.map(g => g.id === updatedGift.id ? updatedGift : g));
+  };
+
   return (
     <div className="min-h-screen relative overflow-x-hidden pb-12">
       <AmbientSnow />
@@ -297,7 +304,16 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {selectedGift && <GiftDetailsModal gift={selectedGift} answers={null} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onWishlistChange={() => {}} />}
+      {selectedGift && (
+          <GiftDetailsModal 
+            gift={selectedGift} 
+            answers={null} 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)} 
+            onWishlistChange={() => {}} 
+            onUpdate={handleGiftUpdate} 
+          />
+      )}
     </div>
   );
 };

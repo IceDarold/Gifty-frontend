@@ -31,6 +31,13 @@ export const Collections: React.FC = () => {
         load();
     }, []);
 
+    const handleGiftUpdate = (updatedGift: Gift) => {
+        setCollections(prev => prev.map(col => ({
+            ...col,
+            gifts: col.gifts.map(g => g.id === updatedGift.id ? updatedGift : g)
+        })));
+    };
+
     if (loading) return <div className="min-h-screen flex items-center justify-center text-white font-bold">Загрузка коллекций...</div>;
 
     return (
@@ -71,6 +78,7 @@ export const Collections: React.FC = () => {
                     onClose={() => setSelectedGift(null)} 
                     answers={null} 
                     onWishlistChange={() => {}} 
+                    onUpdate={handleGiftUpdate}
                 />
             )}
         </div>

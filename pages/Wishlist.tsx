@@ -109,6 +109,10 @@ export const Wishlist: React.FC = () => {
       }
   };
 
+  const handleGiftUpdate = (updatedGift: Gift) => {
+      setItems(prev => prev.map(g => g.id === updatedGift.id ? updatedGift : g));
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-32 px-4 bg-[#F8F9FE] relative overflow-hidden">
       
@@ -272,6 +276,7 @@ export const Wishlist: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           answers={null}
           onWishlistChange={loadItems}
+          onUpdate={handleGiftUpdate}
         />
       )}
     </div>
