@@ -171,32 +171,22 @@ export const api = {
         vibe: answers.vibe || 'cozy',
         interests: interestsArray,
         interests_description: answers.interests || '', // Pass original string for context
+        exclude_categories: answers.exclude ? answers.exclude.split(', ') : [],
         budget: parseBudget(answers.budget),
         city: answers.city || 'Moscow',
         top_n: 30, // OPTIMIZATION: Increased to 50
         debug: true
       };
 
-      try {
-        const response = await apiFetch('/api/v1/recommendations/generate', {
-            method: 'POST',
-            body: JSON.stringify(payload),
-            credentials: 'omit', // Important: Avoid sending cookies to prevent CORS 400 on public endpoint
-            skipErrorLog: false 
-        });
-        const mapped = mapRecommendationsResponse(response);
-        return { ...mapped, requestPayload: payload };
-      } catch (e) {
-        console.warn('Backend generation failed, switching to Mock AI Engine', e);
-        const dto = await MockServer.getRecommendations(answers);
-        const mapped = mapRecommendationsResponse(dto);
-        // Inject error and payload into the mock response for debugging
-        return { 
-            ...mapped, 
-            requestPayload: payload, 
-            serverError: (e as any).details || (e as Error).message || e 
-        };
-      }
+      // Direct API call without Mock fallback for errors, as requested
+      const response = await apiFetch('/api/v1/recommendations/generate', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          credentials: 'omit', // Important: Avoid sending cookies to prevent CORS 400 on public endpoint
+          skipErrorLog: false 
+      });
+      const mapped = mapRecommendationsResponse(response);
+      return { ...mapped, requestPayload: payload };
     }
   },
   wishlist: {

@@ -55,7 +55,7 @@ const LoadingScreen: React.FC = () => {
             const available = LOADING_MESSAGES.filter(m => m !== prev);
             return available[Math.floor(Math.random() * available.length)];
         });
-    }, 2000);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
@@ -327,33 +327,34 @@ export const Results: React.FC = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        setLoading(true);
-        const stored = localStorage.getItem('gifty_answers');
-        if (!stored) {
-          navigate('/quiz');
-          return;
-        }
-        
-        const parsedAnswers: QuizAnswers = JSON.parse(stored);
-        setAnswers(parsedAnswers);
-        
-        // Use the new generate endpoint which returns full Gift objects
-        const recResponse = await api.recommendations.create(parsedAnswers);
-        setResponse(recResponse);
-        track('results_shown', { count: recResponse.gifts.length });
-      } catch (err) {
-        console.error(err);
-        setError("Не удалось подобрать подарки. Попробуйте обновить страницу.");
-      } finally {
-        setLoading(false);
+  const fetchResults = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const stored = localStorage.getItem('gifty_answers');
+      if (!stored) {
+        navigate('/quiz');
+        return;
       }
-    };
+      
+      const parsedAnswers: QuizAnswers = JSON.parse(stored);
+      setAnswers(parsedAnswers);
+      
+      // Use the new generate endpoint which returns full Gift objects
+      const recResponse = await api.recommendations.create(parsedAnswers);
+      setResponse(recResponse);
+      track('results_shown', { count: recResponse.gifts.length });
+    } catch (err) {
+      console.error(err);
+      setError("Не удалось подобрать подарки.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchResults();
-  }, [navigate]);
+  }, []);
 
   const handleGiftClick = (gift: Gift) => {
     track('view_gift_details', { id: gift.id });
@@ -476,11 +477,28 @@ export const Results: React.FC = () => {
 
   if (error || !response) {
     return (
-       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-brand-dark text-white">
-          <Mascot emotion="surprised" className="w-32 h-32 mb-6" />
-          <p className="text-xl font-bold mb-6">{error || 'Что-то пошло не так'}</p>
-          <Button onClick={() => window.location.reload()}>Попробовать снова</Button>
-          <button onClick={() => navigate('/')} className="mt-4 text-white/50 hover:text-brand-blue text-sm font-bold">На главную</button>
+       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-brand-dark text-white relative overflow-hidden">
+          {/* Ambience for error screen too */}
+          <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-red-500/10 rounded-full blur-[80px]"></div>
+          </div>
+          
+          <div className="relative z-10 animate-pop">
+              <Mascot emotion="surprised" accessory="none" className="w-40 h-40 mb-6 drop-shadow-2xl mx-auto" />
+              <h2 className="text-2xl font-black mb-2">Возникла непредвиденная ошибка</h2>
+              <p className="text-white/60 text-sm max-w-xs mx-auto mb-8 font-medium leading-relaxed">
+                  Наши инженеры уже ищут решение. Попробуйте повторить запрос чуть позже.
+              </p>
+              
+              <div className="flex flex-col gap-4 items-center">
+                  <Button onClick={fetchResults} className="shadow-lg shadow-brand-blue/30 px-10">
+                      Попробовать еще раз
+                  </Button>
+                  <button onClick={() => navigate('/quiz')} className="text-white/40 hover:text-white text-xs font-bold transition-colors">
+                      Вернуться к параметрам
+                  </button>
+              </div>
+          </div>
        </div>
     );
   }

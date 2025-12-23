@@ -14,6 +14,7 @@ const Icons = {
   Wedding: () => <span className="text-3xl">💍</span>,
   Anniversary: () => <span className="text-3xl">💑</span>,
   JustBecause: () => <span className="text-3xl">🎁</span>,
+  School: () => <span className="text-3xl">🎒</span>,
   Edit: () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 20h9"></path>
@@ -31,6 +32,13 @@ const Icons = {
   }
 };
 
+const VIBES = [
+  { id: 'cozy', label: 'Уютный и теплый', desc: 'Для душевных вечеров', icon: Icons.Vibes.Cozy },
+  { id: 'practical', label: 'Практичный и полезный', desc: 'То, что пригодится в деле', icon: Icons.Vibes.Practical },
+  { id: 'wow', label: 'Вау-эффект', desc: 'Удивить и поразить', icon: Icons.Vibes.Wow },
+  { id: 'emotional', label: 'Сентиментальный', desc: 'На память и для души', icon: Icons.Vibes.Emotional },
+];
+
 const INITIAL_ANSWERS: QuizAnswers = {
   name: '',
   ageGroup: '25',
@@ -40,7 +48,8 @@ const INITIAL_ANSWERS: QuizAnswers = {
   vibe: '',
   city: '',
   interests: '',
-  budget: ''
+  budget: '',
+  exclude: ''
 };
 
 const INTEREST_TAGS = [
@@ -49,19 +58,9 @@ const INTEREST_TAGS = [
   'Игры', 'Здоровье', 'Эко', 'Стиль'
 ];
 
-const OCCASIONS = [
-  { id: 'new_year', label: 'Новый год', desc: 'Главный праздник', Icon: Icons.NewYear },
-  { id: 'birthday', label: 'День рождения', desc: 'Личный праздник', Icon: Icons.Birthday },
-  { id: 'wedding', label: 'Свадьба', desc: 'Начало истории', Icon: Icons.Wedding },
-  { id: 'anniversary', label: 'Годовщина', desc: 'Важная дата', Icon: Icons.Anniversary },
-  { id: 'just_because', label: 'Просто так', desc: 'Без повода', Icon: Icons.JustBecause }
-];
-
-const VIBES = [
-  { id: 'cozy', label: 'Уют и тепло', icon: Icons.Vibes.Cozy, desc: 'Хюгге, спокойствие' },
-  { id: 'practical', label: 'Практично', icon: Icons.Vibes.Practical, desc: 'Польза в деле' },
-  { id: 'wow', label: 'Вау-эффект', icon: Icons.Vibes.Wow, desc: 'Удивить всех' },
-  { id: 'emotional', label: 'Эмоции', icon: Icons.Vibes.Emotional, desc: 'До слез' }
+const EXCLUDE_TAGS = [
+  'Одежда', 'Косметика', 'Алкоголь', '18+', 'Сувениры', 
+  'Еда', 'Сладости', 'Сертификаты', 'Деньги', 'Книги'
 ];
 
 // --- Components ---
@@ -206,6 +205,111 @@ const AgePicker: React.FC<{ value: string, onChange: (val: string) => void }> = 
   );
 };
 
+// --- City Autocomplete Component ---
+
+const CityAutocomplete: React.FC<{ 
+    value: string; 
+    onChange: (val: string) => void;
+    onSelect: () => void;
+}> = ({ value, onChange, onSelect }) => {
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    // Debounce fetch
+    useEffect(() => {
+        const fetchCities = async () => {
+            if (value.length < 2) {
+                setSuggestions([]);
+                return;
+            }
+            
+            // Only fetch if it looks like user is typing, not if they just selected
+            if (!showSuggestions) return; 
+
+            setLoading(true);
+            try {
+                // Using OpenStreetMap Nominatim API (Free, no key required for moderate use)
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&accept-language=ru&limit=5&featuretype=city`);
+                const data = await res.json();
+                setSuggestions(data);
+            } catch (e) {
+                console.error("City fetch error", e);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchCities, 500);
+        return () => clearTimeout(timeoutId);
+    }, [value]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleSelect = (city: any) => {
+        // Extract city name clearly (removing region info if it's too long, but keeping helpful context if needed)
+        const name = city.display_name.split(',')[0];
+        onChange(name);
+        setShowSuggestions(false);
+        onSelect();
+    };
+
+    const handleInputClick = () => {
+        if (value.length >= 2) setShowSuggestions(true);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange(e.target.value);
+        setShowSuggestions(true);
+    };
+
+    return (
+        <div ref={wrapperRef} className="relative group w-full">
+            <div className="absolute top-1/2 left-0 -translate-y-1/2 text-white/30 pointer-events-none">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <input
+                type="text"
+                value={value}
+                onChange={handleInputChange}
+                onClick={handleInputClick}
+                placeholder="Введите город..."
+                className="w-full bg-transparent pl-12 text-4xl font-black text-white placeholder-white/10 outline-none border-b-2 border-white/20 focus:border-brand-blue transition-all pb-4 caret-brand-blue"
+                autoComplete="off"
+            />
+            {loading && (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                </div>
+            )}
+            
+            {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#1E293B] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto">
+                    {suggestions.map((city: any, i) => (
+                        <div 
+                            key={city.place_id || i}
+                            onClick={() => handleSelect(city)}
+                            className="px-4 py-3 hover:bg-white/10 cursor-pointer text-white border-b border-white/5 last:border-0 transition-colors text-left"
+                        >
+                            <div className="font-bold text-sm">{city.display_name.split(',')[0]}</div>
+                            <div className="text-xs text-white/40 truncate">{city.display_name}</div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // --- Main Quiz Component ---
 
 export const Quiz: React.FC = () => {
@@ -249,6 +353,8 @@ export const Quiz: React.FC = () => {
   const [customVibe, setCustomVibe] = useState('');
   const [isCustomVibe, setIsCustomVibe] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedExcludeTags, setSelectedExcludeTags] = useState<string[]>([]);
+  const [customExclude, setCustomExclude] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -257,24 +363,20 @@ export const Quiz: React.FC = () => {
     localStorage.setItem('gifty_draft', JSON.stringify(answers));
   }, [answers]);
 
-  useEffect(() => {
-      const timer = setTimeout(() => {
-          if (inputRef.current) inputRef.current.focus();
-          if (textAreaRef.current) textAreaRef.current.focus();
-      }, 400);
-      return () => clearTimeout(timer);
-  }, [step]);
-
   const updateAnswer = (field: keyof QuizAnswers, value: any) => {
     setAnswers(prev => ({ ...prev, [field]: value }));
   };
 
   const nextStep = () => {
     track('quiz_step', { step: step + 1 });
-    if (step === 8) {
+    if (step === 9) { // Budget is now step 9
       const finalAnswers = { ...answers };
       const combinedInterests = [...selectedTags, ...(answers.interests ? [answers.interests] : [])].join(', ');
       finalAnswers.interests = combinedInterests;
+      
+      const allExcludes = [...selectedExcludeTags];
+      if (customExclude.trim()) allExcludes.push(customExclude.trim());
+      finalAnswers.exclude = allExcludes.join(', ');
       
       if (isCustomOccasion) finalAnswers.occasion = customOccasion;
       if (isCustomRelationship) finalAnswers.relationship = customRelationship;
@@ -301,6 +403,8 @@ export const Quiz: React.FC = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Prevent Next step on enter for CityAutocomplete as it uses Enter to select
+    if (step === 6) return; 
     if (e.key === 'Enter' && isCurrentStepValid()) nextStep();
   };
 
@@ -314,13 +418,18 @@ export const Quiz: React.FC = () => {
       case 5: return isCustomVibe ? customVibe.trim().length > 0 : (answers.vibe || '').length > 0;
       case 6: return (answers.city || '').trim().length > 0;
       case 7: return ((answers.interests || '').trim().length > 0 || selectedTags.length > 0);
-      case 8: return (answers.budget || '').length > 0 && parseInt(answers.budget) > 0;
+      case 8: return true; // Exclude is optional
+      case 9: return (answers.budget || '').length > 0 && parseInt(answers.budget) > 0;
       default: return false;
     }
   };
 
   const toggleTag = (tag: string) => {
       setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  };
+
+  const toggleExcludeTag = (tag: string) => {
+      setSelectedExcludeTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
   };
 
   const getGenderLabels = () => {
@@ -330,8 +439,60 @@ export const Quiz: React.FC = () => {
       return { female: 'Женщина', male: 'Мужчина' };
   };
 
+  // --- Dynamic Occasions Logic ---
+  const getOccasions = () => {
+      const age = parseInt(answers.ageGroup) || 25;
+      
+      const baseOccasions = [
+          { id: 'new_year', label: 'Новый год', desc: 'Главный праздник', Icon: Icons.NewYear },
+          { id: 'birthday', label: 'День рождения', desc: 'Личный праздник', Icon: Icons.Birthday },
+          { id: 'just_because', label: 'Просто так', desc: 'Без повода', Icon: Icons.JustBecause }
+      ];
+
+      if (age >= 18) {
+          baseOccasions.splice(2, 0, { id: 'wedding', label: 'Свадьба', desc: 'Начало истории', Icon: Icons.Wedding });
+          baseOccasions.splice(3, 0, { id: 'anniversary', label: 'Годовщина', desc: 'Важная дата', Icon: Icons.Anniversary });
+      } else if (age >= 6) {
+          baseOccasions.push({ id: 'school', label: 'Школа / Учеба', desc: '1 сентября, выпускной', Icon: Icons.School });
+      }
+
+      return baseOccasions;
+  };
+
+  // --- Dynamic Relationships Logic ---
+  const getRelationships = () => {
+      const age = parseInt(answers.ageGroup) || 25;
+      const g = answers.recipientGender;
+
+      if (age < 13) {
+          if (g === 'male') return ['Сын', 'Внук', 'Брат', 'Племянник', 'Друг', 'Крестник'];
+          if (g === 'female') return ['Дочь', 'Внучка', 'Сестра', 'Племянница', 'Подруга', 'Крестница'];
+          return ['Ребенок', 'Внук/Внучка', 'Брат/Сестра', 'Племянник/ца', 'Друг'];
+      }
+      
+      if (age < 18) {
+          if (g === 'male') return ['Парень', 'Сын', 'Брат', 'Друг', 'Одноклассник', 'Племянник'];
+          if (g === 'female') return ['Девушка', 'Дочь', 'Сестра', 'Подруга', 'Одноклассница', 'Племянница'];
+          return ['Пара', 'Ребенок', 'Брат/Сестра', 'Друг'];
+      }
+
+      if (age <= 50) {
+          if (g === 'male') return ['Муж', 'Парень', 'Папа', 'Брат', 'Друг', 'Коллега'];
+          if (g === 'female') return ['Жена', 'Девушка', 'Мама', 'Сестра', 'Подруга', 'Коллега'];
+          return ['Партнер', 'Родитель', 'Брат/Сестра', 'Друг', 'Коллега'];
+      }
+
+      // 50+
+      if (g === 'male') return ['Папа', 'Дедушка', 'Муж', 'Коллега', 'Начальник', 'Друг'];
+      if (g === 'female') return ['Мама', 'Бабушка', 'Жена', 'Коллега', 'Начальница', 'Подруга'];
+      
+      return ['Родитель', 'Бабушка/Дедушка', 'Партнер', 'Коллега', 'Друг'];
+  };
+
   const renderContent = () => {
     const genderLabels = getGenderLabels();
+    const occasions = getOccasions();
+    const relationships = getRelationships();
 
     return (
         <div key={step} className={`w-full max-w-lg mx-auto animate-fade-in`}>
@@ -386,7 +547,7 @@ export const Quiz: React.FC = () => {
                 <>
                     <StepHeader title="По какому поводу?" subtitle="Контекст решает всё" />
                     <div className="grid grid-cols-1 gap-3 mb-6">
-                        {OCCASIONS.map(occ => (
+                        {occasions.map(occ => (
                             <SelectionCard
                                 key={occ.id}
                                 label={occ.label}
@@ -422,7 +583,7 @@ export const Quiz: React.FC = () => {
                 <>
                     <StepHeader title="Кто этот человек для вас?" />
                     <div className="grid grid-cols-2 gap-3 mb-6">
-                        {RELATIONSHIPS.map(rel => (
+                        {relationships.map(rel => (
                             <button
                                 key={rel}
                                 onClick={() => { setIsCustomRelationship(false); updateAnswer('relationship', rel); setTimeout(nextStep, 250); }}
@@ -498,20 +659,14 @@ export const Quiz: React.FC = () => {
             {step === 6 && (
                 <>
                     <StepHeader title="Город доставки" subtitle="Чтобы найти товары рядом" />
-                    <div className="relative group">
-                        <div className="absolute top-1/2 left-0 -translate-y-1/2 text-white/30">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        </div>
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={answers.city}
-                            onChange={(e) => updateAnswer('city', e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Москва"
-                            className="w-full bg-transparent pl-12 text-4xl font-black text-white placeholder-white/10 outline-none border-b-2 border-white/20 focus:border-brand-blue transition-all pb-4 caret-brand-blue"
+                    <div className="mb-6 relative z-50">
+                        <CityAutocomplete 
+                            value={answers.city} 
+                            onChange={(val) => updateAnswer('city', val)} 
+                            onSelect={() => setTimeout(nextStep, 250)}
                         />
                     </div>
+                    {/* Popular cities buttons removed as per request to focus on search */}
                 </>
             )}
 
@@ -546,6 +701,40 @@ export const Quiz: React.FC = () => {
             )}
 
             {step === 8 && (
+                <>
+                    <StepHeader title="Чего точно НЕ дарить?" subtitle="Исключим провальные варианты" />
+                    <div className="flex flex-wrap gap-2 mb-6 justify-center">
+                        {EXCLUDE_TAGS.map(tag => (
+                            <button
+                                key={tag}
+                                onClick={() => toggleExcludeTag(tag)}
+                                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+                                    selectedExcludeTags.includes(tag) 
+                                    ? 'bg-red-500 text-white border-red-400 shadow-lg scale-105' 
+                                    : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
+                                }`}
+                            >
+                                {selectedExcludeTags.includes(tag) ? '✕ ' : ''}{tag}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="relative group">
+                        <input
+                            type="text"
+                            placeholder="Что-то еще? (например: живые цветы)"
+                            value={customExclude}
+                            onChange={(e) => setCustomExclude(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="w-full bg-white/10 rounded-2xl px-6 py-4 text-white placeholder-white/30 font-bold outline-none border border-white/20 focus:border-brand-purple transition-all"
+                        />
+                    </div>
+                    <p className="text-center text-white/40 text-sm mt-6">
+                        Можно пропустить, если ограничений нет
+                    </p>
+                </>
+            )}
+
+            {step === 9 && (
                 <>
                     <StepHeader title="Бюджет" subtitle="Сколько готовы потратить?" />
                     <div className="relative mb-8">
@@ -598,12 +787,12 @@ export const Quiz: React.FC = () => {
           </button>
 
           {/* Segmented Progress */}
-          <div className="flex gap-1.5 absolute left-1/2 -translate-x-1/2">
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+          <div className="flex gap-1 absolute left-1/2 -translate-x-1/2">
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
                   <div 
                     key={i} 
                     className={`h-1.5 rounded-full transition-all duration-500 ${
-                        i <= step ? 'w-6 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'w-1.5 bg-white/10'
+                        i <= step ? 'w-4 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'w-1.5 bg-white/10'
                     }`} 
                   />
               ))}
@@ -619,7 +808,7 @@ export const Quiz: React.FC = () => {
           <div className="mb-8 transition-transform duration-500 hover:scale-105 cursor-pointer">
              <Mascot 
                 className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl" 
-                emotion={step === 0 ? 'happy' : step === 7 ? 'thinking' : step === 8 ? 'cool' : 'excited'}
+                emotion={step === 0 ? 'happy' : step === 7 ? 'thinking' : step === 8 ? 'cool' : step === 9 ? 'excited' : 'happy'}
                 accessory="santa-hat"
              />
           </div>
@@ -643,13 +832,13 @@ export const Quiz: React.FC = () => {
                 }`}
             >
                 <div className="flex items-center justify-center gap-2">
-                    {step === 8 ? 'Сотворить магию' : 'Далее'}
-                    {isCurrentStepValid() && step !== 8 && (
+                    {step === 9 ? 'Сотворить магию' : 'Далее'}
+                    {isCurrentStepValid() && step !== 9 && (
                         <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="animate-pulse">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
                     )}
-                    {step === 8 && <span className="text-2xl">✨</span>}
+                    {step === 9 && <span className="text-2xl">✨</span>}
                 </div>
             </Button>
          </div>

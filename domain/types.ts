@@ -62,6 +62,7 @@ export interface QuizAnswers {
   city: string;
   interests: string;
   budget: string;
+  exclude?: string;
 }
 
 export type StepId = 'name' | 'age' | 'gender' | 'occasion' | 'relationship' | 'vibe' | 'city' | 'interests' | 'budget';
