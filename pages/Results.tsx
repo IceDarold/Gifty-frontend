@@ -10,6 +10,7 @@ import { Mascot } from '../components/Mascot';
 import { useDevMode } from '../components/DevModeContext';
 import { inclineName } from '../utils/stringUtils';
 import { createPortal } from 'react-dom';
+import { isInWishlist, addToWishlist, removeFromWishlist } from '../utils/storage';
 
 const LoadingScreen: React.FC = () => (
   <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center text-white bg-brand-dark overflow-hidden relative">
@@ -29,6 +30,125 @@ const LoadingScreen: React.FC = () => (
     <p className="text-white/50 text-sm max-w-xs font-medium">Ищу идеальные совпадения среди тысяч вариантов</p>
   </div>
 );
+
+// --- Featured Hero Card Component ---
+
+const FeaturedCard: React.FC<{ 
+  gift: Gift; 
+  onClick: (g: Gift) => void;
+  onToggleWishlist: () => void; 
+}> = ({ gift, onClick, onToggleWishlist }) => {
+  const [saved, setSaved] = useState(isInWishlist(gift.id));
+
+  useEffect(() => {
+      setSaved(isInWishlist(gift.id));
+  }, [gift.id]);
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (saved) {
+      removeFromWishlist(gift.id);
+      track('remove_wishlist', { id: gift.id });
+    } else {
+      addToWishlist(gift.id);
+      track('add_wishlist', { id: gift.id });
+    }
+    setSaved(!saved);
+    onToggleWishlist();
+  };
+
+  const formattedPrice = gift.price ? new Intl.NumberFormat('ru-RU').format(gift.price) + ' ' + (gift.currency === 'USD' ? '$' : '₽') : '---';
+
+  return (
+    <div 
+        onClick={() => onClick(gift)}
+        className="group relative w-full bg-white rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-[0_0_50px_rgba(124,58,237,0.25)] transition-all duration-500 cursor-pointer border border-white/20 transform hover:-translate-y-1"
+    >
+        <div className="flex flex-col md:flex-row h-auto md:min-h-[28rem]">
+            {/* Image Side */}
+            <div className="relative w-full md:w-5/12 h-96 md:h-auto overflow-hidden bg-gray-100">
+                <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-brand-blue to-brand-purple text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg uppercase tracking-wider flex items-center gap-1">
+                    <span>✨</span> Выбор №1
+                </div>
+                
+                {/* Wishlist Button */}
+                <button 
+                    onClick={handleWishlist}
+                    className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg ${saved ? 'bg-white text-[#F91155]' : 'bg-white/80 hover:bg-white text-gray-400'}`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${saved ? 'fill-current' : ''}`} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={saved ? 0 : 2} fill={saved ? "currentColor" : "none"}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+
+                <img 
+                    src={gift.imageUrl || 'https://placehold.co/600x600/f3f4f6/9ca3af?text=No+Image'} 
+                    alt={gift.title} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                
+                {/* Mobile Gradient & Text Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent md:hidden" />
+                <div className="absolute bottom-4 left-4 right-4 md:hidden text-white pb-2">
+                     <h2 className="text-xl font-bold leading-tight mb-1 line-clamp-2 drop-shadow-md">{gift.title}</h2>
+                     <p className="font-black text-2xl drop-shadow-md">{formattedPrice}</p>
+                </div>
+            </div>
+
+            {/* Content Side (Desktop) */}
+            <div className="relative w-full md:w-7/12 p-6 md:p-10 flex flex-col justify-center bg-white">
+                
+                {/* Desktop Header */}
+                <div className="hidden md:block mb-6">
+                    <h2 className="text-3xl lg:text-4xl font-black text-brand-dark leading-[1.1] mb-3 group-hover:text-brand-blue transition-colors line-clamp-2">
+                        {gift.title}
+                    </h2>
+                    <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-purple">
+                        {formattedPrice}
+                    </div>
+                </div>
+
+                {/* AI Reason Bubble */}
+                <div className="relative bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-3xl p-5 mb-8 shadow-sm">
+                    <div className="absolute -top-4 -left-2 bg-white p-1.5 rounded-full shadow-sm border border-indigo-50 rotate-[-10deg]">
+                        <span className="text-2xl">🤖</span>
+                    </div>
+                    <p className="text-indigo-900/80 font-medium text-sm md:text-lg leading-relaxed pl-2">
+                        "{gift.reason || 'Этот подарок идеально подходит под выбранные параметры.'}"
+                    </p>
+                </div>
+
+                {/* Tags */}
+                {gift.tags && (
+                    <div className="flex flex-wrap gap-2 mb-8">
+                        {gift.tags.slice(0, 3).map(tag => (
+                            <span key={tag} className="px-3 py-1 bg-gray-100 rounded-lg text-xs font-bold text-gray-500 uppercase tracking-wide">
+                                #{tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
+
+                <div className="mt-auto flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        {gift.merchant && (
+                            <>
+                                <span>{gift.merchant}</span>
+                                <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                            </>
+                        )}
+                        <span>{gift.category || 'Gift'}</span>
+                    </div>
+                    
+                    <div className="hidden md:flex h-12 px-8 rounded-xl bg-brand-dark text-white font-bold items-center justify-center group-hover:bg-brand-blue transition-all shadow-lg group-hover:shadow-brand-blue/30">
+                        Смотреть
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  );
+};
 
 // --- Dev Mode Components ---
 
@@ -141,8 +261,8 @@ export const Results: React.FC = () => {
   const [showDebug, setShowDebug] = useState(false);
   const { isDevMode } = useDevMode();
   
-  // Pagination State
-  const [visibleCount, setVisibleCount] = useState(8);
+  // Pagination State - Multiples of 2, 3, 4 (LCM is 12) to avoid gaps
+  const [visibleCount, setVisibleCount] = useState(12);
   
   // Dev Mode State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -362,31 +482,51 @@ export const Results: React.FC = () => {
         </div>
 
         {isDevMode && showDebug && (
-            <div className="bg-black/50 backdrop-blur-xl rounded-2xl p-4 mb-8 text-[10px] font-mono text-green-400 border border-white/10 overflow-hidden shadow-2xl animate-pop">
-            <div className="flex justify-between items-start">
-                <div>
-                    <p className="font-bold text-lg mb-2">🛠 Debug Info</p>
-                    <p>Engine: {response.engineVersion}</p>
-                    <p>Run ID: {response.quizRunId}</p>
-                    <p>Gifts Found: {response.gifts.length}</p>
+            <div className="bg-black/80 backdrop-blur-xl rounded-2xl p-6 mb-8 text-[10px] font-mono text-green-400 border border-white/10 overflow-hidden shadow-2xl animate-pop w-full">
+                <div className="flex justify-between items-start mb-4 border-b border-white/10 pb-4">
+                    <div>
+                        <p className="font-bold text-lg mb-2">🛠 Debug Console</p>
+                        <p>Engine: {response.engineVersion}</p>
+                        <p>Run ID: {response.quizRunId}</p>
+                    </div>
+                    <div className="text-right">
+                        <p>Gifts: {response.gifts.length}</p>
+                    </div>
                 </div>
-                <div className="text-right">
-                    <p>User Budget: {answers?.budget}</p>
-                    <p>User Age: {answers?.ageGroup}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Request Payload */}
+                    {response.requestPayload && (
+                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                            <p className="font-bold text-blue-300 mb-2 uppercase tracking-widest text-[9px]">📤 Request Payload</p>
+                            <pre className="overflow-x-auto whitespace-pre-wrap break-words max-h-60 text-white/70">
+                                {JSON.stringify(response.requestPayload, null, 2)}
+                            </pre>
+                        </div>
+                    )}
+
+                    {/* Server Error (if exists) */}
+                    {response.serverError && (
+                        <div className="bg-red-900/20 p-4 rounded-xl border border-red-500/30">
+                            <p className="font-bold text-red-400 mb-2 uppercase tracking-widest text-[9px]">🔥 Server Error</p>
+                            <pre className="overflow-x-auto whitespace-pre-wrap break-words max-h-60 text-red-200">
+                                {typeof response.serverError === 'string' ? response.serverError : JSON.stringify(response.serverError, null, 2)}
+                            </pre>
+                        </div>
+                    )}
                 </div>
-            </div>
-            <p className="mt-2 text-white/50 border-b border-white/10 pb-1 mb-2">Full Payload:</p>
-            <pre className="mt-1 overflow-x-auto max-h-40">{JSON.stringify(answers, null, 2)}</pre>
-            {response.debug && (
-                <>
-                    <p className="mt-4 text-white/50 border-b border-white/10 pb-1 mb-2">Backend Debug:</p>
-                    <pre className="mt-1 overflow-x-auto max-h-40">{JSON.stringify(response.debug, null, 2)}</pre>
-                </>
-            )}
+
+                {/* Response Data */}
+                <div className="mt-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                    <p className="font-bold text-green-300 mb-2 uppercase tracking-widest text-[9px]">📥 Response Payload (Partial)</p>
+                    <pre className="overflow-x-auto whitespace-pre-wrap break-words max-h-60 text-white/50">
+                        {JSON.stringify({ ...response, gifts: `Array(${response.gifts.length})`, featuredGift: 'Object' }, null, 2)}
+                    </pre>
+                </div>
             </div>
         )}
 
-        <div className="space-y-8">
+        <div className="space-y-12">
             {/* Featured Section */}
             {featured && (
                 <div 
@@ -394,43 +534,39 @@ export const Results: React.FC = () => {
                     onDragStart={(e) => handleDragStart(e, featured.id)}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, featured.id)}
-                    className={`relative group perspective-1000 animate-fade-in-up ${draggedId === featured.id ? 'opacity-50 scale-95' : ''}`} 
+                    className={`relative animate-fade-in-up ${draggedId === featured.id ? 'opacity-50 scale-95' : ''}`} 
                     style={{ animationDelay: '0.1s' }}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-brand-blue to-brand-purple blur-3xl opacity-20 rounded-[3rem] group-hover:opacity-30 transition-opacity duration-700"></div>
-                    <div className="relative">
-                        <div className="absolute -top-6 -right-6 z-20 hidden md:block animate-float">
-                            <div className="bg-white text-brand-dark font-black text-sm px-4 py-2 rounded-xl shadow-xl transform rotate-6 border-2 border-brand-purple">
-                                №1 Выбор AI 🏆
-                            </div>
-                        </div>
-                        
-                        {/* Dev Delete Button for Featured */}
-                        {isDevMode && (
-                            <button 
-                                onClick={(e) => handleDevDelete(e, featured.id)}
-                                className="absolute top-4 left-4 z-50 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20 transition-transform hover:scale-110"
-                                title="Remove item (Dev Mode)"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        )}
+                    {/* Dev Delete Button for Featured */}
+                    {isDevMode && (
+                        <button 
+                            onClick={(e) => handleDevDelete(e, featured.id)}
+                            className="absolute top-4 right-16 z-50 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20 transition-transform hover:scale-110"
+                            title="Remove item (Dev Mode)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    )}
 
-                        <GiftCard 
-                            gift={featured} 
-                            featured 
-                            onClick={handleGiftClick} 
-                            onToggleWishlist={() => setWishlistVersion(v => v + 1)}
-                        />
-                    </div>
+                    <FeaturedCard 
+                        gift={featured} 
+                        onClick={handleGiftClick} 
+                        onToggleWishlist={() => setWishlistVersion(v => v + 1)}
+                    />
                 </div>
             )}
 
             {/* Grid Section */}
             <div>
-                <h3 className="text-white/60 font-bold uppercase tracking-widest text-xs mb-6 pl-2">Другие отличные варианты</h3>
+                {/* Separator */}
+                <div className="flex items-center gap-4 mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="h-px bg-white/10 flex-grow rounded-full"></div>
+                    <h3 className="text-white/50 font-bold uppercase tracking-[0.2em] text-xs">Другие варианты</h3>
+                    <div className="h-px bg-white/10 flex-grow rounded-full"></div>
+                </div>
+
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                     {visibleOthers.map((gift, idx) => (
                         <div 

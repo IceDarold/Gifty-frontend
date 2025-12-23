@@ -45,6 +45,9 @@ export interface RecommendationsResponse {
   featuredGift: Gift;
   gifts: Gift[];
   debug?: any | null;
+  // Enhanced debug info
+  requestPayload?: any;
+  serverError?: any;
 }
 
 export type RecipientGender = 'male' | 'female' | 'unisex';

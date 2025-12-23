@@ -18,11 +18,13 @@ import { Collections } from './pages/Collections';
 const AppRoutes = () => {
     const location = useLocation();
     
+    // Logic for hiding Navigation Bar
     const showNav = location.pathname !== '/quiz' 
                  && location.pathname !== '/login'
                  && !location.pathname.startsWith('/blog/');
     
-    const showFooter = location.pathname !== '/quiz' && location.pathname !== '/login';
+    // Logic for hiding Footer (Explicitly exclude Quiz)
+    const showFooter = !location.pathname.startsWith('/quiz') && location.pathname !== '/login';
 
     return (
         <Layout showNav={showNav} showFooter={showFooter}>

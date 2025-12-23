@@ -60,7 +60,10 @@ export const apiFetch = async (endpoint: string, options: ApiFetchOptions = {}) 
         }
         // Extract useful error message if possible
         const msg = data?.error?.message || data?.detail || (data?.error ? JSON.stringify(data.error) : `API Error: ${response.statusText}`);
-        throw new Error(msg);
+        // Attach full data to error object for debug extraction
+        const error = new Error(msg);
+        (error as any).details = data; 
+        throw error;
     }
     
     console.groupCollapsed(`✅ [API] ${response.status} ${endpoint}`);
@@ -181,11 +184,18 @@ export const api = {
             credentials: 'omit', // Important: Avoid sending cookies to prevent CORS 400 on public endpoint
             skipErrorLog: false 
         });
-        return mapRecommendationsResponse(response);
+        const mapped = mapRecommendationsResponse(response);
+        return { ...mapped, requestPayload: payload };
       } catch (e) {
         console.warn('Backend generation failed, switching to Mock AI Engine', e);
         const dto = await MockServer.getRecommendations(answers);
-        return mapRecommendationsResponse(dto);
+        const mapped = mapRecommendationsResponse(dto);
+        // Inject error and payload into the mock response for debugging
+        return { 
+            ...mapped, 
+            requestPayload: payload, 
+            serverError: (e as any).details || (e as Error).message || e 
+        };
       }
     }
   },
