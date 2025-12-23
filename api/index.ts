@@ -91,7 +91,7 @@ export const api = {
     },
     logout: async () => apiFetch('/api/v1/auth/logout', { method: 'POST' }),
     getLoginUrl: (provider: string, returnTo: string) =>
-        `${API_BASE}/api/v1/auth/${provider}/start?return_to=${encodeURIComponent(returnTo)}`
+        `${API_BASE}/api/v1/auth/${provider}/start?redirect_url=${encodeURIComponent(returnTo)}`
   },
   gifts: {
     getById: async (id: string): Promise<Gift> => {
